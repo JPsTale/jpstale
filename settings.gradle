@@ -1,0 +1,13 @@
+include 'Assets'
+include 'JPsTale-AssetLoader'
+include 'JPsTale-Audio'
+include 'JPsTale-Core'
+include 'JPsTale-Effects'
+include 'JPsTale-Entity'
+include 'JPsTale-Field'
+include 'JPsTale-GUI'
+include 'JPsTale-Sky'
+include 'JPsTale-Server'
+include 'JPsTale-Tool'
+
+rootProject.name = 'JPsTale'
