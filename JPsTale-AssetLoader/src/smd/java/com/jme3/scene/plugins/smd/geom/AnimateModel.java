@@ -1,6 +1,7 @@
 package com.jme3.scene.plugins.smd.geom;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.pstale.assets.Flyweight;
 
@@ -104,5 +105,18 @@ public class AnimateModel extends Flyweight {
 
         in.close();
     }
+
+	@Override
+	public String toString() {
+		return "AnimateModel [modelFile=" + modelFile + ", motionFile=" + motionFile + ", subModelFile=" + subModelFile
+				+ ", HighModel=" + HighModel + ", DefaultModel=" + DefaultModel + ", LowModel=" + LowModel
+				+ ", subMotions=" + Arrays.toString(subMotions) + ", subMotionCount=" + subMotionCount
+				+ ", FileTypeKeyWord=" + FileTypeKeyWord + ", LinkFileKeyWord=" + LinkFileKeyWord + ", motionLinkFile="
+				+ motionLinkFile + ", talkLinkFile=" + talkLinkFile + ", talkMotionFile=" + talkMotionFile
+				+ ", talkMotions=" + Arrays.toString(talkMotions) + ", talkMotionCount=" + talkMotionCount
+				+ ", npcMotionRate=" + Arrays.toString(npcMotionRate) + ", npcMotionRateCnt="
+				+ Arrays.toString(npcMotionRateCnt) + ", talkMotionRate=" + Arrays.toString(talkMotionRate)
+				+ ", talkMotionRateCnt=" + Arrays.toString(talkMotionRateCnt) + "]";
+	}
 
 }

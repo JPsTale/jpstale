@@ -9,4 +9,12 @@ public class TEXTURE {
     int MapOpacity; // 是否透明( TRUE , FALSE )
     int TexSwapMode; // ( TRUE / FALSE )
     TEXTURE TexChild;
+    
+	@Override
+	public String toString() {
+		return "TEXTURE [Name=" + Name + ", NameA=" + NameA + ", Width=" + Width + ", Height=" + Height + ", UsedTime="
+				+ UsedTime + ", UseCounter=" + UseCounter + ", MapOpacity=" + MapOpacity + ", TexSwapMode="
+				+ TexSwapMode + ", TexChild=" + TexChild + "]";
+	}
+    
 }

@@ -20,4 +20,9 @@ public class TransScale extends Flyweight {
         z = in.readInt() / 256f;
     }
 
+	@Override
+	public String toString() {
+		return "TransScale [frame=" + frame + ", x=" + x + ", y=" + y + ", z=" + z + "]";
+	}
+
 }

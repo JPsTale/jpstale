@@ -21,4 +21,11 @@ public class FRAME_POS extends Flyweight {
         posNum = in.readInt();
         posCnt = in.readInt();
     }
+
+	@Override
+	public String toString() {
+		return "FRAME_POS [startFrame=" + startFrame + ", endFrame=" + endFrame + ", posNum=" + posNum + ", posCnt="
+				+ posCnt + "]";
+	}
+    
 }

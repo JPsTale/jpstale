@@ -1,6 +1,7 @@
 package com.jme3.scene.plugins.smd.geom;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.pstale.assets.Flyweight;
 
@@ -340,4 +341,27 @@ public class GeomObject extends Flyweight {
         }
         return maxFrame;
     }
+
+	@Override
+	public String toString() {
+		return "GeomObject [Vertex=" + Arrays.toString(Vertex) + ", Face=" + Arrays.toString(Face) + ", TexLink="
+				+ Arrays.toString(TexLink) + ", boneArray=" + Arrays.toString(boneArray) + ", zeroVertex=" + zeroVertex
+				+ ", maxZ=" + maxZ + ", minZ=" + minZ + ", maxY=" + maxY + ", minY=" + minY + ", maxX=" + maxX
+				+ ", minX=" + minX + ", dBound=" + dBound + ", Bound=" + Bound + ", MaxVertex=" + MaxVertex
+				+ ", MaxFace=" + MaxFace + ", nVertex=" + nVertex + ", nFace=" + nFace + ", nTexLink=" + nTexLink
+				+ ", ColorEffect=" + ColorEffect + ", ClipStates=" + ClipStates + ", Posi=" + Posi + ", CameraPosi="
+				+ CameraPosi + ", Angle=" + Angle + ", Trig=" + Arrays.toString(Trig) + ", NodeName=" + NodeName
+				+ ", NodeParent=" + NodeParent + ", pParent=" + pParent + ", transform=" + transform
+				+ ", transformInvert=" + transformInvert + ", transformResult=" + transformResult + ", transformRotate="
+				+ transformRotate + ", worldMatrix=" + worldMatrix + ", localMatrix=" + localMatrix + ", lFrame="
+				+ lFrame + ", qx=" + qx + ", qy=" + qy + ", qz=" + qz + ", qw=" + qw + ", sx=" + sx + ", sy=" + sy
+				+ ", sz=" + sz + ", px=" + px + ", py=" + py + ", pz=" + pz + ", rotArray=" + Arrays.toString(rotArray)
+				+ ", posArray=" + Arrays.toString(posArray) + ", scaleArray=" + Arrays.toString(scaleArray)
+				+ ", TmPrevRot=" + Arrays.toString(TmPrevRot) + ", TmRotCnt=" + TmRotCnt + ", TmPosCnt=" + TmPosCnt
+				+ ", TmScaleCnt=" + TmScaleCnt + ", TmRotFrame=" + Arrays.toString(TmRotFrame) + ", TmPosFrame="
+				+ Arrays.toString(TmPosFrame) + ", TmScaleFrame=" + Arrays.toString(TmScaleFrame) + ", TmFrameCnt="
+				+ TmFrameCnt + ", lpPhysuque=" + lpPhysuque + ", lpOldTexLink=" + lpOldTexLink + ", boneNames="
+				+ Arrays.toString(boneNames) + ", maxFrame=" + maxFrame + "]";
+	}
+    
 }

@@ -1,6 +1,7 @@
 package com.jme3.script.plugins.character;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.pstale.assets.Flyweight;
 
@@ -24,4 +25,9 @@ public class ModelGroup extends Flyweight {
             modelNames[i] = getString(in, 16);
         }
     }
+
+	@Override
+	public String toString() {
+		return "ModelGroup [modelNameCnt=" + modelNameCnt + ", modelNames=" + Arrays.toString(modelNames) + "]";
+	}
 }

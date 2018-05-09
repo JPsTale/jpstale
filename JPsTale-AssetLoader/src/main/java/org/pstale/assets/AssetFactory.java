@@ -570,7 +570,7 @@ public class AssetFactory {
         }
 
         // 透明物体
-        if (m.MapOpacity != 0 || m.Transparency != 0) {
+        //if (m.MapOpacity != 0 || m.Transparency != 0) {
             // 这个值设置得稍微大一些，这样草、花等图片的边缘就会因为透明度不够而过滤掉像素。
             mat.setFloat("AlphaDiscardThreshold", 0.75f);
             // 虽然已经过时，但是还是写上以防不测。
@@ -582,6 +582,6 @@ public class AssetFactory {
 
             // 透明物体不裁剪面
             rs.setFaceCullMode(FaceCullMode.Off);
-        }
+        //}
     }
 }

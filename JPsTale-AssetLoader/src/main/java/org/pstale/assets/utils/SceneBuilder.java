@@ -136,7 +136,7 @@ public class SceneBuilder {
                 case sMATS_SCRIPT_WINDX2:
                 case sMATS_SCRIPT_WINDZ1:
                 case sMATS_SCRIPT_WINDZ2: {
-                    geom.addControl(new WindAnimationControl(m.WindMeshBottom & 0x07FF));
+                    //geom.addControl(new WindAnimationControl(m.WindMeshBottom & 0x07FF));
                     break;
                 }
                 case sMATS_SCRIPT_WATER: {
@@ -162,7 +162,7 @@ public class SceneBuilder {
             // 透明度
             // 只有不透明物体才需要检测碰撞网格。
             if (m.MapOpacity != 0 || m.Transparency != 0 || m.BlendType == 1 || m.BlendType == 4) {
-                geom.setQueueBucket(Bucket.Translucent);
+                //geom.setQueueBucket(Bucket.Translucent);
             }
 
             if (m.UseState != 0) {// ScriptState

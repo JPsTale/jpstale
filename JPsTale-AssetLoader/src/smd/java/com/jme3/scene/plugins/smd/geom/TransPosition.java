@@ -19,4 +19,10 @@ public class TransPosition extends Flyweight {
         y = in.readFloat();
         z = in.readFloat();
     }
+
+	@Override
+	public String toString() {
+		return "TransPosition [frame=" + frame + ", x=" + x + ", y=" + y + ", z=" + z + "]";
+	}
+    
 }

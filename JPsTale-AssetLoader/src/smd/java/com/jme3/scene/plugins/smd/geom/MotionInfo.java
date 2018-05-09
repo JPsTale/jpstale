@@ -1,6 +1,7 @@
 package com.jme3.scene.plugins.smd.geom;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.pstale.assets.Flyweight;
 
@@ -81,4 +82,15 @@ public class MotionInfo extends Flyweight {
 
         return val[0] + val[1] << 8;
     }
+
+	@Override
+	public String toString() {
+		return "MotionInfo [State=" + State + ", motionStartFrame=" + motionStartFrame + ", talkStartFrame="
+				+ talkStartFrame + ", MotionKeyWord_2=" + MotionKeyWord_2 + ", endFrame=" + endFrame + ", EventFrame="
+				+ Arrays.toString(EventFrame) + ", ItemCodeCount=" + ItemCodeCount + ", ItemCodeList="
+				+ Arrays.toString(ItemCodeList) + ", dwJobCodeBit=" + dwJobCodeBit + ", SkillCodeList="
+				+ Arrays.toString(SkillCodeList) + ", MapPosition=" + MapPosition + ", Repeat=" + Repeat + ", KeyCode="
+				+ KeyCode + ", MotionFrame=" + MotionFrame + ", val=" + Arrays.toString(val) + "]";
+	}
+    
 }

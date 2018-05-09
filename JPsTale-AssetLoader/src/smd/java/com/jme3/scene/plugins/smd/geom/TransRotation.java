@@ -21,4 +21,10 @@ public class TransRotation extends Flyweight {
         z = in.readFloat();
         w = in.readFloat();
     }
+
+	@Override
+	public String toString() {
+		return "TransRotation [frame=" + frame + ", x=" + x + ", y=" + y + ", z=" + z + ", w=" + w + "]";
+	}
+    
 }

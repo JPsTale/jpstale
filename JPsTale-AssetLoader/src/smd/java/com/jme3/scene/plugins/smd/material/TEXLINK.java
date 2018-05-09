@@ -1,6 +1,7 @@
 package com.jme3.scene.plugins.smd.material;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.pstale.assets.Flyweight;
 
@@ -29,4 +30,11 @@ public class TEXLINK extends Flyweight {
         hTexture = in.readInt();// *hTexture;
         lpNextTex = in.readInt();// *NextTex;
     }
+
+	@Override
+	public String toString() {
+		return "TEXLINK [u=" + Arrays.toString(u) + ", v=" + Arrays.toString(v) + ", hTexture=" + hTexture
+				+ ", lpNextTex=" + lpNextTex + ", NextTex=" + NextTex + "]";
+	}
+    
 }

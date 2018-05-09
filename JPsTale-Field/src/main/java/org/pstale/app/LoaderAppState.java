@@ -1,6 +1,7 @@
 package org.pstale.app;
 import static org.pstale.constants.SceneConstants.scale;
 
+import java.io.File;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
 import com.jme3.collision.CollisionResults;
+import com.jme3.export.binary.BinaryExporter;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -168,6 +170,7 @@ public class LoaderAppState extends SubAppState {
                 return null;
             }
 
+            BinaryExporter.getInstance().save(mainModel, new File(field.getName()+".j3o"));
             // 加载成功
             mainModel.scale(scale);
             app.enqueue(new Runnable() {

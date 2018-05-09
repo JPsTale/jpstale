@@ -29,4 +29,10 @@ public class Vertex extends Flyweight {
 
         n = new Vector3f(nx, ny, nz);
     }
+
+	@Override
+	public String toString() {
+		return "Vertex [v=" + v + ", n=" + n + "]";
+	}
+    
 }

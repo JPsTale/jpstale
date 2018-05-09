@@ -1,6 +1,7 @@
 package com.jme3.scene.plugins.smd.material;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.pstale.assets.Flyweight;
 
@@ -78,4 +79,12 @@ public class MaterialGroup extends Flyweight {
             }
         }
     }
+
+	@Override
+	public String toString() {
+		return "MaterialGroup [materials=" + Arrays.toString(materials) + ", materialCount=" + materialCount
+				+ ", reformTexture=" + reformTexture + ", maxMaterial=" + maxMaterial + ", lastSearchMaterial="
+				+ lastSearchMaterial + ", lastSearchName=" + lastSearchName + "]";
+	}
+    
 }

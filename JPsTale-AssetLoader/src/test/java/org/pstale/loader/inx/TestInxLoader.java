@@ -110,6 +110,8 @@ public class TestInxLoader {
         smdFile = AssetNameUtils.getName(smdFile);
         PAT3D model = AssetFactory.loadSmd(folder + smdFile);
         model.setSkeleton(skeleton);
+        
+        logger.debug("Models= {}", modelInfo);
     }
 
     private void printAnimation(MotionInfo[] motions, int count) {

@@ -1,6 +1,7 @@
 package com.jme3.scene.plugins.smd.material;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.pstale.assets.Flyweight;
 
@@ -189,4 +190,19 @@ public class _Material extends Flyweight {
          */
         AnimationFrame = in.readInt();
     }
+
+	@Override
+	public String toString() {
+		return "_Material [InUse=" + InUse + ", TextureCounter=" + TextureCounter + ", smTexture="
+				+ Arrays.toString(smTexture) + ", TextureStageState=" + Arrays.toString(TextureStageState)
+				+ ", TextureFormState=" + Arrays.toString(TextureFormState) + ", ReformTexture=" + ReformTexture
+				+ ", MapOpacity=" + MapOpacity + ", TextureType=" + TextureType + ", BlendType=" + BlendType
+				+ ", Shade=" + Shade + ", TwoSide=" + TwoSide + ", SerialNum=" + SerialNum + ", Diffuse=" + Diffuse
+				+ ", Transparency=" + Transparency + ", SelfIllum=" + SelfIllum + ", TextureSwap=" + TextureSwap
+				+ ", MatFrame=" + MatFrame + ", TextureClip=" + TextureClip + ", UseState=" + UseState + ", MeshState="
+				+ MeshState + ", WindMeshBottom=" + WindMeshBottom + ", smAnimTexture=" + Arrays.toString(smAnimTexture)
+				+ ", AnimTexCounter=" + AnimTexCounter + ", FrameMask=" + FrameMask + ", Shift_FrameSpeed="
+				+ Shift_FrameSpeed + ", AnimationFrame=" + AnimationFrame + "]";
+	}
+    
 }

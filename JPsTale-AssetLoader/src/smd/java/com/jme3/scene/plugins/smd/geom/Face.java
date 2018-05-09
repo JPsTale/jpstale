@@ -1,6 +1,7 @@
 package com.jme3.scene.plugins.smd.geom;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.pstale.assets.Flyweight;
 
@@ -30,6 +31,12 @@ public class Face extends Flyweight {
         }
 
         lpTexLink = in.readInt();
-
     }
+
+	@Override
+	public String toString() {
+		return "Face [v=" + Arrays.toString(v) + ", t=" + Arrays.toString(t) + ", lpTexLink=" + lpTexLink + ", TexLink="
+				+ TexLink + "]";
+	}
+    
 }

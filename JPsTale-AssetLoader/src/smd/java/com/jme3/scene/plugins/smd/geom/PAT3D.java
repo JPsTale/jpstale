@@ -1,6 +1,7 @@
 package com.jme3.scene.plugins.smd.geom;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.pstale.assets.Flyweight;
 
@@ -303,4 +304,15 @@ public class PAT3D extends Flyweight {
             obj.setSkeleton(skeleton);
         }
     }
+
+	@Override
+	public String toString() {
+		return "PAT3D [objArray=" + Arrays.toString(objArray) + ", TmSort=" + Arrays.toString(TmSort) + ", skeleton="
+				+ skeleton + ", materialGroup=" + materialGroup + ", MaxFrame=" + MaxFrame + ", Frame=" + Frame
+				+ ", SizeWidth=" + SizeWidth + ", SizeHeight=" + SizeHeight + ", objCount=" + objCount + ", Posi="
+				+ Posi + ", Angle=" + Angle + ", CameraPosi=" + CameraPosi + ", dBound=" + dBound + ", Bound=" + Bound
+				+ ", TmFrame=" + Arrays.toString(TmFrame) + ", TmFrameCnt=" + TmFrameCnt + ", TmLastFrame="
+				+ TmLastFrame + ", TmLastAngle=" + TmLastAngle + "]";
+	}
+    
 }
