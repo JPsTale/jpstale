@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.pstale.assets.Flyweight;
 
+import com.jme3.math.Matrix4f;
 import com.jme3.util.LittleEndien;
 
 /**
@@ -15,23 +16,16 @@ public class Matrix4D extends Flyweight {
     public int _31, _32, _33, _34;
     public int _41, _42, _43, _44;
 
+    public Matrix4f value;
+    public Matrix4f valueIT;
+    
     public Matrix4D() {
-        _11 = 1;
-        _12 = 0;
-        _13 = 0;
-        _14 = 0;
-        _21 = 0;
-        _22 = 1;
-        _23 = 0;
-        _24 = 0;
-        _31 = 0;
-        _32 = 0;
-        _33 = 1;
-        _34 = 0;
-        _41 = 0;
-        _42 = 0;
-        _43 = 0;
-        _44 = 1;
+        _11 = 1; _12 = 0; _13 = 0; _14 = 0;
+        _21 = 0; _22 = 1; _23 = 0; _24 = 0;
+        _31 = 0; _32 = 0; _33 = 1; _34 = 0;
+        _41 = 0; _42 = 0; _43 = 0; _44 = 1;
+        
+        value = new Matrix4f();
     }
 
     /**
@@ -56,5 +50,14 @@ public class Matrix4D extends Flyweight {
         _42 = in.readInt();
         _43 = in.readInt();
         _44 = in.readInt();
+        
+        // 换算成jME3的矩阵
+        value.set(_11, _12, _13, _14,
+        		_21, _22, _23, _24,
+        		_31, _32, _33, _34,
+        		_41, _42, _43, _44);
+        value.multLocal(1f / 256);
+        
+        valueIT = value.transpose().invertLocal();
     }
 }

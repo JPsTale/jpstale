@@ -308,6 +308,7 @@ public class AnimationBuilder {
 
             for (int j = 0; j < obj.TmRotCnt; j++) {
                 TransRotation rot = obj.rotArray[j];
+                
                 Keyframe k = getOrMakeKeyframe(keyframes, rot.frame);
                 k.rotation.set(rot.x, rot.y, rot.z, -rot.w);
                 

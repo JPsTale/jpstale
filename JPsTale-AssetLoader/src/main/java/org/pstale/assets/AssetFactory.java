@@ -114,7 +114,7 @@ public class AssetFactory {
             return false;
         }
 
-        String[] folders = { "effect", "field", "char", "wav", "sky", "image" };
+        String[] folders = { "effect", "field", "char", "wav", "image" };
         for (String subFolder : folders) {
             if (!new File(folder + "/" + subFolder).exists()) {
                 return false;

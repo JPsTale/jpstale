@@ -13,7 +13,8 @@ import com.jme3.animation.Skeleton;
 import com.jme3.animation.SkeletonControl;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
+import com.jme3.math.Matrix4f;
+import com.jme3.math.Transform;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
@@ -68,6 +69,12 @@ public class ModelBuilder {
                 // 对所有顶点进行线性变换，否则顶点的坐标都在原点附近。
                 invertPoint(obj);
 
+                // 相对位置
+                Matrix4f localMatrix = obj.localMatrix.value.transpose();
+                
+                Transform localTransform = new Transform();
+                localTransform.fromTransformMatrix(localMatrix);
+                
                 // 根据模型的材质不同，将创建多个网格，分别渲染。
                 for (int mat_id = 0; mat_id < pat.materialGroup.materialCount; mat_id++) {
                     // 生成网格
@@ -87,16 +94,11 @@ public class ModelBuilder {
                     // 创建几何体并应用材质。
                     Geometry geom = new Geometry(pat.objArray[i].NodeName + "#" + mat_id, mesh);
                     geom.setMaterial(mat);
-
-                    // 设置位置
-                    // FIXME 这个位置设置后并不准确，需要进一步研究。
-                    Vector3f translation = new Vector3f(-obj.py, obj.pz, -obj.px);
-                    Quaternion rotation = new Quaternion(-obj.qy, obj.qz, -obj.qx, -obj.qw);
-                    Vector3f scale = new Vector3f(obj.sy, obj.sz, obj.sx);
-                    geom.setLocalTranslation(translation);
-                    geom.setLocalRotation(rotation);
-                    geom.setLocalScale(scale);
-
+                    
+                    geom.setLocalTranslation(localTransform.getTranslation());
+                    geom.setLocalRotation(localTransform.getRotation());
+                    geom.setLocalScale(localTransform.getScale());
+                    
                     rootNode.attachChild(geom);
                 }
             }
@@ -108,56 +110,16 @@ public class ModelBuilder {
     private static void invertPoint(GeomObject obj) {
 
         for (int i = 0; i < obj.nVertex; i++) {
-            if (obj.boneArray != null) {
-                obj.Vertex[i].v = mult(obj.Vertex[i].x, obj.Vertex[i].y, obj.Vertex[i].z,
-                        obj.boneArray[i].transformInvert);
-            } else {
-                obj.Vertex[i].v = mult(obj.Vertex[i].x, obj.Vertex[i].y, obj.Vertex[i].z, obj.transformInvert);
-            }
+        	Matrix4D mat = null;
+        	if (obj.boneArray != null) {
+        		mat = obj.boneArray[i].transformInvert;
+        	} else {
+        		mat = obj.transformInvert;
+        	}
+        	
+            Matrix4f mat4 = mat.valueIT;
+        	mat4.mult(obj.Vertex[i].v, obj.Vertex[i].v);
         }
-    }
-
-    /**
-     * 将顺序读取的3个int，用TmInvert进行转置，获得一个GL坐标系的顶点。
-     * 
-     * <pre>
-     * 若有向量x=(v1, v2, v3, 1)与矩阵TmInvert (_11, _12, _13, _14)
-     *                                      (_21, _22, _23, _24)
-     *                                      (_31, _32, _33, _34)
-     *                                      (_41, _42, _43, _44)。
-     * 使用TmInvert对向量x进行线性变换后，得到的向量为a(res1, res2, res3, 1)。
-     *       即：TmInvert * x = a(res1, res2, res3, 1)
-     * 其中TmInvert与a已知，求x。
-     *       x = (1/TmInvert) * a
-     * </pre>
-     * 
-     * @param res1
-     * @param res2
-     * @param res3
-     * @param m
-     */
-    private static Vector3f mult(long res1, long res2, long res3, Matrix4D m) {
-        long v1 = -((res2 * m._33 * m._21 - res2 * m._23 * m._31 - res1 * m._33 * m._22 + res1 * m._23 * m._32
-                - res3 * m._21 * m._32 + res3 * m._31 * m._22 + m._43 * m._21 * m._32 - m._43 * m._31 * m._22
-                - m._33 * m._21 * m._42 + m._33 * m._41 * m._22 + m._23 * m._31 * m._42 - m._23 * m._41 * m._32) << 8)
-                / (m._11 * m._33 * m._22 + m._23 * m._31 * m._12 + m._21 * m._32 * m._13 - m._33 * m._21 * m._12
-                        - m._11 * m._23 * m._32 - m._31 * m._22 * m._13);
-        long v2 = ((res2 * m._11 * m._33 - res1 * m._33 * m._12 - res3 * m._11 * m._32 + res3 * m._31 * m._12
-                - res2 * m._31 * m._13 + res1 * m._32 * m._13 + m._11 * m._43 * m._32 - m._43 * m._31 * m._12
-                - m._11 * m._33 * m._42 + m._33 * m._41 * m._12 + m._31 * m._42 * m._13 - m._41 * m._32 * m._13) << 8)
-                / (m._11 * m._33 * m._22 + m._23 * m._31 * m._12 + m._21 * m._32 * m._13 - m._33 * m._21 * m._12
-                        - m._11 * m._23 * m._32 - m._31 * m._22 * m._13);
-        long v3 = -((res2 * m._11 * m._23 - res1 * m._23 * m._12 - res3 * m._11 * m._22 + res3 * m._21 * m._12
-                - res2 * m._21 * m._13 + res1 * m._22 * m._13 + m._11 * m._43 * m._22 - m._43 * m._21 * m._12
-                - m._11 * m._23 * m._42 + m._23 * m._41 * m._12 + m._21 * m._42 * m._13 - m._41 * m._22 * m._13) << 8)
-                / (m._11 * m._33 * m._22 + m._23 * m._31 * m._12 + m._21 * m._32 * m._13 - m._33 * m._21 * m._12
-                        - m._11 * m._23 * m._32 - m._31 * m._22 * m._13);
-
-        float x = (float) v1 / 256.0f;
-        float y = (float) v2 / 256.0f;
-        float z = (float) v3 / 256.0f;
-
-        return new Vector3f(x, y, z);
     }
 
     /**

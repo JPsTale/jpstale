@@ -48,17 +48,17 @@ public class GeomObject extends Flyweight {
     int[] Trig = new int[8];
 
     // 局聪皋捞记 包访
-    public String NodeName;// [32]; // 坷宏璃飘狼 畴靛 捞抚
-    public String NodeParent;// [32]; // 何葛 坷宏璃飘狼 捞抚
-    public GeomObject pParent; // 何葛 坷宏璃飘 器牢磐
+    public String NodeName;// [32];
+    public String NodeParent;// [32];
+    public GeomObject pParent;
 
-    Matrix4D transform; // 扁夯 TM 青纺
-    public Matrix4D transformInvert; // 逆矩阵
-    Matrix4F transformResult; // 局聪皋捞记 青纺
-    Matrix4D transformRotate; // 扁夯利 雀傈 青纺
+    public Matrix4D transform;
+    public Matrix4D transformInvert;
+    public Matrix4F transformResult;
+    public Matrix4D transformRotate;
 
-    Matrix4D worldMatrix; // 岿靛谅钎 函券 青纺
-    Matrix4D localMatrix; // 肺漠谅钎 函券 青纺
+    public Matrix4D worldMatrix;
+    public Matrix4D localMatrix;
 
     int lFrame;// 没有实际作用
 
