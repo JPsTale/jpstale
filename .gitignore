@@ -5,6 +5,8 @@
 **/logs/
 **/.classpath
 **/.project
+JPsTale-Field/Field
 **/*.dll
+**/*.dylib
 **/*.so
 **/*.log*

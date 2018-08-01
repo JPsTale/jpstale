@@ -25,11 +25,16 @@ import com.jme3.scene.debug.Arrow;
 import com.jme3.scene.debug.Grid;
 import com.jme3.scene.debug.SkeletonDebugger;
 import com.jme3.scene.plugins.ase.AseKey;
+import com.jme3.system.AppSettings;
 
 public class TestLoadMonster extends SimpleApplication {
 
 	public static void main(String[] args) {
 		TestLoadMonster a = new TestLoadMonster();
+		AppSettings setting = new AppSettings(true);
+		setting.setRenderer("JOGL");
+		setting.setAudioRenderer("JOAL");
+		a.setSettings(setting);
 		a.start();
 	}
 

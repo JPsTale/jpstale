@@ -3,6 +3,7 @@ package org.pstale.app;
 import org.pstale.assets.AssetFactory;
 
 import com.jme3.scene.Node;
+import com.jme3.system.AppSettings;
 
 /**
  * 测试加载地图
@@ -25,6 +26,9 @@ public class TestField extends TestBase {
 
     public static void main(String[] args) {
         TestField app = new TestField();
+        AppSettings setting = new AppSettings(true);
+        setting.setRenderer("JOGL");
+        app.setSettings(setting);
         app.start();
     }
 

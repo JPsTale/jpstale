@@ -12,6 +12,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.debug.SkeletonDebugger;
 import com.jme3.scene.plugins.smd.geom.AnimateModel;
 import com.jme3.scene.plugins.smd.geom.PAT3D;
+import com.jme3.system.AppSettings;
 
 /**
  * 测试生成骨骼
@@ -36,7 +37,13 @@ public class TestLoadNPC extends TestBase {
     }
 
     public static void main(String[] args) {
-        new TestLoadNPC().start();
+        AppSettings setting = new AppSettings(true);
+        setting.setRenderer("JOGL");
+        setting.setAudioRenderer("JOAL");
+
+        TestLoadNPC app = new TestLoadNPC();
+        app.setSettings(setting);
+        app.start();
     }
 
 }

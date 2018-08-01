@@ -94,6 +94,7 @@ public class AssetFactory {
         registerFolder("D:/Priston Tale/0_素材/Client");
         registerFolder("D:/Priston Tale/0_素材/Server/精灵中国全服务端3060/3060");
         registerFolder("D:/Priston Tale/PTCN3550/PTCN3550");
+        registerFolder("/Users/yan/Documents/ptcn 2018V5-725");
     }
     
     private static void registerFolder(String folder) {
@@ -114,7 +115,13 @@ public class AssetFactory {
             return false;
         }
 
-        String[] folders = { "effect", "field", "char", "wav", "image" };
+        String[] folders = {
+            "Effect",
+            "Field",
+            "char",
+            "image", 
+            "wav",
+        };
         for (String subFolder : folders) {
             if (!new File(folder + "/" + subFolder).exists()) {
                 return false;
