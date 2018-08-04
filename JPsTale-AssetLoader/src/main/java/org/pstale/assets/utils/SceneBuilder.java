@@ -8,12 +8,13 @@ import org.slf4j.LoggerFactory;
 import com.jme3.material.Material;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.plugins.smd.material.TEXLINK;
-import com.jme3.scene.plugins.smd.material._Material;
+import com.jme3.scene.plugins.smd.material.SmMaterial;
 import com.jme3.scene.plugins.smd.stage.Stage;
 import com.jme3.scene.plugins.smd.stage.StageFace;
 import com.jme3.util.BufferUtils;
@@ -69,7 +70,7 @@ public class SceneBuilder {
 
         // 创建材质
         for (int mat_id = 0; mat_id < materialCount; mat_id++) {
-            _Material m = stage.materials[mat_id];
+            SmMaterial m = stage.materials[mat_id];
 
             // 该材质没有使用，不需要显示。
             if (m.InUse == 0) {
@@ -111,6 +112,7 @@ public class SceneBuilder {
                 int n = m.TextureFormState[0];
                 if (n >= 4) {// 4 SCROLL 滚轴 5 REFLEX 反光 6 SCROLL2 2倍速滚轴
                     mat = AssetFactory.createScrollMaterial(m);
+                    geom.setQueueBucket(Bucket.Transparent);
                 } else {
                     if (SceneConstants.USE_LIGHT) {
                         mat = AssetFactory.createLightMaterial(m);
@@ -159,8 +161,8 @@ public class SceneBuilder {
 
             // 透明度
             // 只有不透明物体才需要检测碰撞网格。
-            if (m.MapOpacity != 0 || m.Transparency != 0 || m.BlendType == 1 || m.BlendType == 4) {
-                //geom.setQueueBucket(Bucket.Translucent);
+            if (m.MapOpacity != 0) {
+                geom.setQueueBucket(Bucket.Transparent);
             }
 
             if (m.UseState != 0) {// ScriptState
@@ -197,7 +199,7 @@ public class SceneBuilder {
      * 
      * @return
      */
-    private static Vector3f[] computeOrginNormals(Stage stage) {
+    public static Vector3f[] computeOrginNormals(Stage stage) {
         TempVars tmp = TempVars.get();
 
         Vector3f A;// 三角形的第1个点
@@ -345,7 +347,7 @@ public class SceneBuilder {
         /**
          * 根据材质的特诊来筛选参加碰撞检测的物体， 将被忽略的材质设置成null，作为一种标记。
          */
-        _Material m;// 临时变量
+        SmMaterial m;// 临时变量
         for (int mat_id = 0; mat_id < materialCount; mat_id++) {
             m = stage.materials[mat_id];
 

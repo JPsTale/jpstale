@@ -33,8 +33,7 @@ public class TEXLINK extends Flyweight {
 
 	@Override
 	public String toString() {
-		return "TEXLINK [u=" + Arrays.toString(u) + ", v=" + Arrays.toString(v) + ", hTexture=" + hTexture
-				+ ", lpNextTex=" + lpNextTex + ", NextTex=" + NextTex + "]";
+		return "TEXLINK [u=" + Arrays.toString(u) + ", v=" + Arrays.toString(v) + "]";
 	}
     
 }

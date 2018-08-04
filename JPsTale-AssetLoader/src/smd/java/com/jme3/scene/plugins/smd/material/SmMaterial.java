@@ -1,12 +1,12 @@
 package com.jme3.scene.plugins.smd.material;
 
-import java.io.IOException;
-import java.util.Arrays;
+import com.jme3.scene.plugins.smd.math.ColorRGB3F;
+import com.jme3.util.LittleEndien;
 
 import org.pstale.assets.Flyweight;
 
-import com.jme3.scene.plugins.smd.math.ColorRGB3F;
-import com.jme3.util.LittleEndien;
+import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * 材质 size = 320
@@ -14,7 +14,7 @@ import com.jme3.util.LittleEndien;
  * @author yanmaoyuan
  * 
  */
-public class _Material extends Flyweight {
+public class SmMaterial extends Flyweight {
     /**
      * 判断这个面是否被使用。 实际上smd文件中存储的材质都是被用到的材质，否则是不会存储的。 因此判断这个变量并没有实际意义。
      */

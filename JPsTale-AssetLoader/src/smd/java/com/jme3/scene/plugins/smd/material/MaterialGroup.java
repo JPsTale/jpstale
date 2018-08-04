@@ -12,7 +12,7 @@ import com.jme3.util.LittleEndien;
  */
 public class MaterialGroup extends Flyweight {
     // DWORD Head
-    public _Material[] materials;
+    public SmMaterial[] materials;
     public int materialCount;
     int reformTexture;
     int maxMaterial;
@@ -45,10 +45,10 @@ public class MaterialGroup extends Flyweight {
         if (materialCount < 0) {
             return;
         }
-        materials = new _Material[materialCount];
+        materials = new SmMaterial[materialCount];
 
         for (int i = 0; i < materialCount; i++) {
-            materials[i] = new _Material();
+            materials[i] = new SmMaterial();
             materials[i].loadData(in);
             // size += 320;
 

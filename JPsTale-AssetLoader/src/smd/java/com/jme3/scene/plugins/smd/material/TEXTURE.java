@@ -12,9 +12,10 @@ public class TEXTURE {
     
 	@Override
 	public String toString() {
-		return "TEXTURE [Name=" + Name + ", NameA=" + NameA + ", Width=" + Width + ", Height=" + Height + ", UsedTime="
-				+ UsedTime + ", UseCounter=" + UseCounter + ", MapOpacity=" + MapOpacity + ", TexSwapMode="
-				+ TexSwapMode + ", TexChild=" + TexChild + "]";
+		return "TEXTURE [Name=" + Name
+		    + ", NameA=" + NameA
+		    + ", MapOpacity=" + MapOpacity
+		    + ", TexSwapMode=" + TexSwapMode + "]";
 	}
     
 }

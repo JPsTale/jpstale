@@ -9,6 +9,5 @@ include 'JPsTale-GUI'
 include 'JPsTale-Sky'
 include 'JPsTale-Server'
 include 'JPsTale-Tool'
-include 'JPsTale-glTF'
 
 rootProject.name = 'JPsTale'

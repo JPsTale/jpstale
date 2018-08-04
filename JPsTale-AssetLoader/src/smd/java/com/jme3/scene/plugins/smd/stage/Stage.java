@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.pstale.assets.Flyweight;
 
 import com.jme3.math.Vector3f;
-import com.jme3.scene.plugins.smd.material._Material;
+import com.jme3.scene.plugins.smd.material.SmMaterial;
 import com.jme3.scene.plugins.smd.SmdFileHeader;
 import com.jme3.scene.plugins.smd.material.MaterialGroup;
 import com.jme3.scene.plugins.smd.material.TEXLINK;
@@ -41,7 +41,7 @@ public class Stage extends Flyweight {
     public MaterialGroup materialGroup;
     
     // smSTAGE_OBJECT *StageObject;
-    public _Material[] materials;
+    public SmMaterial[] materials;
 
     public int nVertex = 0;// offset = 88 + = 262752
     public int nFace = 0;

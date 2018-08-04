@@ -24,7 +24,7 @@ import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.plugins.smd.geom.GeomObject;
 import com.jme3.scene.plugins.smd.geom.PAT3D;
 import com.jme3.scene.plugins.smd.material.TEXLINK;
-import com.jme3.scene.plugins.smd.material._Material;
+import com.jme3.scene.plugins.smd.material.SmMaterial;
 import com.jme3.scene.plugins.smd.math.Matrix4D;
 import com.jme3.util.BufferUtils;
 
@@ -81,7 +81,7 @@ public class ModelBuilder {
                     Mesh mesh = buildMesh(obj, mat_id, ske);
 
                     // 创建材质
-                    _Material m = pat.materialGroup.materials[mat_id];
+                    SmMaterial m = pat.materialGroup.materials[mat_id];
                     Material mat;
                     if (SceneConstants.USE_LIGHT) {
                         mat = AssetFactory.createLightMaterial(m);

@@ -1,6 +1,7 @@
 package com.jme3.scene.plugins.smd.stage;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.pstale.assets.Flyweight;
 
@@ -18,7 +19,7 @@ public class StageFace extends Flyweight {
     int lpTexLink;// 这是一个指针，指向TEXLINK结构体
     public TEXLINK TexLink;// 若lpTexLink != 0，则TexLink指向一个实际的对象象
 
-    float nx, ny, nz, y;// Cross氦磐( Normal ) ( nx , ny , nz , [0,1,0]氦磐 Y );
+    public float nx, ny, nz, y;// Cross氦磐( Normal ) ( nx , ny , nz , [0,1,0]氦磐 Y );
 
     public void loadData(LittleEndien in) throws IOException {
         sum = in.readInt();
@@ -35,4 +36,13 @@ public class StageFace extends Flyweight {
         nz = in.readShort() / 32767f;// nz
         y = in.readShort() / 32767f;// Y 除以32767后是 1/8PI，不知道有何用。
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "StageFace [v=" + Arrays.toString(v) + ", TexLink=" + TexLink + ", nx=" + nx + ", ny=" + ny + ", nz=" + nz + ", y=" + y + "]";
+    }
+    
 }

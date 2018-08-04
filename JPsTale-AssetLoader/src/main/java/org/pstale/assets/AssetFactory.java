@@ -37,7 +37,7 @@ import com.jme3.scene.plugins.smd.SmdKey;
 import com.jme3.scene.plugins.smd.SmdLoader;
 import com.jme3.scene.plugins.smd.geom.AnimateModel;
 import com.jme3.scene.plugins.smd.geom.PAT3D;
-import com.jme3.scene.plugins.smd.material._Material;
+import com.jme3.scene.plugins.smd.material.SmMaterial;
 import com.jme3.scene.plugins.smd.stage.Stage;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
@@ -49,6 +49,7 @@ import com.jme3.script.plugins.field.SpmLoader;
 import com.jme3.script.plugins.field.SppLoader;
 import com.jme3.script.plugins.item.ItemLoader;
 import com.jme3.texture.Texture;
+import com.jme3.texture.Texture.MinFilter;
 import com.jme3.texture.Texture.WrapMode;
 
 /**
@@ -398,6 +399,7 @@ public class AssetFactory {
             texKey.setGenerateMips(true);
             texture = assetManager.loadTexture(texKey);
             texture.setWrap(WrapMode.Repeat);
+            texture.setMinFilter(MinFilter.NearestLinearMipMap);
             texture.setAnisotropicFilter(4);
         } catch (Exception ex) {
             texture = assetManager.loadTexture("Common/Textures/MissingTexture.png");
@@ -412,7 +414,7 @@ public class AssetFactory {
      * @param m
      * @return
      */
-    public static Material createLightMaterial(_Material m) {
+    public static Material createLightMaterial(SmMaterial m) {
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         mat.setColor("Diffuse", new ColorRGBA(m.Diffuse.r, m.Diffuse.g, m.Diffuse.b, 1));
         mat.setColor("Ambient", new ColorRGBA(1f, 1f, 1f, 1f));
@@ -437,7 +439,7 @@ public class AssetFactory {
      * @param m
      * @return
      */
-    public static Material createMiscMaterial(_Material m) {
+    public static Material createMiscMaterial(SmMaterial m) {
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         // mat.setColor("Color", new ColorRGBA(m.Diffuse.r, m.Diffuse.g,
         // m.Diffuse.b, 1));
@@ -460,7 +462,7 @@ public class AssetFactory {
      * @param m
      * @return
      */
-    public static Material createShiftMaterial(_Material m) {
+    public static Material createShiftMaterial(SmMaterial m) {
         Material mat = new Material(assetManager, "Shader/Misc/Shift.j3md");
 
         // 画面的切换时间间隔
@@ -483,7 +485,7 @@ public class AssetFactory {
      * @param m
      * @return
      */
-    public static Material createScrollMaterial(_Material m) {
+    public static Material createScrollMaterial(SmMaterial m) {
         Material mat = new Material(assetManager, "Shader/Misc/Scroll.j3md");
 
         // 画面的卷动速度
@@ -519,7 +521,7 @@ public class AssetFactory {
      * @param m
      * @return
      */
-    public static Material createRoundMaterial(_Material m) {
+    public static Material createRoundMaterial(SmMaterial m) {
         Material mat = new Material(assetManager, "Shader/Misc/Round.j3md");
 
         // 设置贴图
@@ -540,7 +542,7 @@ public class AssetFactory {
      * @param m
      * @param mat
      */
-    public static void setRenderState(_Material m, Material mat) {
+    public static void setRenderState(SmMaterial m, Material mat) {
         RenderState rs = mat.getAdditionalRenderState();
 
         switch (m.BlendType) {

@@ -15,7 +15,7 @@ public class StageVertex extends Flyweight {
     int sum;
     // smRENDVERTEX *lpRendVertex;
     public Vector3f v;
-    ColorRGBA vectorColor;
+    public ColorRGBA vectorColor;
 
     public void loadData(LittleEndien in) throws IOException {
         sum = in.readInt();

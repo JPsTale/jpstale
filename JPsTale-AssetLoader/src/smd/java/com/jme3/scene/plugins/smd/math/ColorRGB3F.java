@@ -17,4 +17,10 @@ public class ColorRGB3F extends Flyweight {
         g = in.readFloat();
         b = in.readFloat();
     }
+
+    @Override
+    public String toString() {
+        return "ColorRGB3F [r=" + r + ", g=" + g + ", b=" + b + "]";
+    }
+    
 }
