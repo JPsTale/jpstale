@@ -1,5 +1,7 @@
 package org.pstale.assets.gltf.entity;
 
+import org.pstale.assets.gltf.enums.WrapMode;
+
 /**
  * Texture sampler properties for filtering and wrapping modes. 
  * 
@@ -28,14 +30,14 @@ public class Sampler
      * Valid values: [33071, 33648, 10497] 
      * 
      */
-    private Integer wrapS;
+    private Integer wrapS = WrapMode.Repeat.getValue();
     /**
      * t wrapping mode. (optional)<br> 
      * Default: 10497<br> 
      * Valid values: [33071, 33648, 10497] 
      * 
      */
-    private Integer wrapT;
+    private Integer wrapT = WrapMode.Repeat.getValue();
 
     /**
      * Magnification filter. (optional)<br> 

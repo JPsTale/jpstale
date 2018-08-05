@@ -49,6 +49,7 @@ import com.jme3.script.plugins.field.SpmLoader;
 import com.jme3.script.plugins.field.SppLoader;
 import com.jme3.script.plugins.item.ItemLoader;
 import com.jme3.texture.Texture;
+import com.jme3.texture.Texture.MagFilter;
 import com.jme3.texture.Texture.MinFilter;
 import com.jme3.texture.Texture.WrapMode;
 
@@ -400,10 +401,12 @@ public class AssetFactory {
             texture = assetManager.loadTexture(texKey);
             texture.setWrap(WrapMode.Repeat);
             texture.setMinFilter(MinFilter.NearestLinearMipMap);
+            texture.setMagFilter(MagFilter.Bilinear);
             texture.setAnisotropicFilter(4);
         } catch (Exception ex) {
             texture = assetManager.loadTexture("Common/Textures/MissingTexture.png");
             texture.setWrap(WrapMode.EdgeClamp);
+            logger.warn("Missing Texture: {}", name);
         }
         return texture;
     }

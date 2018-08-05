@@ -1,37 +1,76 @@
 package org.pstale.assets.gltf.entity;
 
+/**
+ * A buffer points to binary geometry, animation, or skins.
+ * 
+ */
 public class Buffer extends GlTFChildOfRootProperty {
 
-    String uri;
-
-    Integer byteLength;
-
     /**
-     * @return the uri
+     * The uri of the buffer. (optional)
+     * 
      */
-    public String getUri() {
-        return uri;
-    }
+    private String uri;
 
     /**
-     * @param uri the uri to set
+     * The length of the buffer in bytes. (required)<br>
+     * Minimum: 1 (inclusive)
+     * 
+     */
+    private Integer byteLength;
+
+    /**
+     * The uri of the buffer. (optional)
+     * 
+     * @param uri The uri to set
+     * 
      */
     public void setUri(String uri) {
+        if (uri == null) {
+            this.uri = uri;
+            return;
+        }
         this.uri = uri;
     }
 
     /**
-     * @return the byteLength
+     * The uri of the buffer. (optional)
+     * 
+     * @return The uri
+     * 
      */
-    public Integer getByteLength() {
-        return byteLength;
+    public String getUri() {
+        return this.uri;
     }
 
     /**
-     * @param byteLength the byteLength to set
+     * The length of the buffer in bytes. (required)<br>
+     * Minimum: 1 (inclusive)
+     * 
+     * @param byteLength The byteLength to set
+     * @throws NullPointerException If the given value is <code>null</code>
+     * @throws IllegalArgumentException If the given value does not meet the given constraints
+     * 
      */
     public void setByteLength(Integer byteLength) {
+        if (byteLength == null) {
+            throw new NullPointerException((("Invalid value for byteLength: " + byteLength) + ", may not be null"));
+        }
+        if (byteLength < 1) {
+            throw new IllegalArgumentException("byteLength < 1");
+        }
         this.byteLength = byteLength;
     }
-    
+
+    /**
+     * The length of the buffer in bytes. (required)<br>
+     * Minimum: 1 (inclusive)
+     * 
+     * @return The byteLength
+     * 
+     */
+    public Integer getByteLength() {
+        return this.byteLength;
+    }
+
 }
