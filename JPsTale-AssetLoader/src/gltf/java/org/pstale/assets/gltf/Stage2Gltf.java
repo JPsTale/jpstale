@@ -490,7 +490,7 @@ public class Stage2Gltf {
 		Sampler sampler = new Sampler();
 		sampler.setName("Default Sampler");
 		sampler.setMagFilter(MagFilter.LINEAR.getValue());
-		sampler.setMinFilter(MinFilter.NEAREST_MIPMAP_NEAREST.getValue());
+		sampler.setMinFilter(MinFilter.LINEAR_MIPMAP_NEAREST.getValue());
 
 		samplers.add(sampler);
 		samplerId++;
