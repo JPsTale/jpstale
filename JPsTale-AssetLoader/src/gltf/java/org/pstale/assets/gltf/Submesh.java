@@ -7,6 +7,7 @@ import com.jme3.math.Vector4f;
 
 import org.pstale.assets.gltf.entity.Accessor;
 import org.pstale.assets.gltf.entity.BufferView;
+import org.pstale.assets.gltf.entity.Mesh;
 import org.pstale.assets.gltf.entity.MeshPrimitive;
 import org.pstale.assets.gltf.enums.ComponentType;
 import org.pstale.assets.gltf.enums.GltfType;
@@ -52,7 +53,7 @@ public class Submesh {
     int length = 0;
 
     public int getLength() {
-        indicesLength = indices.length * 2;// SCALAR USHORT
+        indicesLength = indices.length * 4;// SCALAR UNSIGNED_INT
         indicesPadding = indicesLength % 4;
         if (indicesPadding != 0) {
             indicesPadding = 4 - indicesPadding;// 如果索引数是奇数，那么就需要增加2个字节来进行对齐
@@ -95,8 +96,8 @@ public class Submesh {
         int offset = 0;
         // indices
         for (int v : indices) {
-            writeShort(data, v, offset);
-            offset += 2;
+            writeInt(data, v, offset);
+            offset += 4;
         }
         // for data alignment
         offset += indicesPadding;
@@ -337,7 +338,7 @@ public class Submesh {
         accessors.add(new Accessor());// indices
         accessors.get(0).setName("index" + matId);
         accessors.get(0).setBufferView(idx + 0);
-        accessors.get(0).setComponentType(ComponentType.UNSIGNED_SHORT.getValue());
+        accessors.get(0).setComponentType(ComponentType.UNSIGNED_INT.getValue());
         accessors.get(0).setType(GltfType.SCALAR.name());
         accessors.get(0).setCount(indices.length);
         accessors.get(0).setMax(new Integer[] { max });
@@ -373,7 +374,7 @@ public class Submesh {
         if (normal != null) {
             accessors.add(new Accessor());// normals
             accessors.get(4).setName("normal" + matId);
-            accessors.get(4).setBufferView(idx + 3);
+            accessors.get(4).setBufferView(idx + 4);
             accessors.get(4).setComponentType(ComponentType.FLOAT.getValue());
             accessors.get(4).setType(GltfType.VEC3.name());
             accessors.get(4).setCount(normal.length);
@@ -384,7 +385,10 @@ public class Submesh {
         return accessors;
     }
     
-    public MeshPrimitive getPrimitive(int idx) {
+    public Mesh getMesh(int idx) {
+        
+        List<MeshPrimitive> primitives = new ArrayList<>();
+        
         MeshPrimitive primitive = new MeshPrimitive();
         primitive.setMaterial(matId);
         primitive.setIndices(idx + 0);
@@ -395,7 +399,13 @@ public class Submesh {
             primitive.addAttributes(VertexAttribute.NORMAL.name(), idx + 4);
         }
         
-        return primitive;
+        primitives.add(primitive);
+        
+        Mesh mesh = new Mesh();
+        mesh.setName("mesh" + matId);
+        mesh.setPrimitives(primitives);
+        
+        return mesh;
     }
 
     /**

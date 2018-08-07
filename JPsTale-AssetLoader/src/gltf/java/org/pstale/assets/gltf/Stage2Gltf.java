@@ -66,19 +66,56 @@ public class Stage2Gltf {
      * @param args
      */
     public static void main(String[] args) throws IOException {
+        
+        String[] names = {
+//            "Field/forest/fore-1.smd",
+//            "Field/forest/fore-2.smd",
+//            "Field/forest/fore-3.smd",
+//            "Field/forest/village-1.smd",
+            "Field/Ricarten/village-2.smd",
+//            "Field/Ruin/ruin-4.smd",
+//            "Field/Ruin/ruin-3.smd",
+//            "Field/Ruin/ruin-2.smd",
+//            "Field/Ruin/ruin-1.smd",
+//            "Field/forever-fall/forever-fall-01.smd",
+//            "Field/forever-fall/forever-fall-02.smd",
+//            "Field/forever-fall/forever-fall-03.smd",
+//            "Field/forever-fall/forever-fall-04.smd",
+            "Field/forever-fall/pilai.smd",
+//            "Field/Greedy/Greedy.smd",
+//            "Field/desert/De-1.smd",
+//            "Field/desert/De-2.smd",
+//            "Field/desert/De-3.smd",
+//            "Field/desert/De-4.smd",
+//            "Field/desert/de-5.smd",
+//            "Field/Sod/sod-1.smd",
+//            "Field/Sod/sod-2.smd",
+//            "Field/cave/Dcave.smd",
+//            "Field/cave/Tcave.smd",
+//            "Field/cave/Mcave.smd",
+//            "Field/Iron/iron-1.smd",
+//            "Field/Iron/iron-2.smd",
+//            "Field/Iron/iron3.smd",
+//            "Field/Ice/ice1.smd",
+//            "Field/Ice/ice_2.smd",
+//            "Field/Ice/ice3.smd",
+//            "Field/Ice/ice_ura.smd",
+//            "Field/Boss/Boss.smd",
+        };
         Stage2Gltf stage2gltf = new Stage2Gltf();
 
         stage2gltf.init();
-        // stage2gltf.load("Field/Forest/fore-3.smd");
-        stage2gltf.outputFolder = "/Users/yan/Downloads/TestGLTF/Forest/";
-        // stage2gltf.isGenerateNormals = true;
+        stage2gltf.outputFolder = "/Users/yan/Downloads/TestGLTF/";
+        stage2gltf.isGenerateNormals = true;
         stage2gltf.isOptimizeMaterials = false;
         stage2gltf.isMoveToCenter = true;
 
         // stage2gltf.createMeshes();
         // stage2gltf.createWhiteGltf();
-        stage2gltf.load("Field/Forest/fore-1.smd");
-        stage2gltf.start();
+        for (String name : names) {
+            stage2gltf.load(name);
+            stage2gltf.start();
+        }
     }
 
     private AssetManager assetManager;
@@ -145,7 +182,19 @@ public class Stage2Gltf {
     public void load(String file) {
         this.filename = file;
         this.stage = AssetFactory.loadSmdStage(file);
+        
+        /**
+         * 计算文件名
+         */
+        String newName = file.replace("\\", "/");
+        int startIdx = newName.lastIndexOf("/");
+        int endIdx = newName.lastIndexOf(".");
+        String simpleName = newName.substring(startIdx + 1, endIdx);
+        
+        binFileName = simpleName + ".bin";
+        gltfFileName = simpleName + ".gltf";
 
+        // 保存顶点数据
         int nVertex = stage.nVertex;
         this.positions = new Vector3f[nVertex];
         this.colors = new ColorRGBA[nVertex];
@@ -273,8 +322,8 @@ public class Stage2Gltf {
 
         List<Scene> scenes = new ArrayList<Scene>();
         List<Node> nodes = new ArrayList<Node>();
+        List<Node> children = new ArrayList<Node>();
         List<Mesh> meshes = new ArrayList<Mesh>();
-        List<MeshPrimitive> primitives = new ArrayList<>();
 
         /**
          * Buffer
@@ -298,15 +347,22 @@ public class Stage2Gltf {
 
         int baseOffset = 0;// 基准偏移量
         int idx = 0;
-        for (Submesh submesh : submeshes) {
+        for (int i = 0; i < submeshes.size(); i++) {
 
+            Submesh submesh = submeshes.get(i);
             submesh.getLength();
             submesh.setBaseOffset(baseOffset);
             submesh.getMaxMin();
 
             bufferViews.addAll(submesh.getBufferViews());
             accessors.addAll(submesh.getAccessors(idx));
-            primitives.add(submesh.getPrimitive(idx));
+
+            Mesh mesh = submesh.getMesh(idx);
+            meshes.add(mesh);
+
+            Node node = new Node();
+            node.setMesh(i);
+            children.add(node);
 
             // baseOffset递增
             baseOffset += submesh.length;
@@ -320,23 +376,25 @@ public class Stage2Gltf {
         }
 
         /**
-         * 只需要一个网格
+         * 只需要一个rootNode
          */
-        Mesh mesh = new Mesh();
-        mesh.setName(filename);
-        mesh.setPrimitives(primitives);
-        meshes.add(mesh);
+        Node rootNode = new Node();
+        rootNode.setName("rootNode:" + filename);
+        if (isMoveToCenter) {
+            rootNode.setTranslation(translation.toArray(null));
+        }
+        nodes.add(rootNode);
 
         /**
-         * 只需要一个Node
+         * 设置子节点
          */
-        Node node = new Node();
-        node.setName("rootNode:" + filename);
-        node.setMesh(0);
-        if (isMoveToCenter) {
-            // TODO node.setTranslation(translation.toArray(null));
+        List<Integer> childrenIdx = new ArrayList<Integer>();
+        for (int i = 0; i < children.size(); i++) {
+            Node node = children.get(i);
+            nodes.add(node);
+            childrenIdx.add(i + 1);
         }
-        nodes.add(node);
+        rootNode.setChildren(childrenIdx);
 
         /**
          * Scenes
@@ -445,7 +503,7 @@ public class Stage2Gltf {
         Sampler sampler = new Sampler();
         sampler.setName("Default Sampler");
         sampler.setMagFilter(MagFilter.LINEAR.getValue());
-        sampler.setMinFilter(MinFilter.NEAREST_MIPMAP_LINEAR.getValue());
+        sampler.setMinFilter(MinFilter.NEAREST_MIPMAP_NEAREST.getValue());
 
         samplers.add(sampler);
         samplerId++;
@@ -462,22 +520,33 @@ public class Stage2Gltf {
             pbrMetallicRoughness.setBaseColorFactor(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
             material.setPbrMetallicRoughness(pbrMetallicRoughness);
 
+            // 透明度
+            material.setAlphaMode("MASK");
+            material.setAlphaCutoff(0.75f);
+
             // 只有在TwoSide有值的时候，才给材质设置DoubleSided参数
             if (mat.TwoSide != 0) {
                 material.setDoubleSided(true);
             }
-            
-            material.setAlphaMode("MASK");
-            material.setAlphaCutoff(0.75f);
+
             // 纹理
             if (mat.TextureCounter >= 1) {
 
                 // 把文件名替换成 texture/*.* 的形式
                 String newName = mat.smTexture[0].Name.replace("\\", "/");
+                
                 int idx = newName.lastIndexOf("/");
                 String simpleName = newName.substring(idx + 1).toLowerCase();
 
                 String imageName = texFolder + simpleName;
+                
+                
+                try {
+                    TextureKey key = new TextureKey(newName);
+                    assetManager.loadTexture(key);
+                } catch (Exception e) {
+                    imageName = "texture/MissingTexture.png";
+                }
 
                 // 图片
                 Image image = new Image();
@@ -553,7 +622,7 @@ public class Stage2Gltf {
                 vertexIds.add(face.v[2]);
             }
 
-            Submesh submesh = createSubmesh(faceIds, vertexIds);
+            Submesh submesh = createSubmeshOld(faceIds, vertexIds);
             submesh.matId = matId;
 
             submeshes.add(submesh);
@@ -609,7 +678,7 @@ public class Stage2Gltf {
      * @param faceIds
      * @param vertexIds
      */
-    private Submesh createSubmesh(TreeSet<Integer> faceIds, TreeSet<Integer> vertexIds) {
+    protected Submesh createSubmesh(TreeSet<Integer> faceIds, TreeSet<Integer> vertexIds) {
         int triangles = faceIds.size();
         int vertexes = vertexIds.size();
 
@@ -630,16 +699,13 @@ public class Stage2Gltf {
             color[i] = colors[id];
             texCoord[i] = new Vector2f();
             if (isGenerateNormals) {
-                try {
-                    normal[i] = normals[id];
-                } catch (Exception e) {
-                    //System.out.println(normal + " ~" + normals);
-                    
-                }
+                normal[i] = normals[id];
             }
             vertexMap.put(id, i);
             i++;
         }
+
+        // TODO 蛋疼
 
         i = 0;
         int[] indices = new int[triangles * 3];
@@ -676,6 +742,68 @@ public class Stage2Gltf {
     }
 
     /**
+     * 提取子网格
+     * 
+     * @param matId
+     * @param faceIds
+     * @param vertexIds
+     */
+    private Submesh createSubmeshOld(TreeSet<Integer> faceIds, TreeSet<Integer> vertexIds) {
+        int triangles = faceIds.size();
+
+        int[] indices = new int[triangles * 3];
+        Vector3f[] position = new Vector3f[triangles * 3];
+        Vector2f[] texCoord = new Vector2f[triangles * 3];
+        ColorRGBA[] color = new ColorRGBA[triangles * 3];
+
+        Vector3f[] normal = null;
+        if (isGenerateNormals) {
+            normal = new Vector3f[triangles * 3];
+        }
+
+        int i = 0;
+        for (Integer id : faceIds) {
+            StageFace face = stage.Face[id];
+
+            // 顺序处理3个顶点
+            for (int vIndex = 0; vIndex < 3; vIndex++) {
+                int v = face.v[vIndex];
+                // 顶点 VERTEX
+                position[i + vIndex] = positions[v];
+
+                if (isGenerateNormals) {
+                    // 法向量 Normal
+                    normal[i + vIndex] = normals[v];
+                }
+
+                color[i + vIndex] = colors[v];
+
+                // 面 FACE
+                indices[i + vIndex] = i + vIndex;
+
+                // 纹理映射
+                TEXLINK tl = face.TexLink;
+                if (tl != null) {
+                    // 第1组uv坐标
+                    texCoord[i + vIndex] = new Vector2f(tl.u[vIndex], tl.v[vIndex]);
+                } else {
+                    texCoord[i + vIndex] = new Vector2f();
+                }
+            }
+            i += 3;
+        }
+
+        Submesh submesh = new Submesh();
+        submesh.position = position;
+        submesh.color = color;
+        submesh.normal = normal;
+        submesh.texCoord = texCoord;
+        submesh.indices = indices;
+
+        return submesh;
+    }
+
+    /**
      * 优化材质数量
      * 
      * 合并无纹理的材质，共用一个默认材质
@@ -695,6 +823,17 @@ public class Stage2Gltf {
         for (int i = 0; i < stage.nFace; i++) {
             StageFace sf = stage.Face[i];
             int matId = sf.v[3];
+            
+            SmMaterial m = stage.materials[matId];
+            // 忽略没有纹理的材质
+            if (m.TextureCounter == 0) {
+                continue;
+            }
+            
+            // 不可见的材质，不需要显示。
+            if ((m.UseState & 0x0400) != 0) {
+                continue;
+            }
 
             // 记录使用这个材质的表面ID
             TreeSet<Integer> faceSet = matFaceMap.get(matId);
