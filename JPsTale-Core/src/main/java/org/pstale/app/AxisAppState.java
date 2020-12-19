@@ -36,7 +36,7 @@ public class AxisAppState extends BaseAppState implements ActionListener {
         assetManager = app.getAssetManager();
 
         // 网格
-        Geometry grid = new Geometry("Grid", new Grid(21, 21, 1));
+        Geometry grid = new Geometry("Grid", new Grid(201, 201, 1));
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.DarkGray);
         grid.setMaterial(mat);
