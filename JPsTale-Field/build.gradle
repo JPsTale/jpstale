@@ -15,7 +15,7 @@ dependencies {
 
     compile "${jme3.g}:jme3-core:${jme3.v}"
     compile "${jme3.g}:jme3-desktop:${jme3.v}"
-    compile "${jme3.g}:jme3-jogl:${jme3.v}"
+    compile "${jme3.g}:jme3-lwjgl:${jme3.v}"
     compile "${jme3.g}:jme3-jogg:${jme3.v}"
     compile "${jme3.g}:jme3-terrain:${jme3.v}"
     compile "${jme3.g}:jme3-bullet:${jme3.v}"

@@ -1,16 +1,17 @@
 package org.pstale.loader.inx;
 
+import com.jme3.asset.DesktopAssetManager;
+import com.jme3.scene.plugins.smd.geom.AnimateModel;
+import com.jme3.scene.plugins.smd.geom.MotionInfo;
+import com.jme3.scene.plugins.smd.geom.PAT3D;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pstale.assets.AssetFactory;
 import org.pstale.assets.utils.AnimationBuilder;
 import org.pstale.assets.utils.AssetNameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.jme3.asset.DesktopAssetManager;
-import com.jme3.scene.plugins.smd.geom.AnimateModel;
-import com.jme3.scene.plugins.smd.geom.MotionInfo;
-import com.jme3.scene.plugins.smd.geom.PAT3D;
 
 public class TestInxLoader {
 
@@ -21,21 +22,25 @@ public class TestInxLoader {
     }
 
     @Test
+    @Ignore
     public void testDeathKnight() {
         printAnimation("char/monster/death_knight/death_knight.inx");
     }
 
     @Test
+    @Ignore
     public void testArad() {
         printAnimation("char/npc/arad/arad.inx");
     }
 
     @Test
+    @Ignore
     public void testBcn01() {
         printAnimation("char/npc/bcn01/Bcn01.ini");
     }
 
     @Test
+    @Ignore
     public void testCmc010() {
         printAnimation("char/tmABCD/Cmc010.ini");
     }

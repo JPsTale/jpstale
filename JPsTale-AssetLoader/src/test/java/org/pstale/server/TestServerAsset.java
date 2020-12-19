@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pstale.assets.AssetFactory;
 import org.pstale.entity.item.ItemInfo;
@@ -33,6 +34,7 @@ public class TestServerAsset {
     }
     
     @Test
+    @Ignore
     public void testLoadMonster() {
         // 所有怪物数据
         File folder = new File(SERVER_ROOT + "/" + MONSTER_DIR);
@@ -51,11 +53,13 @@ public class TestServerAsset {
     }
     
     @Test
+    @Ignore
     public void testLoadNPC() {
         
     }
     
     @Test
+    @Ignore
     public void testLoadItem() {
      // 所有装备数据
         File folder = new File(SERVER_ROOT + "/" + OPENITEM_DIR);

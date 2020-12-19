@@ -1,10 +1,6 @@
 package org.pstale.test;
 
-import java.nio.FloatBuffer;
-
-import org.pstale.app.TestBase;
-import org.pstale.assets.AssetFactory;
-
+import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
@@ -27,13 +23,28 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.shape.Box;
 
+import org.pstale.app.AxisAppState;
+import org.pstale.assets.AssetFactory;
+
+import java.nio.FloatBuffer;
+
 /**
  * 测试地形的碰撞检测
  * 
  * @author yanmaoyuan
  *
  */
-public class TestCollision extends TestBase {
+public class TestCollision extends SimpleApplication {
+
+    @Override
+    public void simpleInitApp() {
+        AssetFactory.setAssetManager(assetManager);
+
+        stateManager.attach(new AxisAppState());
+
+        init();
+    }
+
     private final static String LEFT = "left";
     private final static String RIGHT = "right";
     private final static String FORWARD = "forward";
@@ -96,7 +107,6 @@ public class TestCollision extends TestBase {
      */
     private ChaseCamera chaseCamera;// 第三人称摄像机
 
-    @Override
     public void init() {
         /**
          * 初始化bullet引擎
