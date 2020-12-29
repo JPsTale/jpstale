@@ -32,8 +32,8 @@ public class TestLoadMonster extends SimpleApplication {
 	public static void main(String[] args) {
 		TestLoadMonster a = new TestLoadMonster();
 		AppSettings setting = new AppSettings(true);
-		setting.setRenderer("JOGL");
-		setting.setAudioRenderer("JOAL");
+		setting.setRenderer(AppSettings.LWJGL_OPENGL2);
+		setting.setAudioRenderer(AppSettings.LWJGL_OPENAL);
 		a.setSettings(setting);
 		a.start();
 	}

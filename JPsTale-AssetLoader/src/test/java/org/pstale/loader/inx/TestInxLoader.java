@@ -40,7 +40,7 @@ public class TestInxLoader {
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void testCmc010() {
         printAnimation("char/tmABCD/Cmc010.ini");
     }

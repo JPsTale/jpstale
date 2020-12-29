@@ -27,7 +27,7 @@ public class TestField extends TestBase {
     public static void main(String[] args) {
         TestField app = new TestField();
         AppSettings setting = new AppSettings(true);
-        setting.setRenderer("JOGL");
+        setting.setRenderer(AppSettings.LWJGL_OPENGL3);
         app.setSettings(setting);
         app.start();
     }
