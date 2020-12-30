@@ -1,7 +1,5 @@
 package org.pstale.optimize;
 
-import static org.pstale.utils.GridMesh.MAP_SIZE;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -40,16 +38,18 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.log4j.Logger;
+import org.jpstale.assets.plugins.smd.SMDTYPE;
+import org.jpstale.assets.plugins.smd.SmdKey;
+import org.jpstale.assets.plugins.smd.SmdLoader;
+import org.jpstale.assets.plugins.smd.stage.Stage;
+import org.jpstale.assets.plugins.smd.stage.StageFace;
+
+import static org.jpstale.utils.GridMesh.MAP_SIZE;
 
 import com.jme3.asset.AssetInfo;
 import com.jme3.asset.AssetLoadException;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.DesktopAssetManager;
-import com.jme3.scene.plugins.smd.SMDTYPE;
-import com.jme3.scene.plugins.smd.SmdKey;
-import com.jme3.scene.plugins.smd.SmdLoader;
-import com.jme3.scene.plugins.smd.stage.Stage;
-import com.jme3.scene.plugins.smd.stage.StageFace;
 
 @SuppressWarnings("serial")
 public class TestUVWarp extends JFrame {

@@ -2,7 +2,7 @@ package org.pstale.optimize;
 
 import static com.jme3.scene.VertexBuffer.Type.Index;
 import static com.jme3.scene.VertexBuffer.Type.Position;
-import static org.pstale.utils.GridMesh.MAP_SIZE;
+import static org.jpstale.utils.GridMesh.MAP_SIZE;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -42,11 +42,11 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.log4j.Logger;
-import org.pstale.assets.utils.SceneBuilder;
-import org.pstale.utils.GridMesh;
+import org.jpstale.assets.plugins.smd.stage.Stage;
+import org.jpstale.assets.utils.SceneBuilder;
+import org.jpstale.utils.GridMesh;
 
 import com.jme3.scene.Mesh;
-import com.jme3.scene.plugins.smd.stage.Stage;
 import com.jme3.util.LittleEndien;
 
 @SuppressWarnings("serial")

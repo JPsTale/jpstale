@@ -2,8 +2,8 @@ package org.pstale.optimize;
 
 import java.io.File;
 
-import org.pstale.assets.AssetFactory;
-import org.pstale.utils.FileLocator;
+import org.jpstale.assets.AssetFactory;
+import org.jpstale.utils.FileLocator;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bounding.BoundingBox;

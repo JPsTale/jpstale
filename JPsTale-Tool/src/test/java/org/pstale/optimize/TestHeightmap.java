@@ -8,9 +8,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.pstale.assets.AssetFactory;
-import org.pstale.utils.FileLocator;
-import org.pstale.utils.GaussianBlur;
+import org.jpstale.assets.AssetFactory;
+import org.jpstale.utils.FileLocator;
+import org.jpstale.utils.GaussianBlur;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

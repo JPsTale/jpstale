@@ -1,7 +1,7 @@
 package org.pstale.entity.chars;
 
-import com.jme3.scene.plugins.smd.geom.GeomObject;
-import com.jme3.scene.plugins.smd.geom.PAT3D;
+import org.jpstale.assets.plugins.smd.geom.GeomObject;
+import org.jpstale.assets.plugins.smd.geom.PAT3D;
 
 public class CHARTOOL {
     GeomObject ObjBip;

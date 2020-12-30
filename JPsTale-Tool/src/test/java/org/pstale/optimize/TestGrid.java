@@ -13,7 +13,7 @@ import java.nio.IntBuffer;
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
-import org.pstale.assets.AssetFactory;
+import org.jpstale.assets.AssetFactory;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.DesktopAssetManager;
