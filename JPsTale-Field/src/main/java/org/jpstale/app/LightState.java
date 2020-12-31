@@ -82,7 +82,7 @@ public class LightState extends SubAppState {
             // 在这里获得CollisionState中玩家的坐标点引用。
             CollisionState collisionState = getStateManager().getState(CollisionState.class);
             if (collisionState != null) {
-                orgin = collisionState.getPlayerLocation();
+                // TODO
             }
         }
 

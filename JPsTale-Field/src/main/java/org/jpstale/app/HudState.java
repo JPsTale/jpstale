@@ -122,7 +122,7 @@ public class HudState extends BaseAppState {
         if (collisionRef.update()) {
             CollisionState collision = getStateManager().getState(CollisionState.class);
             if (collision != null) {
-                collision.toggle(collisionRef.get());
+                // TODO
             }
         }
         if (speedRef.update()) {

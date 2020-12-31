@@ -140,7 +140,6 @@ public class LoaderAppState extends SubAppState {
             Vector2f center2f = field.getCenter();
             center = new Vector3f(center2f.x, 0, center2f.y).multLocal(scale);
             center.y = 1000;
-            setPhysicLocation(center);
 
             // 加载小地图
             setMiniMap(field);
@@ -198,19 +197,6 @@ public class LoaderAppState extends SubAppState {
             }
 
             /**
-             * 地图的碰撞网格
-             */
-            final CollisionState collisionState = getStateManager().getState(CollisionState.class);
-            if (collisionState != null) {
-                app.enqueue(new Runnable() {
-                    public void run() {
-                        collisionState.addMesh(mesh);
-                        collisionState.setPlayerLocation(center);
-                    }
-                });
-            }
-
-            /**
              * 地图的其他舞台物体
              */
             // setStageObject(field);
@@ -237,7 +223,9 @@ public class LoaderAppState extends SubAppState {
             if (fieldgateAppState != null) {
                 app.enqueue(new Runnable() {
                     public void run() {
-                        fieldgateAppState.load(field.getFieldGate());
+                        if (field != null) {
+                            fieldgateAppState.load(field.getFieldGate());
+                        }
                     }
                 });
             }
@@ -249,7 +237,9 @@ public class LoaderAppState extends SubAppState {
             if (warpgateAppState != null) {
                 app.enqueue(new Runnable() {
                     public void run() {
-                        warpgateAppState.load(field.getWarpGate());
+                        if (field != null) {
+                            warpgateAppState.load(field.getWarpGate());
+                        }
                     }
                 });
             }
@@ -277,17 +267,6 @@ public class LoaderAppState extends SubAppState {
         }
 
     };
-
-    private void setPhysicLocation(final Vector3f center) {
-        final CollisionState collisionState = getStateManager().getState(CollisionState.class);
-        if (collisionState != null) {
-            app.enqueue(new Runnable() {
-                public void run() {
-                    collisionState.setPlayerLocation(center);
-                }
-            });
-        }
-    }
 
     /**
      * 加载舞台物体

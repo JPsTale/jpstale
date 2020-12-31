@@ -21,5 +21,5 @@ public class SceneConstants {
     /**
      * 场景缩放系数
      */
-    public static float scale = 0.1f;
+    public static float scale = 0.025f;
 }

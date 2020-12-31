@@ -946,8 +946,8 @@ public final class Main extends JFrame {
         new Thread() {
             public void run() {
                 final FieldApp app = new FieldApp();
-                source.setRenderer("LWJGL-OpenGL2");
-                source.setAudioRenderer("JOAL");
+                source.setRenderer(AppSettings.LWJGL_OPENGL3);
+                source.setAudioRenderer(AppSettings.LWJGL_OPENAL);
                 app.setSettings(source);
                 app.setPauseOnLostFocus(false);
                 app.setShowSettings(false);

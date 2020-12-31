@@ -50,7 +50,7 @@ public class TestHeightmap extends SimpleApplication {
         AssetFactory.setAssetManager(new DesktopAssetManager());
 
         // 读取地图的smd文件
-        Mesh mesh = AssetFactory.loadStage3DMesh("Field/forest/fore-1.smd");
+        Mesh mesh = AssetFactory.loadStage3DMesh("Field/desert/de-1.smd");
         // 包围盒
         BoundingBox bb = (BoundingBox) mesh.getBound();
         

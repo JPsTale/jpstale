@@ -1,10 +1,6 @@
 package org.pstale.optimize;
 
-import java.io.File;
-
-import org.jpstale.assets.AssetFactory;
-import org.jpstale.utils.FileLocator;
-
+import com.jme3.app.DetailedProfilerState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.ColorRGBA;
@@ -16,82 +12,81 @@ import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Image.Format;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
+import com.jme3.ui.Picture;
+import com.jme3.util.BufferUtils;
+
+import org.jpstale.assets.AssetFactory;
+
+import java.nio.ByteBuffer;
 
 public class TestColormap extends SimpleApplication {
     private Spatial scene;
+
     private ViewPort offView;
-    
-    public Texture2D setupOffscreenView(){
-        Camera offCamera = new Camera(512, 512);
 
-        offView = renderManager.createPreView("Offscreen View", offCamera);
-        offView.setClearFlags(true, true, true);
-        offView.setBackgroundColor(ColorRGBA.DarkGray);
+    int size = 512;
 
-        // create offscreen framebuffer
-        FrameBuffer offBuffer = new FrameBuffer(512, 512, 1);
+    FrameBuffer offBuffer;
+    ByteBuffer  outBuf;
 
-        //setup framebuffer's cam
-        offCamera.setFrustumPerspective(45f, 1f, 1f, 1000f);
-        offCamera.setLocation(new Vector3f(0f, 0f, -5f));
-        offCamera.lookAtDirection(new Vector3f(0f, -1f, 0f), Vector3f.UNIT_Y);
+    public Texture2D setupOffscreenView() {
+        outBuf = BufferUtils.createByteBuffer(size * size * 4);
 
-        //setup framebuffer's texture
-        Texture2D offTex = new Texture2D(512, 512, Format.RGBA8);
-        offTex.setMinFilter(Texture.MinFilter.Trilinear);
-        offTex.setMagFilter(Texture.MagFilter.Bilinear);
-
-        //setup framebuffer to use texture
-        offBuffer.setDepthBuffer(Format.Depth);
-        offBuffer.setColorTexture(offTex);
-        
-        //set viewport to render to offscreen framebuffer
-        offView.setOutputFrameBuffer(offBuffer);
-
-        
         BoundingBox bb = (BoundingBox) scene.getWorldBound();
         Vector3f center = bb.getCenter();
-        offCamera.setLocation(center.add(0, 100, 0));
-        
-        // attach the scene to the viewport to be rendered
+        float xextent = bb.getXExtent();
+        float zextent = bb.getZExtent();
+
+        Camera offCamera = new Camera(size, size);
+        offCamera.setLocation(center);
+        offCamera.lookAtDirection(new Vector3f(0, -1, 0), Vector3f.UNIT_Y);
+        offCamera.setParallelProjection(true);
+        offCamera.setFrustum(-1000, 1000, -xextent / 2, xextent / 2, zextent / 2, -zextent / 2);
+
+        // setup framebuffer's texture
+        Texture2D colorTexture = new Texture2D(size, size, Format.RGBA8);
+        colorTexture.setMinFilter(Texture.MinFilter.Trilinear);
+        colorTexture.setMagFilter(Texture.MagFilter.Bilinear);
+
+        offBuffer = new FrameBuffer(size, size, 1);
+        offBuffer.setColorBuffer(Format.RGBA8);
+        offBuffer.setColorTexture(colorTexture);
+
+        offView = renderManager.createPreView("Map View", offCamera);
+        offView.setClearFlags(true, true, true);
+        offView.setBackgroundColor(ColorRGBA.Black);
+        offView.setOutputFrameBuffer(offBuffer);
         offView.attachScene(scene);
-        
-        return offTex;
+
+        return colorTexture;
     }
 
-    
     @Override
     public void simpleInitApp() {
-        if (new File("I:/game/PTCN-RPT1.0").exists()) {
-            assetManager.registerLocator("I:/game/PTCN-RPT1.0", FileLocator.class);
-        } else {
-            assetManager.registerLocator("D:/Priston Tale/PTCN3550/PTCN3550", FileLocator.class);
-        }
+        stateManager.attach(new DetailedProfilerState());
         AssetFactory.setAssetManager(assetManager);
 
-        scene = AssetFactory.loadStage3D("Field/forest/fore-1.smd");
+        scene = AssetFactory.loadStage3D("Field/desert/de-1.smd");
         scene.scale(0.05f);
         rootNode.attachChild(scene);
-        
+
         BoundingBox bb = (BoundingBox) scene.getWorldBound();
         Vector3f center = bb.getCenter();
         cam.setLocation(center);
         cam.lookAtDirection(new Vector3f(0, -1, 0), Vector3f.UNIT_Y);
-        cam.setParallelProjection(true);
-        cam.setFrustum(-1000, 1000, -bb.getXExtent(), bb.getXExtent(), bb.getZExtent(), -bb.getZExtent());
-        
-//        Texture2D offTex = setupOffscreenView();
-//        
-//        Picture pic = new Picture();
-//        pic.setTexture(assetManager, offTex, true);
-//        pic.setWidth(256);
-//        pic.setWidth(256);
-//        pic.setPosition(0, 256);
-//        guiNode.attachChild(pic);
+
+        Texture2D offTex = setupOffscreenView();
+
+        Picture pic = new Picture("colormap");
+        pic.setTexture(assetManager, offTex, false);
+        pic.setWidth(size);
+        pic.setHeight(size);
+        pic.setPosition(0, cam.getHeight() - size);
+        guiNode.attachChild(pic);
     }
-    
+
     @Override
-    public void simpleUpdate(float tpf){
+    public void simpleUpdate(float tpf) {
     }
 
     public static void main(String[] args) {

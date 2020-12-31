@@ -1,7 +1,27 @@
 package org.jpstale.assets;
 
-import java.io.File;
-import java.util.ArrayList;
+import static org.jpstale.constants.SceneConstants.scale;
+
+import com.jme3.asset.AssetManager;
+import com.jme3.asset.TextureKey;
+import com.jme3.asset.plugins.ClasspathLocator;
+import com.jme3.audio.plugins.WAVLoader;
+import com.jme3.material.Material;
+import com.jme3.material.RenderState;
+import com.jme3.material.RenderState.BlendMode;
+import com.jme3.material.RenderState.FaceCullMode;
+import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
+import com.jme3.scene.Node;
+import com.jme3.scene.SceneGraphVisitor;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Quad;
+import com.jme3.texture.Texture;
+import com.jme3.texture.Texture.MagFilter;
+import com.jme3.texture.Texture.MinFilter;
+import com.jme3.texture.Texture.WrapMode;
 
 import org.jpstale.assets.plugins.ase.AseLoader;
 import org.jpstale.assets.plugins.script.character.CharInfoLoader;
@@ -30,28 +50,8 @@ import org.jpstale.utils.FileLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.jpstale.constants.SceneConstants.scale;
-
-import com.jme3.asset.AssetManager;
-import com.jme3.asset.TextureKey;
-import com.jme3.asset.plugins.ClasspathLocator;
-import com.jme3.audio.plugins.WAVLoader;
-import com.jme3.material.Material;
-import com.jme3.material.RenderState;
-import com.jme3.material.RenderState.BlendMode;
-import com.jme3.material.RenderState.FaceCullMode;
-import com.jme3.math.ColorRGBA;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.Node;
-import com.jme3.scene.SceneGraphVisitor;
-import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
-import com.jme3.scene.shape.Quad;
-import com.jme3.texture.Texture;
-import com.jme3.texture.Texture.MagFilter;
-import com.jme3.texture.Texture.MinFilter;
-import com.jme3.texture.Texture.WrapMode;
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * 模型工厂
@@ -472,6 +472,8 @@ public class AssetFactory {
         // 画面的切换时间间隔
         float ShiftSpeed = (1 << m.Shift_FrameSpeed) / 1000f;
         mat.setFloat("ShiftSpeed", ShiftSpeed);
+
+        mat.setFloat("AlphaDiscardThreshold", 0.1f);
 
         // 设置贴图
         Texture tex;

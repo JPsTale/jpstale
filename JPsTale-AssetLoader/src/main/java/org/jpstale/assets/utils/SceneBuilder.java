@@ -112,7 +112,7 @@ public class SceneBuilder {
                 int n = m.TextureFormState[0];
                 if (n >= 4) {// 4 SCROLL 滚轴 5 REFLEX 反光 6 SCROLL2 2倍速滚轴
                     mat = AssetFactory.createScrollMaterial(m);
-                    geom.setQueueBucket(Bucket.Transparent);
+                    //geom.setQueueBucket(Bucket.Transparent);
                 } else {
                     if (SceneConstants.USE_LIGHT) {
                         mat = AssetFactory.createLightMaterial(m);
@@ -124,6 +124,7 @@ public class SceneBuilder {
                 if (m.AnimTexCounter > 0) {
                     // AminTexCounter大于0说明有轮播动画，创建一个Control，定时更新画面。
                     mat = AssetFactory.createShiftMaterial(m);
+                    geom.setQueueBucket(Bucket.Transparent);
                 } else {
                     mat = AssetFactory.createMiscMaterial(m);
                 }

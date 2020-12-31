@@ -1,10 +1,6 @@
 package org.jpstale.app;
 
-import org.jpstale.assets.AssetFactory;
-import org.jpstale.constants.SceneConstants;
-import org.jpstale.gui.Style;
-import org.jpstale.utils.FileLocator;
-
+import com.jme3.app.DetailedProfilerState;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
@@ -12,10 +8,15 @@ import com.jme3.app.state.ScreenshotAppState;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.MouseButtonTrigger;
 
+import org.jpstale.assets.AssetFactory;
+import org.jpstale.constants.SceneConstants;
+import org.jpstale.gui.Style;
+import org.jpstale.utils.FileLocator;
+
 public class FieldApp extends SimpleApplication {
 
     public FieldApp() {
-        super(new LoadingAppState(), new StatsAppState(), new FlyCamAppState(), new ScreenshotAppState());
+        super(new LoadingAppState(), new StatsAppState(), new FlyCamAppState(), new ScreenshotAppState(), new DetailedProfilerState());
     }
 
     @Override
