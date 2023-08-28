@@ -1,6 +1,9 @@
 /.gradle/
+**/.idea/
+**/.DS_Store
 **/.settings/
 **/build/
+**/target/
 **/bin/
 **/logs/
 **/.classpath
@@ -10,3 +13,4 @@ JPsTale-Field/Field
 **/*.dylib
 **/*.so
 **/*.log*
+**/.flattened-pom.xml
