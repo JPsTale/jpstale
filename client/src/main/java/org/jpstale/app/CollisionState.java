@@ -39,8 +39,8 @@ public class CollisionState extends BaseAppState {
     BulletAppState bullet;
 
     public CollisionState() {
-        meshes = new ArrayList<Mesh>(100);
-        rigids = new ArrayList<PhysicsRigidBody>(100);
+        meshes = new ArrayList<>(100);
+        rigids = new ArrayList<>(100);
         bullet = new BulletAppState();
         bullet.setDebugEnabled(false);
     }
@@ -64,8 +64,10 @@ public class CollisionState extends BaseAppState {
     }
 
     public void addMesh(Mesh mesh) {
-        if (meshes.contains(mesh))
+        log.info("add mesh");
+        if (meshes.contains(mesh)) {
             return;
+        }
 
         if (getStateManager().hasState(bullet)) {
             MeshCollisionShape shape = new MeshCollisionShape(mesh);
@@ -76,6 +78,8 @@ public class CollisionState extends BaseAppState {
 
             meshes.add(mesh);
             rigids.add(rigid);
+        } else {
+            log.info("bullet is not initialized");
         }
     }
 

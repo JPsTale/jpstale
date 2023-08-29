@@ -3,7 +3,6 @@ package org.jpstale.app;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.jpstale.app.AxisAppState;
 import org.jpstale.entity.field.Field;
 
 import com.jme3.app.Application;
@@ -108,7 +107,7 @@ public class HudState extends BaseAppState {
 
     public void update(float tpf) {
         if (showAxisRef.update()) {
-            AxisAppState axis = getStateManager().getState(AxisAppState.class);
+            CheckerBoardState axis = getStateManager().getState(CheckerBoardState.class);
             if (axis != null) {
                 axis.setEnabled(showAxisRef.get());
             }
@@ -122,7 +121,7 @@ public class HudState extends BaseAppState {
         if (collisionRef.update()) {
             CollisionState collision = getStateManager().getState(CollisionState.class);
             if (collision != null) {
-                // TODO
+                collision.setEnabled(collisionRef.get());
             }
         }
         if (speedRef.update()) {

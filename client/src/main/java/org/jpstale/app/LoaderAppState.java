@@ -173,10 +173,8 @@ public class LoaderAppState extends SubAppState {
             BinaryExporter.getInstance().save(mainModel, new File(field.getName()+".j3o"));
             // 加载成功
             mainModel.scale(scale);
-            app.enqueue(new Runnable() {
-                public void run() {
-                    rootNode.attachChild(mainModel);
-                }
+            app.enqueue(() -> {
+                rootNode.attachChild(mainModel);
             });
 
             // 将网格缩小
@@ -216,16 +214,21 @@ public class LoaderAppState extends SubAppState {
              */
             setupAmbient(field);
 
+            final CollisionState collisionState = getStateManager().getState(CollisionState.class);
+            if (collisionState != null) {
+                app.enqueue(() -> {
+                    collisionState.addMesh(mesh);
+                });
+            }
+
             /**
              * 门户
              */
             final FieldgateAppState fieldgateAppState = getStateManager().getState(FieldgateAppState.class);
             if (fieldgateAppState != null) {
-                app.enqueue(new Runnable() {
-                    public void run() {
-                        if (field != null) {
-                            fieldgateAppState.load(field.getFieldGate());
-                        }
+                app.enqueue(() -> {
+                    if (field != null) {
+                        fieldgateAppState.load(field.getFieldGate());
                     }
                 });
             }
@@ -235,11 +238,9 @@ public class LoaderAppState extends SubAppState {
              */
             final WarpgateAppState warpgateAppState = getStateManager().getState(WarpgateAppState.class);
             if (warpgateAppState != null) {
-                app.enqueue(new Runnable() {
-                    public void run() {
-                        if (field != null) {
-                            warpgateAppState.load(field.getWarpGate());
-                        }
+                app.enqueue(() -> {
+                    if (field != null) {
+                        warpgateAppState.load(field.getWarpGate());
                     }
                 });
             }
@@ -275,17 +276,15 @@ public class LoaderAppState extends SubAppState {
      */
     protected void setStageObject(final Field field) {
         List<StageObject> objs = field.getStageObject();
-        if (objs.size() > 0) {
-            for (int i = 0; i < objs.size(); i++) {
+        if (!objs.isEmpty()) {
+            for (StageObject obj : objs) {
                 final Spatial model;
                 try {
-                    model = AssetFactory.loadStageObj("Field/" + objs.get(i).getName(), objs.get(i).isBipAnimation());
+                    model = AssetFactory.loadStageObj("Field/" + obj.getName(), obj.isBipAnimation());
                     // 加载成功
                     model.scale(scale);
-                    app.enqueue(new Runnable() {
-                        public void run() {
-                            rootNode.attachChild(model);
-                        }
+                    app.enqueue(() -> {
+                        rootNode.attachChild(model);
                     });
                 } catch (Exception e) {
                     logger.error("加载舞台物体失败", e);
@@ -300,11 +299,7 @@ public class LoaderAppState extends SubAppState {
          */
         final AmbientAppState ambientAppState = getStateManager().getState(AmbientAppState.class);
         if (ambientAppState != null) {
-            app.enqueue(new Runnable() {
-                public void run() {
-                    ambientAppState.load(field.getAmbientPos());
-                }
-            });
+            app.enqueue(() -> ambientAppState.load(field.getAmbientPos()));
         }
     }
 
@@ -327,15 +322,13 @@ public class LoaderAppState extends SubAppState {
 
         List<StgMonster> monsters = creatures.monsterList;
         final ArrayList<String> mList = new ArrayList<String>();
-        for (int i = 0; i < monsters.size(); i++) {
-            StgMonster monster = monsters.get(i);
+        for (StgMonster monster : monsters) {
             mList.add(monster.name + " : " + monster.percentage + "%");
         }
 
         List<StgBoss> bosses = creatures.bossList;
         final ArrayList<String> bList = new ArrayList<String>();
-        for (int i = 0; i < bosses.size(); i++) {
-            StgBoss boss = bosses.get(i);
+        for (StgBoss boss : bosses) {
             bList.add(boss.name + " + " + boss.slave + "*" + boss.slaveCnt);
         }
 
@@ -377,10 +370,8 @@ public class LoaderAppState extends SubAppState {
                 final Spatial model = flag.clone();
                 model.scale(scale);
                 model.setLocalTranslation(pos);
-                app.enqueue(new Runnable() {
-                    public void run() {
-                        rootNode.attachChild(model);
-                    }
+                app.enqueue(() -> {
+                    rootNode.attachChild(model);
                 });
             } catch (Exception e) {
                 logger.error("加载模型失败", e);
@@ -408,7 +399,7 @@ public class LoaderAppState extends SubAppState {
 
             /**
              * 创建一个NPC模型
-             * 
+             *
              * @param pos
              */
             // 首先尝试直接读取NPC模型

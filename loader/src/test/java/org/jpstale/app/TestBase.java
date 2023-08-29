@@ -3,7 +3,6 @@ package org.jpstale.app;
 
 import com.jme3.app.SimpleApplication;
 
-import org.jpstale.app.AxisAppState;
 import org.jpstale.assets.AssetFactory;
 
 /**
@@ -18,7 +17,7 @@ public abstract class TestBase extends SimpleApplication {
     public void simpleInitApp() {
         AssetFactory.setAssetManager(assetManager);
 
-        stateManager.attach(new AxisAppState());
+        stateManager.attach(new CheckerBoardState());
 
         init();
     }

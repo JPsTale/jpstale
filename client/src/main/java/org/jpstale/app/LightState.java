@@ -66,7 +66,7 @@ public class LightState extends SubAppState {
 
         if (USE_LIGHT) {
             ambientLight = new AmbientLight();
-            ambientLight.setColor(new ColorRGBA(0.4f, 0.4f, 0.4f, 1));
+            ambientLight.setColor(new ColorRGBA(0.8f, 0.8f, 0.8f, 1));
 
             sunLight = new DirectionalLight();
             sunLight.setColor(sunColor);

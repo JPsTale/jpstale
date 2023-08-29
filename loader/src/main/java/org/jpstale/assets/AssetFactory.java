@@ -23,6 +23,7 @@ import com.jme3.texture.Texture.MagFilter;
 import com.jme3.texture.Texture.MinFilter;
 import com.jme3.texture.Texture.WrapMode;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.plugins.ase.AseLoader;
 import org.jpstale.assets.plugins.script.character.CharInfoLoader;
 import org.jpstale.assets.plugins.script.character.Monster;
@@ -59,9 +60,8 @@ import java.util.ArrayList;
  * @author yanmaoyuan
  *
  */
+@Slf4j
 public class AssetFactory {
-
-    static Logger logger = LoggerFactory.getLogger(AssetFactory.class);
 
     static AssetManager assetManager;
     static String folder = "/";
@@ -177,7 +177,7 @@ public class AssetFactory {
 
             flag = wow;
         } catch (Exception e) {
-            logger.debug("无法加载旗帜", e);
+            log.debug("无法加载旗帜", e);
             flag = new Geometry("flag", new Box(1 / scale, 1 / scale, 1 / scale));
             Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
             mat.setColor("Color", ColorRGBA.Red);
@@ -408,7 +408,7 @@ public class AssetFactory {
         } catch (Exception ex) {
             texture = assetManager.loadTexture("Common/Textures/MissingTexture.png");
             texture.setWrap(WrapMode.EdgeClamp);
-            logger.warn("Missing Texture: {}", name);
+            log.warn("Missing Texture: {}, {}, msg:{}", folder, name, ex.getMessage());
         }
         return texture;
     }
@@ -573,7 +573,7 @@ public class AssetFactory {
         case 6:
             break;
         default:
-            logger.info("Unknown BlendType=" + m.BlendType);
+            log.info("Unknown BlendType=" + m.BlendType);
         }
 
         if (m.TwoSide == 1) {

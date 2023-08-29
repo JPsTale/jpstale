@@ -23,7 +23,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.shape.Box;
 
-import org.jpstale.app.AxisAppState;
+import org.jpstale.app.CheckerBoardState;
 import org.jpstale.assets.AssetFactory;
 
 import java.nio.FloatBuffer;
@@ -40,7 +40,7 @@ public class TestCollision extends SimpleApplication {
     public void simpleInitApp() {
         AssetFactory.setAssetManager(assetManager);
 
-        stateManager.attach(new AxisAppState());
+        stateManager.attach(new CheckerBoardState());
 
         init();
     }

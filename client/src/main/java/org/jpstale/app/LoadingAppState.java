@@ -6,11 +6,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.logging.Logger;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jpstale.app.AxisAppState;
-import org.jpstale.app.MusicAppState;
 import org.jpstale.assets.AssetFactory;
 import org.jpstale.assets.plugins.script.character.Monster;
 import org.jpstale.entity.item.ItemInfo;
@@ -117,7 +114,7 @@ public class LoadingAppState extends SubAppState {
      * @param data
      */
     private void initLoader(Data data) {
-        AppState[] states = { new AxisAppState(),
+        AppState[] states = { new CheckerBoardState(),
                 new DataState(data.serverRoot, data.allMonster, data.allNpc, data.allItem),
                 // new CursorState(),
                 new HudState(), new LoaderAppState(), new CollisionState(), new MusicAppState(), new AmbientAppState(),

@@ -1,6 +1,5 @@
 package org.jpstale.app;
 
-import org.jpstale.app.AxisAppState;
 import org.jpstale.assets.AssetFactory;
 import org.jpstale.assets.plugins.ase.AseKey;
 
@@ -65,7 +64,7 @@ public class TestLoadMob extends SimpleApplication {
             channel.setAnim("Anim");
         }
 
-        stateManager.attach(new AxisAppState());
+        stateManager.attach(new CheckerBoardState());
     }
 
     boolean isVisiavle = true;
