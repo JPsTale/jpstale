@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.swing.JCheckBox;
@@ -41,7 +42,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.plugins.smd.stage.Stage;
 import org.jpstale.assets.utils.SceneBuilder;
 import org.jpstale.utils.GridMesh;
@@ -50,13 +51,13 @@ import com.jme3.scene.Mesh;
 import com.jme3.util.LittleEndien;
 
 @SuppressWarnings("serial")
+@Slf4j
 public class TestGridMesh extends JFrame {
 
     public static void main(String[] args) {
         new TestGridMesh().setVisible(true);
     }
 
-    static Logger log = Logger.getLogger(TestGridMesh.class);
     // 绘图单元格的大小
     private int GRID_SIZE = 3;
     /**

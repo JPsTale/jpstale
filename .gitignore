@@ -8,7 +8,7 @@
 **/logs/
 **/.classpath
 **/.project
-JPsTale-Field/Field
+/Field/
 **/*.dll
 **/*.dylib
 **/*.so

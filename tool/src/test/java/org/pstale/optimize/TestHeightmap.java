@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.AssetFactory;
 import org.jpstale.utils.FileLocator;
 import org.jpstale.utils.GaussianBlur;
@@ -35,9 +36,8 @@ import com.jme3.texture.Texture;
  * @author yanmaoyuan
  * 
  */
+@Slf4j
 public class TestHeightmap extends SimpleApplication {
-
-    static Logger logger = LoggerFactory.getLogger(TestHeightmap.class);
 
     private final static int MAP_SIZE = 513;
     private static float scaleX = 1f;
@@ -99,7 +99,7 @@ public class TestHeightmap extends SimpleApplication {
         
         float dx = width / (MAP_SIZE-1);
         float dy = height / (MAP_SIZE-1);
-        logger.debug("min={} max={} w={} h={} dx={} dy={}", min, max, width, height, dx, dy);
+        log.debug("min={} max={} w={} h={} dx={} dy={}", min, max, width, height, dx, dy);
         
         CollisionResults results = new CollisionResults();
         Vector3f origin = new Vector3f(min.x, max.y+100, min.z);

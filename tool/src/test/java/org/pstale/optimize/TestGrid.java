@@ -12,7 +12,7 @@ import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.AssetFactory;
 
 import com.jme3.asset.AssetManager;
@@ -33,9 +33,8 @@ import com.jme3.scene.VertexBuffer.Type;
  * @author yanmaoyuan
  * 
  */
+@Slf4j
 public class TestGrid {
-
-    static Logger log = Logger.getLogger(TestGrid.class);
 
     private final static int MAP_SIZE = 256;
 

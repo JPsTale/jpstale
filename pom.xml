@@ -9,11 +9,9 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <modules>
-        <module>asset-loader</module>
+        <module>loader</module>
+        <module>client</module>
         <module>core</module>
-        <module>entity</module>
-        <module>field</module>
-        <module>gui</module>
         <module>server</module>
         <module>tool</module>
     </modules>
@@ -89,6 +87,11 @@
                 <version>${jme3.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jmonkeyengine</groupId>
+                <artifactId>jme3-jbullet</artifactId>
+                <version>${jme3.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.github.stephengold</groupId>
                 <artifactId>Minie</artifactId>
                 <version>7.6.0+mt</version>
@@ -97,17 +100,17 @@
             <dependency>
                 <groupId>com.simsilica</groupId>
                 <artifactId>lemur</artifactId>
-                <version>1.15.0</version>
+                <version>1.16.0</version>
             </dependency>
             <dependency>
                 <groupId>com.simsilica</groupId>
                 <artifactId>lemur-proto</artifactId>
-                <version>1.12.0</version>
+                <version>1.13.0</version>
             </dependency>
             <dependency>
                 <groupId>com.simsilica</groupId>
                 <artifactId>lemur-props</artifactId>
-                <version>1.1.1</version>
+                <version>1.2.0</version>
             </dependency>
             <dependency>
                 <groupId>com.jayfella</groupId>
@@ -135,33 +138,33 @@
             <dependency>
                 <groupId>com.simsilica</groupId>
                 <artifactId>zay-es</artifactId>
-                <version>1.3.2</version>
+                <version>1.5.0</version>
             </dependency>
             <dependency>
                 <groupId>com.simsilica</groupId>
                 <artifactId>zay-es-net</artifactId>
-                <version>1.3.2</version>
+                <version>1.5.2</version>
             </dependency>
 
             <dependency>
                 <groupId>com.simsilica</groupId>
                 <artifactId>jmec</artifactId>
-                <version>1.2.0</version>
+                <version>1.3.0</version>
             </dependency>
             <dependency>
                 <groupId>com.simsilica</groupId>
                 <artifactId>sio2</artifactId>
-                <version>1.6.0</version>
+                <version>1.8.0</version>
             </dependency>
             <dependency>
                 <groupId>com.simsilica</groupId>
                 <artifactId>sim-ethereal</artifactId>
-                <version>1.6.0</version>
+                <version>1.8.0</version>
             </dependency>
             <dependency>
                 <groupId>com.simsilica</groupId>
                 <artifactId>sim-math</artifactId>
-                <version>1.4.1</version>
+                <version>1.6.0</version>
             </dependency>
 
             <!-- lombok -->
@@ -306,6 +309,10 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.32</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

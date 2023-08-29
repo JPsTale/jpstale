@@ -37,7 +37,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.plugins.smd.SMDTYPE;
 import org.jpstale.assets.plugins.smd.SmdKey;
 import org.jpstale.assets.plugins.smd.SmdLoader;
@@ -51,6 +51,7 @@ import com.jme3.asset.AssetLoadException;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.DesktopAssetManager;
 
+@Slf4j
 @SuppressWarnings("serial")
 public class TestUVWarp extends JFrame {
 
@@ -58,7 +59,6 @@ public class TestUVWarp extends JFrame {
         new TestUVWarp().setVisible(true);
     }
 
-    static Logger log = Logger.getLogger(TestUVWarp.class);
     // 绘图单元格的大小
     private int GRID_SIZE = 4;
     /**
@@ -252,8 +252,10 @@ public class TestUVWarp extends JFrame {
      * 绘制三角形网格 将3D的网格绘制到2D平面上。
      */
     private void drawBackground() {
-        if (mesh == null)
+        if (mesh == null) {
+            log.warn("mesh is null");
             return;
+        }
 
         int nMatCnt = mesh.materialGroup.materialCount;
 

@@ -4,14 +4,14 @@ import java.awt.Point;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer.Type;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <h2>九宫格网格。</h2> 定义一个256 * 256大小的矩阵，将地图划分成65536个格子。统计地图网格中所有的三角形，看看它们都落在
@@ -22,9 +22,8 @@ import com.jme3.scene.VertexBuffer.Type;
  * @author yanmaoyuan
  * 
  */
+@Slf4j
 public class GridMesh {
-
-    static Logger log = Logger.getLogger(GridMesh.class);
 
     public final static int MAP_SIZE = 256;
 

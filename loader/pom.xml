@@ -9,22 +9,22 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tool</artifactId>
+    <artifactId>loader</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.jmonkeyengine</groupId>
-            <artifactId>jme3-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.jpstale</groupId>
-            <artifactId>loader</artifactId>
+            <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20230227</version>
+        </dependency>
+        <dependency>
             <groupId>org.jmonkeyengine</groupId>
-            <artifactId>jme3-terrain</artifactId>
-            <scope>test</scope>
+            <artifactId>jme3-desktop</artifactId>
         </dependency>
     </dependencies>
 
