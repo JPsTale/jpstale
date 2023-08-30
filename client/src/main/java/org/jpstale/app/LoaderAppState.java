@@ -195,6 +195,19 @@ public class LoaderAppState extends SubAppState {
             }
 
             /**
+             * 地图的碰撞网格
+             */
+            final CollisionState collisionState = getStateManager().getState(CollisionState.class);
+            if (collisionState != null) {
+                app.enqueue(new Runnable() {
+                    public void run() {
+                        collisionState.addMesh(mesh);
+                        collisionState.setPlayerLocation(center);
+                    }
+                });
+            }
+
+            /**
              * 地图的其他舞台物体
              */
             // setStageObject(field);
@@ -213,13 +226,6 @@ public class LoaderAppState extends SubAppState {
              * 环境音效
              */
             setupAmbient(field);
-
-            final CollisionState collisionState = getStateManager().getState(CollisionState.class);
-            if (collisionState != null) {
-                app.enqueue(() -> {
-                    collisionState.addMesh(mesh);
-                });
-            }
 
             /**
              * 门户
