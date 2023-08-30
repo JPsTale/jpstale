@@ -6,12 +6,14 @@ import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioSource;
 import com.jme3.audio.AudioData.DataType;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 背景音乐
  * 
  * @author yanmaoyuan
  */
+@Slf4j
 public class MusicAppState extends BaseAppState {
     private String song;
     private AudioNode music;
@@ -30,9 +32,7 @@ public class MusicAppState extends BaseAppState {
         if (this.song == null && song == null)
             return;
 
-        /**
-         * 换歌了
-         */
+        // 换歌了
         if (this.song != null && !this.song.equals(song)) {
             if (music != null) {
                 music.stop();
@@ -40,9 +40,7 @@ public class MusicAppState extends BaseAppState {
             }
         }
 
-        /**
-         * 停止播放
-         */
+        // 停止播放
         if (song == null) {
             this.song = null;
             this.delay = delay;
@@ -50,8 +48,9 @@ public class MusicAppState extends BaseAppState {
             return;
         }
 
-        if (song != null && song.equals(this.song))
+        if (song.equals(this.song)) {
             return;
+        }
 
         this.delay = delay;
         this.song = song;
@@ -93,9 +92,8 @@ public class MusicAppState extends BaseAppState {
                 music.play();
                 playing = song;
             } catch (Exception e) {
-                System.out.println("加载音乐失败:" + song);
+                log.error("加载音乐失败:{}", song, e);
                 song = null;
-                e.printStackTrace();
             }
         }
     }

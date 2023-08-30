@@ -21,17 +21,15 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Mesh;
-import lombok.extern.slf4j.Slf4j;
 
 import static org.jpstale.constants.SceneConstants.scale;
 
 /**
  * 碰撞检测模块
- *
+ * 
  * @author yanmaoyuan
- *
+ * 
  */
-@Slf4j
 public class CollisionState extends BaseAppState {
 
     private final static String LEFT = "left";
@@ -203,7 +201,7 @@ public class CollisionState extends BaseAppState {
 
     /**
      * 设置原点，发出一条垂直向下的射线与地形的网格进行碰撞检测。
-     *
+     * 
      * @param orgin
      *            原点
      * @return
@@ -221,7 +219,7 @@ public class CollisionState extends BaseAppState {
 
     /**
      * 获得玩家的坐标
-     *
+     * 
      * @return
      */
     public Vector3f getPlayerLocation() {

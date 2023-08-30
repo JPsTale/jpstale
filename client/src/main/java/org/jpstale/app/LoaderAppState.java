@@ -1,4 +1,6 @@
 package org.jpstale.app;
+import static org.jpstale.constants.SceneConstants.scale;
+
 import java.io.File;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -7,7 +9,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import org.jpstale.app.MusicAppState;
+import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.AssetFactory;
 import org.jpstale.assets.plugins.script.character.Monster;
 import org.jpstale.assets.plugins.script.field.CharacterTransform;
@@ -18,10 +20,6 @@ import org.jpstale.entity.field.StageObject;
 import org.jpstale.entity.field.StartPoint;
 import org.jpstale.entity.field.StgBoss;
 import org.jpstale.entity.field.StgMonster;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.jpstale.constants.SceneConstants.scale;
 
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.Skeleton;
@@ -50,9 +48,8 @@ import com.jme3.texture.Texture;
  * @author yanmaoyuan
  * 
  */
+@Slf4j
 public class LoaderAppState extends SubAppState {
-
-    static Logger logger = LoggerFactory.getLogger(LoaderAppState.class);
 
     private SimpleApplication app;
 
@@ -140,6 +137,7 @@ public class LoaderAppState extends SubAppState {
             Vector2f center2f = field.getCenter();
             center = new Vector3f(center2f.x, 0, center2f.y).multLocal(scale);
             center.y = 1000;
+            setPhysicLocation(center);
 
             // 加载小地图
             setMiniMap(field);
@@ -166,15 +164,17 @@ public class LoaderAppState extends SubAppState {
             final Mesh mesh = AssetFactory.loadStage3DMesh(field.getName());
 
             if (mainModel == null) {
-                logger.debug("加载地图模型失败");
+                log.debug("加载地图模型失败");
                 return null;
             }
 
             BinaryExporter.getInstance().save(mainModel, new File(field.getName()+".j3o"));
             // 加载成功
             mainModel.scale(scale);
-            app.enqueue(() -> {
-                rootNode.attachChild(mainModel);
+            app.enqueue(new Runnable() {
+                public void run() {
+                    rootNode.attachChild(mainModel);
+                }
             });
 
             // 将网格缩小
@@ -232,8 +232,8 @@ public class LoaderAppState extends SubAppState {
              */
             final FieldgateAppState fieldgateAppState = getStateManager().getState(FieldgateAppState.class);
             if (fieldgateAppState != null) {
-                app.enqueue(() -> {
-                    if (field != null) {
+                app.enqueue(new Runnable() {
+                    public void run() {
                         fieldgateAppState.load(field.getFieldGate());
                     }
                 });
@@ -244,8 +244,8 @@ public class LoaderAppState extends SubAppState {
              */
             final WarpgateAppState warpgateAppState = getStateManager().getState(WarpgateAppState.class);
             if (warpgateAppState != null) {
-                app.enqueue(() -> {
-                    if (field != null) {
+                app.enqueue(new Runnable() {
+                    public void run() {
                         warpgateAppState.load(field.getWarpGate());
                     }
                 });
@@ -275,6 +275,17 @@ public class LoaderAppState extends SubAppState {
 
     };
 
+    private void setPhysicLocation(final Vector3f center) {
+        final CollisionState collisionState = getStateManager().getState(CollisionState.class);
+        if (collisionState != null) {
+            app.enqueue(new Runnable() {
+                public void run() {
+                    collisionState.setPlayerLocation(center);
+                }
+            });
+        }
+    }
+
     /**
      * 加载舞台物体
      * 
@@ -282,18 +293,20 @@ public class LoaderAppState extends SubAppState {
      */
     protected void setStageObject(final Field field) {
         List<StageObject> objs = field.getStageObject();
-        if (!objs.isEmpty()) {
-            for (StageObject obj : objs) {
+        if (objs.size() > 0) {
+            for (int i = 0; i < objs.size(); i++) {
                 final Spatial model;
                 try {
-                    model = AssetFactory.loadStageObj("Field/" + obj.getName(), obj.isBipAnimation());
+                    model = AssetFactory.loadStageObj("Field/" + objs.get(i).getName(), objs.get(i).isBipAnimation());
                     // 加载成功
                     model.scale(scale);
-                    app.enqueue(() -> {
-                        rootNode.attachChild(model);
+                    app.enqueue(new Runnable() {
+                        public void run() {
+                            rootNode.attachChild(model);
+                        }
                     });
                 } catch (Exception e) {
-                    logger.error("加载舞台物体失败", e);
+                    log.error("加载舞台物体失败", e);
                 }
             }
         }
@@ -305,7 +318,11 @@ public class LoaderAppState extends SubAppState {
          */
         final AmbientAppState ambientAppState = getStateManager().getState(AmbientAppState.class);
         if (ambientAppState != null) {
-            app.enqueue(() -> ambientAppState.load(field.getAmbientPos()));
+            app.enqueue(new Runnable() {
+                public void run() {
+                    ambientAppState.load(field.getAmbientPos());
+                }
+            });
         }
     }
 
@@ -322,19 +339,21 @@ public class LoaderAppState extends SubAppState {
             hud.setBoss(null);
             return;
         }
-        logger.debug("生物数量上限:" + creatures.LimitMax);
-        logger.debug("刷怪时间间隔:" + creatures.OpenInterval);
-        logger.debug("每次最多刷怪:" + creatures.OpenLimit);
+        log.debug("生物数量上限:" + creatures.LimitMax);
+        log.debug("刷怪时间间隔:" + creatures.OpenInterval);
+        log.debug("每次最多刷怪:" + creatures.OpenLimit);
 
         List<StgMonster> monsters = creatures.monsterList;
         final ArrayList<String> mList = new ArrayList<String>();
-        for (StgMonster monster : monsters) {
+        for (int i = 0; i < monsters.size(); i++) {
+            StgMonster monster = monsters.get(i);
             mList.add(monster.name + " : " + monster.percentage + "%");
         }
 
         List<StgBoss> bosses = creatures.bossList;
         final ArrayList<String> bList = new ArrayList<String>();
-        for (StgBoss boss : bosses) {
+        for (int i = 0; i < bosses.size(); i++) {
+            StgBoss boss = bosses.get(i);
             bList.add(boss.name + " + " + boss.slave + "*" + boss.slaveCnt);
         }
 
@@ -360,7 +379,7 @@ public class LoaderAppState extends SubAppState {
 
         // 刷怪点的坐标只有X/Z坐标，而且有些刷怪点是无效的，需要重新计算。
         int len = spawns.size();
-        logger.debug("刷怪点数量:" + len);
+        log.debug("刷怪点数量:" + len);
         final ArrayList<String> sppList = new ArrayList<String>(len);
         for (int i = 0; i < len; i++) {
             StartPoint point = spawns.get(i);
@@ -376,11 +395,13 @@ public class LoaderAppState extends SubAppState {
                 final Spatial model = flag.clone();
                 model.scale(scale);
                 model.setLocalTranslation(pos);
-                app.enqueue(() -> {
-                    rootNode.attachChild(model);
+                app.enqueue(new Runnable() {
+                    public void run() {
+                        rootNode.attachChild(model);
+                    }
                 });
             } catch (Exception e) {
-                logger.error("加载模型失败", e);
+                log.error("加载模型失败", e);
             }
         }
 
@@ -405,7 +426,7 @@ public class LoaderAppState extends SubAppState {
 
             /**
              * 创建一个NPC模型
-             *
+             * 
              * @param pos
              */
             // 首先尝试直接读取NPC模型
@@ -437,9 +458,9 @@ public class LoaderAppState extends SubAppState {
             Monster script = AssetFactory.loadNpcScript(npc.charInfo.szModelName2);
             if (script != null) {
                 npcList.add(script.szName);
-                logger.debug("NPC script added: {}", npc.charInfo.szModelName2);
+                log.debug("NPC script added: {}", npc.charInfo.szModelName2);
             } else {
-                logger.debug("NPC script not found: {}", npc.charInfo.szModelName2);
+                log.debug("NPC script not found: {}", npc.charInfo.szModelName2);
             }
         }
         hud.setNpc(npcList);
@@ -448,8 +469,7 @@ public class LoaderAppState extends SubAppState {
     /**
      * 设置小地图
      * 
-     * @param mapRes
-     * @param titleRes
+     * @param field
      */
     private void setMiniMap(final Field field) {
         final HudState hud = getStateManager().getState(HudState.class);
@@ -459,26 +479,22 @@ public class LoaderAppState extends SubAppState {
             try {
 
                 String map = field.getNameMap();
-                if (map != null && map.length() > 0) {
+                if (map != null && !map.isEmpty()) {
                     mapRes = assetManager.loadTexture(field.getNameMap());
                 } else {
                     mapRes = null;
                 }
 
                 String title = field.getNameTitle();
-                if (title != null && title.length() > 0) {
+                if (title != null && !title.isEmpty()) {
                     titleRes = assetManager.loadTexture(field.getNameTitle());
                 } else {
                     titleRes = null;
                 }
 
-                app.enqueue(new Runnable() {
-                    public void run() {
-                        hud.setMiniMap(titleRes, mapRes);
-                    }
-                });
+                app.enqueue(() -> hud.setMiniMap(titleRes, mapRes));
             } catch (Exception e) {
-                logger.error("读取小地图失败", e);
+                log.error("读取小地图失败", e);
             }
         }
     }

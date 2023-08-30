@@ -1,16 +1,15 @@
 package org.jpstale.app;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.plugins.script.character.Monster;
 import org.jpstale.assets.plugins.script.field.FieldLoader;
-import org.jpstale.entity.field.Field;
-import org.jpstale.entity.item.ItemInfo;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import org.jpstale.entity.field.Field;
+import org.jpstale.entity.item.ItemInfo;
 
 /**
  * 这个状态机仅用于维持地区数据
@@ -118,7 +117,7 @@ public class DataState extends BaseAppState {
     /**
      * 根据怪物的名字查询怪物信息
      * 
-     * @param file
+     * @param name
      * @return
      */
     public Monster findMonsterByName(String name) {

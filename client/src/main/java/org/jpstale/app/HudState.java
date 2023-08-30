@@ -107,7 +107,7 @@ public class HudState extends BaseAppState {
 
     public void update(float tpf) {
         if (showAxisRef.update()) {
-            CheckerBoardState axis = getStateManager().getState(CheckerBoardState.class);
+            AxisAppState axis = getStateManager().getState(AxisAppState.class);
             if (axis != null) {
                 axis.setEnabled(showAxisRef.get());
             }
@@ -121,7 +121,7 @@ public class HudState extends BaseAppState {
         if (collisionRef.update()) {
             CollisionState collision = getStateManager().getState(CollisionState.class);
             if (collision != null) {
-                collision.setEnabled(collisionRef.get());
+                collision.toggle(collisionRef.get());
             }
         }
         if (speedRef.update()) {

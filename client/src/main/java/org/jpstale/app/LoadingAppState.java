@@ -114,7 +114,7 @@ public class LoadingAppState extends SubAppState {
      * @param data
      */
     private void initLoader(Data data) {
-        AppState[] states = { new CheckerBoardState(),
+        AppState[] states = { new AxisAppState(),
                 new DataState(data.serverRoot, data.allMonster, data.allNpc, data.allItem),
                 // new CursorState(),
                 new HudState(), new LoaderAppState(), new CollisionState(), new MusicAppState(), new AmbientAppState(),

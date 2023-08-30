@@ -1,7 +1,6 @@
 package org.jpstale.app;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;

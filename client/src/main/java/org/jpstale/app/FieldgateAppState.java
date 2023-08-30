@@ -1,13 +1,13 @@
 package org.jpstale.app;
 import static org.jpstale.constants.SceneConstants.scale;
 
+import org.jpstale.entity.field.FieldGate;
+
 import com.jme3.app.Application;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
-
-import org.jpstale.entity.field.FieldGate;
 
 /**
  * 地区门户

@@ -1,6 +1,8 @@
 package org.jpstale.app;
 import static org.jpstale.constants.SceneConstants.scale;
 
+import org.jpstale.utils.GameDate;
+
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.font.BitmapFont;
@@ -13,8 +15,6 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
-
-import org.jpstale.utils.GameDate;
 
 /**
  * 游戏时间及亮度系统控制。
@@ -66,7 +66,7 @@ public class LightState extends SubAppState {
 
         if (USE_LIGHT) {
             ambientLight = new AmbientLight();
-            ambientLight.setColor(new ColorRGBA(0.8f, 0.8f, 0.8f, 1));
+            ambientLight.setColor(new ColorRGBA(0.4f, 0.4f, 0.4f, 1));
 
             sunLight = new DirectionalLight();
             sunLight.setColor(sunColor);
@@ -82,7 +82,7 @@ public class LightState extends SubAppState {
             // 在这里获得CollisionState中玩家的坐标点引用。
             CollisionState collisionState = getStateManager().getState(CollisionState.class);
             if (collisionState != null) {
-                // TODO
+                orgin = collisionState.getPlayerLocation();
             }
         }
 

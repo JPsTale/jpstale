@@ -1,14 +1,14 @@
 package org.jpstale.app;
 import static org.jpstale.constants.SceneConstants.scale;
 
+import org.jpstale.entity.field.WarpGate;
+
 import com.jme3.app.Application;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Cylinder;
-
-import org.jpstale.entity.field.WarpGate;
 
 /**
  * 传送门
@@ -26,7 +26,7 @@ public class WarpgateAppState extends SubAppState {
     /**
      * 载入传送门
      * 
-     * @param warpGate
+     * @param warpGates
      */
     public void load(WarpGate... warpGates) {
         // rootNode.detachAllChildren();
