@@ -1,13 +1,12 @@
 package org.jpstale.assets.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.AssetFactory;
 import org.jpstale.assets.plugins.smd.material.SmMaterial;
 import org.jpstale.assets.plugins.smd.material.TEXLINK;
 import org.jpstale.assets.plugins.smd.stage.Stage;
 import org.jpstale.assets.plugins.smd.stage.StageFace;
 import org.jpstale.constants.SceneConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.jme3.material.Material;
 import com.jme3.math.Vector2f;
@@ -26,11 +25,10 @@ import com.jme3.util.TempVars;
  * @author yanmaoyuan
  *
  */
+@Slf4j
 public class SceneBuilder {
 
-    static Logger logger = LoggerFactory.getLogger(SceneBuilder.class);
-    
-    /**
+    /*
      * 精灵的动画使用3DS MAX的默认速率，每秒30Tick，每Tick共160帧。 也就是每秒4800帧。
      * 
      * 但是smd文件中也另外存储了2个参数： (1) 每秒Tick数 (默认30) (2) 每Tick帧数 (默认160)
@@ -53,9 +51,9 @@ public class SceneBuilder {
 
     /**
      * 生成STAGE3D对象
-     * @param name 
+     * @param name STAGE3D名称
      * 
-     * @return
+     * @return STAGE3D对象
      */
     public static Node buildScene3D(Stage stage, String name) {
         Node rootNode = new Node("STAGE3D:" + name);
@@ -85,7 +83,7 @@ public class SceneBuilder {
                 continue;
             }
 
-            /**
+            /*
              * 统计材质为mat_id的面一共有多少个面，用于计算需要生成多少个子网格。
              */
             int size = 0;
@@ -177,8 +175,7 @@ public class SceneBuilder {
                     // MeshState = sMATS_SCRIPT_ORG_WATER;
                 }
                 if ((m.UseState & sMATS_SCRIPT_BLINK_COLOR) != 0) {
-                    // m.WindMeshBottom == dwBlinkCode[]{ 9, 10, 11, 12, 13, 14,
-                    // 15, 16,} 8个数值的其中之一
+                    // m.WindMeshBottom == dwBlinkCode[]{ 9, 10, 11, 12, 13, 14, 15, 16,} 8个数值的其中之一
                 }
             }
 
@@ -191,14 +188,14 @@ public class SceneBuilder {
         return rootNode;
     }
     
-    /**********************************
-     * STAGE3D
-     */
+    ///////////////////////////////
+    // STAGE3D
+    //
 
     /**
      * 根据原有的面，计算每个顶点的法向量。
      * 
-     * @return
+     * @return 法向量
      */
     public static Vector3f[] computeOrginNormals(Stage stage) {
         TempVars tmp = TempVars.get();
@@ -261,7 +258,7 @@ public class SceneBuilder {
      *            材质编号
      * @param orginNormal
      *            法线
-     * @return
+     * @return 网格
      */
     public static Mesh buildMesh(Stage stage, int size, int mat_id, Vector3f[] orginNormal) {
 
@@ -335,17 +332,17 @@ public class SceneBuilder {
     /**
      * 生成碰撞网格：将透明的、不参与碰撞检测的面统统裁剪掉，只保留参于碰撞检测的面。
      * 
-     * @return
+     * @return 碰撞网格
      */
     public static Mesh buildCollisionMesh(Stage stage) {
         if (stage.nFace <= 0) {
-            logger.error("Stage has no triangle mesh!");
+            log.error("Stage has no triangle mesh!");
             return null;
         }
         Mesh mesh = new Mesh();
 
         int materialCount = stage.materialGroup.materialCount;
-        /**
+        /*
          * 根据材质的特诊来筛选参加碰撞检测的物体， 将被忽略的材质设置成null，作为一种标记。
          */
         SmMaterial m;// 临时变量
@@ -357,10 +354,10 @@ public class SceneBuilder {
             }
         }
 
-        /**
+        /*
          * 统计有多少个要参加碰撞检测的面。
          */
-        int loc[] = new int[stage.nVertex];
+        int[] loc = new int[stage.nVertex];
         for (int i = 0; i < stage.nVertex; i++) {
             loc[i] = -1;
         }

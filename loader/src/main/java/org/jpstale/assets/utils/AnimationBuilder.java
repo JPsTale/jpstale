@@ -5,14 +5,13 @@ import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.plugins.smd.geom.GeomObject;
 import org.jpstale.assets.plugins.smd.geom.MotionInfo;
 import org.jpstale.assets.plugins.smd.geom.PAT3D;
 import org.jpstale.assets.plugins.smd.geom.TransPosition;
 import org.jpstale.assets.plugins.smd.geom.TransRotation;
 import org.jpstale.assets.plugins.smd.geom.TransScale;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.jme3.animation.Animation;
 import com.jme3.animation.Bone;
@@ -21,9 +20,8 @@ import com.jme3.animation.Skeleton;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 
+@Slf4j
 public class AnimationBuilder {
-    
-    static Logger logger = LoggerFactory.getLogger(AnimationBuilder.class);
     
     /**
      * 精灵的动画使用3DS MAX的默认速率，每秒30Tick，每Tick共160帧。 也就是每秒4800帧。
@@ -97,7 +95,7 @@ public class AnimationBuilder {
         } else if (motionInfo.talkStartFrame > 0){
             startTick = motionInfo.talkStartFrame/256;
         } else {
-            logger.warn("No animation included!");
+            log.warn("No animation included!");
             return null;
         }
         endTick = motionInfo.endFrame/256;
@@ -110,7 +108,7 @@ public class AnimationBuilder {
             startTick = tmp;
             backForward = true;
             
-            logger.debug("需要倒放的动画!");
+            log.debug("需要倒放的动画!");
         }
         
         // 计算开始和结束的帧，用于截取动画数据
@@ -121,8 +119,8 @@ public class AnimationBuilder {
         float length = (float)(endTick - startTick) / TickPerSecond;
         
         String name = getAnimationNameById(motionInfo.State);
-        if (logger.isDebugEnabled()) {
-            logger.debug("{} startKey:{} endKey:{} length:{}", name, startTick, endTick, length);
+        if (log.isDebugEnabled()) {
+            log.debug("{} startKey:{} endKey:{} length:{}", name, startTick, endTick, length);
         }
 
         Animation anim = new Animation(name, length);
@@ -199,7 +197,7 @@ public class AnimationBuilder {
                 sclCnt++;
             }
 
-            logger.debug("total:{} position:{} rotation:{} scacle:{}", keyframes.size(), posCnt, rotCnt, sclCnt);
+            log.debug("total:{} position:{} rotation:{} scacle:{}", keyframes.size(), posCnt, rotCnt, sclCnt);
             
             /**
              * 计算动画数据。 为BoneTrack准备数据。
@@ -270,8 +268,8 @@ public class AnimationBuilder {
         // 计算动画时常
         float length = (float) maxFrame / FramePerSecond;
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("MaxFrame:{}, Tick:{}, Time:{}", maxFrame, maxFrame/FramePerTick, length);
+        if (log.isDebugEnabled()) {
+            log.debug("MaxFrame:{}, Tick:{}, Time:{}", maxFrame, maxFrame/FramePerTick, length);
         }
 
         Animation anim = new Animation("Anim", length);
@@ -516,7 +514,7 @@ public class AnimationBuilder {
             ret = "Talk (V)";
             break;
         default:
-            logger.debug("Unknow animation id: {}", id);
+            log.debug("Unknow animation id: {}", id);
         }
 
         return ret;

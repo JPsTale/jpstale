@@ -232,8 +232,8 @@ public class LoaderAppState extends SubAppState {
              */
             final FieldgateAppState fieldgateAppState = getStateManager().getState(FieldgateAppState.class);
             if (fieldgateAppState != null) {
-                app.enqueue(new Runnable() {
-                    public void run() {
+                app.enqueue(() -> {
+                    if (field != null) {
                         fieldgateAppState.load(field.getFieldGate());
                     }
                 });
@@ -244,8 +244,8 @@ public class LoaderAppState extends SubAppState {
              */
             final WarpgateAppState warpgateAppState = getStateManager().getState(WarpgateAppState.class);
             if (warpgateAppState != null) {
-                app.enqueue(new Runnable() {
-                    public void run() {
+                app.enqueue(() -> {
+                    if (field != null) {
                         warpgateAppState.load(field.getWarpGate());
                     }
                 });

@@ -2,6 +2,7 @@ package org.jpstale.assets.utils;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.AssetFactory;
 import org.jpstale.assets.plugins.smd.geom.GeomObject;
 import org.jpstale.assets.plugins.smd.geom.PAT3D;
@@ -9,8 +10,6 @@ import org.jpstale.assets.plugins.smd.material.SmMaterial;
 import org.jpstale.assets.plugins.smd.material.TEXLINK;
 import org.jpstale.assets.plugins.smd.math.Matrix4D;
 import org.jpstale.constants.SceneConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.Animation;
@@ -34,9 +33,8 @@ import com.jme3.util.BufferUtils;
  * @author yanmaoyuan
  *
  */
+@Slf4j
 public class ModelBuilder {
-
-    static Logger logger = LoggerFactory.getLogger(ModelBuilder.class);
 
     /**
      * 生成模型
@@ -60,7 +58,7 @@ public class ModelBuilder {
             rootNode.addControl(new SkeletonControl(ske));
         }
 
-        logger.debug("Material Count: {}", pat.materialGroup.materialCount);
+        log.debug("Material Count: {}", pat.materialGroup.materialCount);
 
         for (int i = 0; i < pat.objCount; i++) {
             GeomObject obj = pat.objArray[i];

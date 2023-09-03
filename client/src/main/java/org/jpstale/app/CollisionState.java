@@ -71,9 +71,9 @@ public class CollisionState extends BaseAppState {
 
     // 运动逻辑
     private boolean left = false, right = false, forward = false, backward = false;
-    private Vector3f camDir = new Vector3f();
-    private Vector3f camLeft = new Vector3f();
-    private Vector3f walkDirection = new Vector3f();
+    private final Vector3f camDir = new Vector3f();
+    private final Vector3f camLeft = new Vector3f();
+    private final Vector3f walkDirection = new Vector3f();
 
     public CollisionState() {
         meshes = new ArrayList<Mesh>(100);
@@ -99,20 +99,26 @@ public class CollisionState extends BaseAppState {
     /**
      * 按键事件监听器
      */
-    private ActionListener myListener = new ActionListener() {
+    private final ActionListener myListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
-            if (name.equals(LEFT)) {
-                left = isPressed;
-            } else if (name.equals(RIGHT)) {
-                right = isPressed;
-            } else if (name.equals(FORWARD)) {
-                forward = isPressed;
-            } else if (name.equals(BACKWARD)) {
-                backward = isPressed;
-            } else if (name.equals(JUMP)) {
-                if (player != null)
-                    player.jump();
+            switch (name) {
+                case LEFT:
+                    left = isPressed;
+                    break;
+                case RIGHT:
+                    right = isPressed;
+                    break;
+                case FORWARD:
+                    forward = isPressed;
+                    break;
+                case BACKWARD:
+                    backward = isPressed;
+                    break;
+                case JUMP:
+                    if (player != null)
+                        player.jump();
+                    break;
             }
         }
     };
