@@ -14,6 +14,8 @@
         <module>core</module>
         <module>server</module>
         <module>tool</module>
+        <module>sio2-bullet</module>
+        <module>demos</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -90,6 +92,11 @@
                 <groupId>org.jmonkeyengine</groupId>
                 <artifactId>jme3-jbullet</artifactId>
                 <version>${jme3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jmonkeyengine</groupId>
+                <artifactId>jme3-bullet</artifactId>
+                <version>3.3.2-stable</version>
             </dependency>
             <dependency>
                 <groupId>com.github.stephengold</groupId>
@@ -282,6 +289,11 @@
             </dependency>
 
             <!-- logger -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.36</version>
+            </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
