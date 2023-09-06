@@ -1,11 +1,14 @@
 package org.jpstale.entity.item;
 
+import lombok.ToString;
+
 /**
  * 攻击能力
  * 
  * @author yanmaoyuan
  *
  */
+@ToString
 public class AttrAttack {
     public int[] Damage = new int[4]; // 伤害值
     public int Shooting_Range; // 射程

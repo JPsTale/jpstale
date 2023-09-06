@@ -1,5 +1,8 @@
 package org.jpstale.assets.plugins.script.character;
 
+import lombok.ToString;
+
+@ToString
 public class Monster extends Character {
     public final static int FALLITEM_MAX = 200;
     public final static int FALLITEM2_MAX = 3;

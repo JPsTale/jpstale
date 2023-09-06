@@ -13,6 +13,7 @@ import org.jpstale.assets.plugins.smd.geom.AnimateModel;
 import org.jpstale.assets.plugins.smd.geom.PAT3D;
 import org.jpstale.assets.utils.AssetNameUtils;
 import org.jpstale.assets.utils.ModelBuilder;
+import org.jpstale.constants.SceneConstants;
 
 /**
  * 测试生成骨骼
@@ -26,10 +27,8 @@ public class TestLoadNPC extends TestBase {
     public void init() {
 
         String path = "char/npc/arad/arad.inx";
-        float scale = 0.1f;
-
         Node npc = AssetFactory.loadCharacter(path);
-        npc.scale(scale);
+        npc.scale(SceneConstants.scale);
         rootNode.attachChild(npc);
 
         cam.setLocation(new Vector3f(0, 5, 10));
@@ -38,8 +37,6 @@ public class TestLoadNPC extends TestBase {
 
     public static void main(String[] args) {
         AppSettings setting = new AppSettings(true);
-        setting.setRenderer("JOGL");
-        setting.setAudioRenderer("JOAL");
 
         TestLoadNPC app = new TestLoadNPC();
         app.setSettings(setting);

@@ -25,6 +25,7 @@ public abstract class TestBase extends SimpleApplication {
         AssetFactory.setAssetManager(assetManager);
 
         stateManager.attach(new CheckerBoardState());
+        stateManager.attach(new AxisAppState());
 
         init();
     }

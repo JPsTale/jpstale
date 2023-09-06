@@ -97,7 +97,7 @@ public class AssetFactory {
         registerFolder("D:/Priston Tale/0_素材/Server/精灵中国全服务端3060/3060");
         registerFolder("D:/Priston Tale/PTCN3550/PTCN3550");
         registerFolder("/Users/yanmaoyuan/PTCN2018V5-725");
-        registerFolder("/Users/yanmaoyuan/PTcn2018");
+        registerFolder("/Users/yanmaoyuan/3060");
         registerFolder("assets");
     }
     

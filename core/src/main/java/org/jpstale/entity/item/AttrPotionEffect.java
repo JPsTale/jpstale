@@ -1,11 +1,14 @@
 package org.jpstale.entity.item;
 
+import lombok.ToString;
+
 /**
  * 药剂效果
  * 
  * @author yanmaoyuan
  *
  */
+@ToString
 public class AttrPotionEffect {
 
     /* 回复能力 */

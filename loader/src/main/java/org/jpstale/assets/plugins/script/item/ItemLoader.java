@@ -258,8 +258,8 @@ public class ItemLoader extends PTScriptLoader<ItemInfo> {
                 iteminfo.defence.Absorb[1] = getFloat(1);
             }
             if (startWith(Defence, 2)) {
-                iteminfo.defence.Defence[0] = getInt(0);
-                iteminfo.defence.Defence[1] = getInt(1);
+                iteminfo.defence.Defence[0] = getFloat(0);
+                iteminfo.defence.Defence[1] = getFloat(1);
             }
             if (startWith(Block_Rating, 2)) {
                 iteminfo.defence.Block_Rating[0] = getFloat(0);

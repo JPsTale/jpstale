@@ -40,10 +40,6 @@ void main(){
         if(color.a < m_AlphaDiscardThreshold){
            discard;
         }
-        float alpha = color.r * 0.3 + color.g * 0.59 + color.b * 0.11;
-		if (alpha < m_AlphaDiscardThreshold) {
-			discard;
-		}
     #endif
     
     gl_FragColor = color;

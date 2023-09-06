@@ -1,9 +1,12 @@
 package org.jpstale.entity.item;
 
+import lombok.ToString;
+
 /**
  * 装备特效
  * 
  */
+@ToString
 public class ItemSpecial {
     public float Add_Absorb[] = new float[2]; // 吸收
     public int Add_Defence[] = new int[2]; // 防御

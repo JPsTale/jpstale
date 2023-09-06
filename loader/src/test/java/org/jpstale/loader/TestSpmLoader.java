@@ -20,11 +20,8 @@ public class TestSpmLoader {
         // 读取地图的spc文件
         RespawnList respawn = (RespawnList) assetManager.loadAsset("GameServer/Field/Fore-3.ase.spm");
 
-        log.info("" + respawn.LimitMax);
-        log.info("" + respawn.IntervalTime);
-        log.info("" + respawn.OpenLimit);
-        log.info("" + respawn.PercentageCnt);
-
+        log.info("limitMax:{}, intervalTime:{}, openLimit:{}, percentageCtn:{}", respawn.LimitMax, respawn.IntervalTime, respawn.OpenLimit, respawn.PercentageCnt);
+        log.info("hasMonster:{}, bossCount:{}, bossList:{}, monsterList:{}", respawn.hasMonster(), respawn.BossMonsterCount, respawn.bossList, respawn.monsterList);
     }
 
 }

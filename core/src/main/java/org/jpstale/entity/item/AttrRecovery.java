@@ -1,5 +1,8 @@
 package org.jpstale.entity.item;
 
+import lombok.ToString;
+
+@ToString
 public class AttrRecovery {
     public float Mana_Regen[] = new float[2]; // 法力 恢复
     public float Life_Regen[] = new float[2]; // 生命 恢复

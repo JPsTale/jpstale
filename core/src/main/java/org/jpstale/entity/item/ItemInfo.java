@@ -1,5 +1,8 @@
 package org.jpstale.entity.item;
 
+import lombok.ToString;
+
+@ToString
 public class ItemInfo {
     public final static int SPECIAL_JOB_RANDOM_MAX = 12;
 

@@ -3,6 +3,7 @@ package org.jpstale.assets.plugins.script;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +30,14 @@ public abstract class PTScriptLoader<T> implements AssetLoader {
 
     private String charset = "gbk";
 
+    private AssetInfo assetInfo;
+
     /**
      * 初始化，加载数据
      */
     @Override
     public T load(AssetInfo assetInfo) throws IOException {
+        this.assetInfo = assetInfo;
         // 加载文件
         reader = new BufferedReader(new InputStreamReader(assetInfo.openStream(), charset));
 
@@ -141,7 +145,7 @@ public abstract class PTScriptLoader<T> implements AssetLoader {
         try {
             value = Integer.parseInt(token[1 + index]);
         } catch (NumberFormatException e) {
-            log.error("数值解析失败", e);
+            log.error("数值解析失败, assetInfo:{}, token:{}", assetInfo, Arrays.toString(token), e);
         }
         return value;
     }

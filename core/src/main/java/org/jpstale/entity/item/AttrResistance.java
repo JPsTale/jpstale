@@ -1,11 +1,14 @@
 package org.jpstale.entity.item;
 
+import lombok.ToString;
+
 /**
  * 元素抗性
  * 
  * @author yanmaoyuan
  *
  */
+@ToString
 public class AttrResistance {
 
     public int Bionic[] = new int[2];

@@ -1,6 +1,7 @@
 package org.jpstale.app;
 
 import org.jpstale.assets.AssetFactory;
+import org.jpstale.constants.SceneConstants;
 import org.jpstale.entity.item.Item;
 
 import static org.jpstale.entity.item.ItemConstant.itemDataBase;
@@ -21,7 +22,7 @@ public class TestDropItem extends TestBase {
 
         Item item = itemDataBase[21];
 
-        String cat = "PS104";
+        String cat = "CA196";
 
         // 查找装备
         for (int cnt = 0; cnt < itemDataBase.length; cnt++) {
@@ -33,17 +34,7 @@ public class TestDropItem extends TestBase {
         }
 
         Node node = AssetFactory.loadStageObj(String.format(dorpItem, item.dorpItem), false);
-        node.scale(1f);
-        node.addControl(new AbstractControl() {
-            @Override
-            protected void controlUpdate(float tpf) {
-                spatial.rotate(0, tpf, 0);
-            }
-
-            @Override
-            protected void controlRender(RenderManager rm, ViewPort vp) {
-            }
-        });
+        node.scale(SceneConstants.scale);
         rootNode.attachChild(node);
 
         Picture picture = new Picture("sinImage");

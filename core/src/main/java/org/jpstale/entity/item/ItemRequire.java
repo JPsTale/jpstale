@@ -1,5 +1,8 @@
 package org.jpstale.entity.item;
 
+import lombok.ToString;
+
+@ToString
 public class ItemRequire {
     public int level; // 等级
     public int strength; // 力量

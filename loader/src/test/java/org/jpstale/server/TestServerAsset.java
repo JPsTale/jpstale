@@ -21,7 +21,7 @@ public class TestServerAsset {
      * 服务端的路径
      */
     static boolean CHECK_SERVER = false;
-    static String SERVER_ROOT = "I:/game/PTCN-RPT1.0";
+    static String SERVER_ROOT = "/Users/yanmaoyuan/3060";
     static String FIELD_DIR = "GameServer/Field";
     static String MONSTER_DIR = "GameServer/Monster";
     static String OPENITEM_DIR = "GameServer/OpenItem";
@@ -34,13 +34,12 @@ public class TestServerAsset {
     }
     
     @Test
-    @Ignore
     public void testLoadMonster() {
         // 所有怪物数据
         File folder = new File(SERVER_ROOT + "/" + MONSTER_DIR);
         String[] files = folder.list();
         int len = files.length;
-        ArrayList<Monster> allMonster = new ArrayList<Monster>(len);
+        ArrayList<Monster> allMonster = new ArrayList<>(len);
         for (int i = 0; i < len; i++) {
             String name = files[i];
             Monster m = AssetFactory.loadMonsterScript(name);
@@ -50,6 +49,9 @@ public class TestServerAsset {
         }
 
         logger.info("Monster: {}", allMonster.size());
+        for (Monster m : allMonster) {
+            logger.info("{}", m);
+        }
     }
     
     @Test
@@ -59,7 +61,7 @@ public class TestServerAsset {
     }
     
     @Test
-    @Ignore
+    //@Ignore
     public void testLoadItem() {
      // 所有装备数据
         File folder = new File(SERVER_ROOT + "/" + OPENITEM_DIR);
@@ -75,5 +77,8 @@ public class TestServerAsset {
         }
 
         logger.info("Item: {}", allItem.size());
+        for (ItemInfo item : allItem) {
+            logger.info("{}", item);
+        }
     }
 }

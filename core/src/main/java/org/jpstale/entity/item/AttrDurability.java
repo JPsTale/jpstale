@@ -1,5 +1,7 @@
 package org.jpstale.entity.item;
 
+import lombok.ToString;
+
 import java.util.Random;
 
 /**
@@ -8,6 +10,7 @@ import java.util.Random;
  * @author yanmaoyuan
  *
  */
+@ToString
 public class AttrDurability {
 
     private Random rand = new Random();

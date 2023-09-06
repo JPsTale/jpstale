@@ -1,5 +1,8 @@
 package org.jpstale.entity.item;
 
+import lombok.ToString;
+
+@ToString
 class ItemCreate {
     long Head; // 头
     long dwVersion; // 创建的版本
