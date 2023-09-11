@@ -12,7 +12,6 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
@@ -27,24 +26,13 @@ public class CheckerBoardState extends BaseAppState implements ActionListener {
 
     private AssetManager assetManager;
 
-    private Camera cam;
-
     @Override
     protected void initialize(Application app) {
         assetManager = app.getAssetManager();
 
-        cam = app.getCamera();
-
         createCheckerBoard();
 
         toggleAxis();
-    }
-
-    @Override
-    public void update(float tpf) {
-        if(isEnabled()) {
-            rootNode.setLocalTranslation(cam.getLocation().x, 0, cam.getLocation().z);
-        }
     }
 
     @Override
@@ -91,7 +79,7 @@ public class CheckerBoardState extends BaseAppState implements ActionListener {
     }
     
     private void createCheckerBoard() {
-        Quad quad = new Quad(100, 100);
+        Quad quad = new Quad(20, 20);
         Geometry grid = new Geometry("CheckerBoard", quad);
         grid.rotate(-FastMath.HALF_PI, 0, 0);
         grid.center();

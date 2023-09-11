@@ -944,25 +944,21 @@ public final class Main extends JFrame {
     }
 
     private void startApp() {
-        new Thread() {
-            public void run() {
-                final FieldApp app = new FieldApp();
-                source.setRenderer(AppSettings.LWJGL_OPENGL3);
-                source.setAudioRenderer(AppSettings.LWJGL_OPENAL);
-                app.setSettings(source);
-                app.setPauseOnLostFocus(false);
-                app.setShowSettings(false);
-                app.start();
-            }
-        }.start();
+        new Thread(() -> {
+            final FieldApp app = new FieldApp();
+            source.setRenderer(AppSettings.LWJGL_OPENGL40);
+            source.setAudioRenderer(AppSettings.LWJGL_OPENAL);
+            app.setSettings(source);
+            app.setPauseOnLostFocus(false);
+            app.setShowSettings(false);
+            app.start();
+        }).start();
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                Main dialog = new Main();
-                dialog.showDialog();
-            }
+        SwingUtilities.invokeLater(() -> {
+            Main dialog = new Main();
+            dialog.showDialog();
         });
     }
 }

@@ -15,8 +15,10 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
 import com.jme3.scene.debug.SkeletonDebugger;
+import org.jpstale.assets.plugins.smd.geom.AnimateModel;
+import org.jpstale.assets.utils.ModelBuilder;
 
-public class TestLoadMob extends SimpleApplication {
+public class TestLoadMob extends TestBase {
 
     public static void main(String[] args) {
         TestLoadMob app = new TestLoadMob();
@@ -30,7 +32,7 @@ public class TestLoadMob extends SimpleApplication {
     Node skeletonDebug;
 
     @Override
-    public void simpleInitApp() {
+    public void init() {
 
         AssetFactory.setAssetManager(assetManager);
 
@@ -39,7 +41,8 @@ public class TestLoadMob extends SimpleApplication {
         rootNode.addLight(light);
 
         // mob = (Node)assetManager.loadAsset(new AseKey("char/monster/chaoscara/chaoscara.ASE"));
-        mob = (Node) assetManager.loadAsset(new AseKey("char/monster/death_knight/death_knight.ASE"));
+        Node animateModel = AssetFactory.loadCharacter("char/monster/death_knight/death_knight.inx");
+        mob = animateModel;
         mob.scale(0.04f);
         rootNode.attachChild(mob);
 

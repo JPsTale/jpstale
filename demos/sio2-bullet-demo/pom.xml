@@ -44,6 +44,11 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.github.stephengold</groupId>
+            <artifactId>Minie</artifactId>
+        </dependency>
+        <!--
+        <dependency>
             <groupId>org.jmonkeyengine</groupId>
             <artifactId>jme3-jbullet</artifactId>
             <exclusions>
@@ -57,6 +62,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        -->
         <dependency>
             <groupId>com.simsilica</groupId>
             <artifactId>lemur</artifactId>

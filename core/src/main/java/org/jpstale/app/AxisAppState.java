@@ -35,16 +35,6 @@ public class AxisAppState extends BaseAppState implements ActionListener {
     protected void initialize(Application app) {
         assetManager = app.getAssetManager();
 
-        // 网格
-        Geometry grid = new Geometry("Grid", new Grid(201, 201, 1));
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.DarkGray);
-        grid.setMaterial(mat);
-        grid.center().move(0, 0, 0);
-        grid.setShadowMode(ShadowMode.Off);
-
-        rootNode.attachChild(grid);
-
         // 坐标
         createArrow("X", Vector3f.UNIT_X.mult(10), ColorRGBA.Red);
         createArrow("Y", Vector3f.UNIT_Y.mult(10), ColorRGBA.Green);

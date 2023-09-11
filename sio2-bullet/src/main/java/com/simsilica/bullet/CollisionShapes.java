@@ -52,15 +52,15 @@ public interface CollisionShapes {
      *  shape loading that the CollisionShapes implementation might be attempting
      *  for registry misses.
      */
-    public CollisionShape register( ShapeInfo info, CollisionShape shape ); 
+    CollisionShape register(ShapeInfo info, CollisionShape shape);
  
     /**
      *  Returns the collision shape for the specified shape info.
      *  This will generally reuse CollisionShapes (without cloning) if they have
      *  already been loaded or registered... though ultimately it is up to the
      *  specific implementation of CollisionShapes.
-     */   
-    public CollisionShape getShape( ShapeInfo shape );
+     */
+    CollisionShape getShape(ShapeInfo shape);
 }
 
 

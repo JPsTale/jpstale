@@ -16,6 +16,7 @@
         <module>tool</module>
         <module>sio2-bullet</module>
         <module>demos</module>
+        <module>navmesh</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -31,6 +32,7 @@
         <protobuf.version>3.9.0</protobuf.version>
         <zxing.version>3.4.0</zxing.version>
         <jme3.version>3.6.1-stable</jme3.version>
+        <recast4j.version>1.5.6</recast4j.version>
     </properties>
 
     <dependencyManagement>
@@ -101,7 +103,7 @@
             <dependency>
                 <groupId>com.github.stephengold</groupId>
                 <artifactId>Minie</artifactId>
-                <version>7.6.0+mt</version>
+                <version>7.7.0+big3</version>
             </dependency>
             <!-- Lemur GUI -->
             <dependency>
@@ -172,6 +174,38 @@
                 <groupId>com.simsilica</groupId>
                 <artifactId>sim-math</artifactId>
                 <version>1.6.0</version>
+            </dependency>
+
+            <!-- recast4j -->
+            <dependency>
+                <groupId>org.recast4j</groupId>
+                <artifactId>recast</artifactId>
+                <version>${recast4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.recast4j</groupId>
+                <artifactId>detour</artifactId>
+                <version>${recast4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.recast4j</groupId>
+                <artifactId>detour-crowd</artifactId>
+                <version>${recast4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.recast4j</groupId>
+                <artifactId>detour-dynamic</artifactId>
+                <version>${recast4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.recast4j</groupId>
+                <artifactId>detour-extras</artifactId>
+                <version>${recast4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.recast4j</groupId>
+                <artifactId>detour-tile-cache</artifactId>
+                <version>${recast4j.version}</version>
             </dependency>
 
             <!-- lombok -->

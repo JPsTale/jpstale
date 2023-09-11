@@ -26,15 +26,14 @@ import com.jme3.scene.debug.Arrow;
 import com.jme3.scene.debug.Grid;
 import com.jme3.scene.debug.SkeletonDebugger;
 import com.jme3.system.AppSettings;
+import org.jpstale.assets.plugins.smd.SmdKey;
+import org.jpstale.assets.utils.ModelBuilder;
+import org.jpstale.constants.SceneConstants;
 
-public class TestLoadMonster extends SimpleApplication {
+public class TestLoadMonster extends TestBase {
 
 	public static void main(String[] args) {
 		TestLoadMonster a = new TestLoadMonster();
-		AppSettings setting = new AppSettings(true);
-		setting.setRenderer(AppSettings.LWJGL_OPENGL2);
-		setting.setAudioRenderer(AppSettings.LWJGL_OPENAL);
-		a.setSettings(setting);
 		a.start();
 	}
 
@@ -80,30 +79,34 @@ public class TestLoadMonster extends SimpleApplication {
 		ch.setText("+"); // crosshairs
 		ch.setLocalTranslation(
 				// center
-				settings.getWidth() / 2 - ch.getLineWidth() / 2,
-				settings.getHeight() / 2 + ch.getLineHeight() / 2, 0);
+				(float) settings.getWidth() / 2 - ch.getLineWidth() / 2,
+				(float) settings.getHeight() / 2 + ch.getLineHeight() / 2, 0);
 		guiNode.attachChild(ch);
 	}
 
 	@Override
-	public void simpleInitApp() {
+	public void init() {
 		this.setPauseOnLostFocus(false);
 
-		cam.setLocation(new Vector3f(100, 80, 100));
+		cam.setLocation(new Vector3f(10, 8, 10));
 		cam.lookAt(Vector3f.ZERO, cam.getUp());
-		this.flyCam.setMoveSpeed(100f);
+		this.flyCam.setMoveSpeed(10f);
 
 		AssetFactory.setAssetManager(assetManager);
 
-		Spatial flag = assetManager.loadAsset(new AseKey("char/Flag/wow.ASE"));
+
+		Spatial flag = AssetFactory.loadFlag();
+		flag.scale(SceneConstants.scale);
 		rootNode.attachChild(flag);
 
-		Spatial death_knight = assetManager.loadAsset(new AseKey("char/monster/death_knight/death_knight.ASE"));
-		death_knight.move(0, 0, 300);
+		Spatial death_knight = AssetFactory.loadCharacter("char/monster/death_knight/death_knight.ASE");
+		death_knight.move(4, 0, 0);
+		death_knight.scale(SceneConstants.scale);
 		rootNode.attachChild(death_knight);
 
-		Spatial chaoscara = assetManager.loadAsset(new AseKey("char/monster/chaoscara/chaoscara.ASE"));
-		chaoscara.move(0, 0, 150);
+		Spatial chaoscara = AssetFactory.loadCharacter("char/monster/chaoscara/chaoscara.ASE");
+		chaoscara.move(2, 0, 0);
+		chaoscara.scale(SceneConstants.scale);
 		rootNode.attachChild(chaoscara);
 		
 //		debugSke(death_knight);
@@ -115,55 +118,12 @@ public class TestLoadMonster extends SimpleApplication {
 
 		viewPort.setBackgroundColor(ColorRGBA.LightGray);
 
-		showNodeAxes(15);
-
 	}
 
 	private void initAmbient() {
 		AmbientLight light = new AmbientLight();
 		light.setColor(ColorRGBA.White);
 		rootNode.addLight(light);
-	}
-
-	public void showNodeAxes(float axisLen) {
-		Mesh mesh = new Grid(31, 31, 3.93701f);
-		Geometry grid = new Geometry("Axis", mesh);
-		Material gm = new Material(assetManager,
-				"Common/MatDefs/Misc/Unshaded.j3md");
-		gm.setColor("Color", ColorRGBA.White);
-		gm.getAdditionalRenderState().setWireframe(true);
-		grid.setMaterial(gm);
-		grid.center().move(0, -0.1f, 0);
-
-		rootNode.attachChild(grid);
-
-		//
-		Vector3f v = new Vector3f(axisLen, 0, 0);
-		Arrow a = new Arrow(v);
-		Material mat = new Material(assetManager,
-				"Common/MatDefs/Misc/Unshaded.j3md");
-		mat.setColor("Color", ColorRGBA.Red);
-		Geometry geom = new Geometry(rootNode.getName() + "XAxis", a);
-		geom.setMaterial(mat);
-		rootNode.attachChild(geom);
-
-		//
-		v = new Vector3f(0, axisLen, 0);
-		a = new Arrow(v);
-		mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-		mat.setColor("Color", ColorRGBA.Green);
-		geom = new Geometry(rootNode.getName() + "YAxis", a);
-		geom.setMaterial(mat);
-		rootNode.attachChild(geom);
-
-		//
-		v = new Vector3f(0, 0, axisLen);
-		a = new Arrow(v);
-		mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-		mat.setColor("Color", ColorRGBA.Blue);
-		geom = new Geometry(rootNode.getName() + "ZAxis", a);
-		geom.setMaterial(mat);
-		rootNode.attachChild(geom);
 	}
 
 	public void debugSke(Spatial model) {

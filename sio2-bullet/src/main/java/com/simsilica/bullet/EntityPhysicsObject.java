@@ -49,19 +49,19 @@ import com.simsilica.es.*;
  */
 public interface EntityPhysicsObject<T extends PhysicsCollisionObject> {
 
-    public EntityId getId();
+    EntityId getId();
     
-    public T getObject();
+    T getObject();
  
     /**
      *  Returns the "mass type" of the object which will be 0 (ie: Mass.TYPE_INTANGIBLE) 
      *  for ghost objects and Mass.getType() for rigid bodies. 
      */
-    public int getMassType();
+    int getMassType();
         
-    public Vector3f getPhysicsLocation( Vector3f trans );
+    Vector3f getPhysicsLocation(Vector3f trans);
 
-    public Quaternion getPhysicsRotation( Quaternion rot );
+    Quaternion getPhysicsRotation(Quaternion rot);
     
     /**
      *  Returns the control driver for this object or its parent, if either have
@@ -69,7 +69,7 @@ public interface EntityPhysicsObject<T extends PhysicsCollisionObject> {
      *  will be returned directly.  If this is an EntityGhostObject that has a
      *  rigid body parent then the parent's control driver will be returned.
      */
-    public ControlDriver getControlDriver();
+    ControlDriver getControlDriver();
 }
 
 

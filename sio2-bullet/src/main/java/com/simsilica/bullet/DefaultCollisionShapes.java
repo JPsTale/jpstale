@@ -38,10 +38,9 @@ package com.simsilica.bullet;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
 
 import org.slf4j.*;
-
-import com.google.common.base.Function;
 
 import com.jme3.bullet.collision.shapes.CollisionShape;
 
@@ -56,9 +55,9 @@ import com.simsilica.es.*;
 public class DefaultCollisionShapes implements CollisionShapes {
     static Logger log = LoggerFactory.getLogger(DefaultCollisionShapes.class);
 
-    private EntityData ed;
-    private Map<Integer, CollisionShape> shapeIndex = new ConcurrentHashMap<>();    
- 
+    private final EntityData ed;
+    private final Map<Integer, CollisionShape> shapeIndex = new ConcurrentHashMap<>();
+
     private Function<ShapeInfo, CollisionShape> loadFunction;
  
     /**
@@ -88,13 +87,13 @@ public class DefaultCollisionShapes implements CollisionShapes {
     public void setLoadFunction( Function<ShapeInfo, CollisionShape> loadFunction ) {
         this.loadFunction = loadFunction;
     }
- 
+
     /**
      *  Returns the current load function or null if none has been set.
-     */   
+     */
     public Function<ShapeInfo, CollisionShape> getLoadFunction() {
         return loadFunction;
-    } 
+    }
 
     @Override
     public CollisionShape register( ShapeInfo info, CollisionShape shape ) {

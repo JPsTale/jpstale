@@ -41,6 +41,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Stage2Gltf {
 
@@ -60,19 +63,45 @@ public class Stage2Gltf {
 				"Field/cave/Mcave.smd", "Field/Iron/iron-1.smd", "Field/Iron/iron-2.smd", "Field/Iron/iron3.smd",
 				"Field/Ice/ice1.smd", "Field/Ice/ice_2.smd", "Field/Ice/ice3.smd", "Field/Ice/ice_ura.smd",
 				"Field/Boss/Boss.smd", };
-		Stage2Gltf stage2gltf = new Stage2Gltf();
+		String[] names2 = {
+				"Field/Lost/lostisland.smd", "Field/Lost/lost3.smd", "Field/Losttemple/lost_temple.smd",
+				"Field/Mine/mine-1.smd", "Field/Quest/quest_IV.smd", "Field/Room/office.smd", "Field/SeaA/SeaA.smd",
+				"Field/Slab/Slab.smd", "Field/AncientW/ancientW.smd", "Field/Boss/dark_boss.smd", "Field/castle/castle.smd",
+				"Field/de5dxc/S5de-1.smd", "Field/de5dxc/S5de-2.smd", "Field/dungeon/dun-1.smd", "Field/dungeon/dun-2.smd",
+				"Field/dungeon/dun-3.smd", "Field/dungeon/dun-4.smd", "Field/dungeon/dun-5.smd", "Field/dungeon/dun-6a.smd",
+				"Field/endless/dun-7.smd", "Field/endless/dun-8.smd", "Field/endless/dun-9.smd", "Field/Fall_Game/fall_game.smd",
+		};
 
-		stage2gltf.init();
-		stage2gltf.outputFolder = "./build/GLTF/";
-		stage2gltf.isGenerateNormals = true;
-		stage2gltf.isOptimizeMaterials = false;
-		stage2gltf.isMoveToCenter = true;
+		ExecutorService executorService = Executors.newFixedThreadPool(8);
 
-		// stage2gltf.createMeshes();
-		// stage2gltf.createWhiteGltf();
-		for (String name : names) {
-			stage2gltf.load(name);
-			stage2gltf.start();
+		CountDownLatch latch = new CountDownLatch(names2.length);
+
+		for (String name : names2) {
+			executorService.submit(() -> {
+				try {
+					Stage2Gltf stage2gltf = new Stage2Gltf();
+
+					stage2gltf.init();
+					stage2gltf.outputFolder = "./build/GLTF/";
+					stage2gltf.isGenerateNormals = true;
+					stage2gltf.isOptimizeMaterials = false;
+					stage2gltf.isMoveToCenter = true;
+
+					// stage2gltf.createMeshes();
+					// stage2gltf.createWhiteGltf();
+					stage2gltf.load(name);
+					stage2gltf.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					latch.countDown();
+				}
+			});
+		}
+		try {
+			latch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -642,7 +671,6 @@ public class Stage2Gltf {
 	/**
 	 * 提取子网格
 	 * 
-	 * @param matId
 	 * @param faceIds
 	 * @param vertexIds
 	 */
@@ -712,7 +740,6 @@ public class Stage2Gltf {
 	/**
 	 * 提取子网格
 	 * 
-	 * @param matId
 	 * @param faceIds
 	 * @param vertexIds
 	 */

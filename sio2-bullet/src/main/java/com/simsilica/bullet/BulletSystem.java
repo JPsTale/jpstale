@@ -98,9 +98,9 @@ public class BulletSystem extends AbstractGameSystem {
     public BulletSystem() {
     }
 
-public PhysicsSpace getSpace() {
-    return pSpace;
-}
+    public PhysicsSpace getSpace() {
+        return pSpace;
+    }
 
     /**
      *  Initializes an EntityPhysicsObjects using the specified function.  This

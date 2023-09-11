@@ -12,6 +12,7 @@ import org.jpstale.assets.plugins.smd.geom.AnimateModel;
 import org.jpstale.assets.plugins.smd.geom.PAT3D;
 import org.jpstale.assets.utils.AnimationBuilder;
 import org.jpstale.assets.utils.AssetNameUtils;
+import org.jpstale.constants.SceneConstants;
 
 /**
  * 测试生成骨骼
@@ -47,7 +48,7 @@ public class TestSkeleton extends TestBase {
             
             SkeletonDebugger debugger = new SkeletonDebugger("skeleton", ske);
             debugger.setMaterial(mat);
-            debugger.scale(0.2f);
+            debugger.scale(SceneConstants.scale);
             debugger.rotate(-FastMath.HALF_PI, 0, 0);
             
             rootNode.attachChild(debugger);

@@ -48,10 +48,10 @@ import com.simsilica.sim.SimTime;
  *  @author    Paul Speed
  */
 public interface ControlDriver {
-    public void initialize( EntityRigidBody body );      
-    public void update( SimTime time, EntityRigidBody body );
-    public void terminate( EntityRigidBody body );
-    public void addCollision( EntityPhysicsObject otherBody, PhysicsCollisionEvent event );  
+    void initialize(EntityRigidBody body);
+    void update(SimTime time, EntityRigidBody body);
+    void terminate(EntityRigidBody body);
+    void addCollision(EntityPhysicsObject otherBody, PhysicsCollisionEvent event);
 }
 
 

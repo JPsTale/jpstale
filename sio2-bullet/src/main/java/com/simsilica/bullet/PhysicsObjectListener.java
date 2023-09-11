@@ -44,12 +44,12 @@ import com.simsilica.sim.SimTime;
  *  @author    Paul Speed
  */
 public interface PhysicsObjectListener {
-    public void startFrame( SimTime time );
-    public void endFrame();
+    void startFrame(SimTime time);
+    void endFrame();
     
-    public void added( EntityPhysicsObject object );
-    public void updated( EntityPhysicsObject object );
-    public void removed( EntityPhysicsObject object );
+    void added(EntityPhysicsObject object);
+    void updated(EntityPhysicsObject object);
+    void removed(EntityPhysicsObject object);
 }
 
 

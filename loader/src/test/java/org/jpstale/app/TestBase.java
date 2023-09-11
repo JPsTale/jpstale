@@ -14,9 +14,11 @@ import org.jpstale.assets.AssetFactory;
  */
 public abstract class TestBase extends SimpleApplication {
 
-    TestBase() {
+    public TestBase() {
         super();
         AppSettings settings = new AppSettings(true);
+        settings.setResolution(1280, 720);
+        settings.setSamples(4);
         super.setSettings(settings);
     }
 

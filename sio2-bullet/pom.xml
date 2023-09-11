@@ -34,9 +34,15 @@
         </dependency>
         -->
         <!-- Uncomment the following dependency if needed -->
+        <!--
         <dependency>
             <groupId>org.jmonkeyengine</groupId>
             <artifactId>jme3-jbullet</artifactId>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>com.github.stephengold</groupId>
+            <artifactId>Minie</artifactId>
         </dependency>
         <dependency>
             <groupId>com.simsilica</groupId>

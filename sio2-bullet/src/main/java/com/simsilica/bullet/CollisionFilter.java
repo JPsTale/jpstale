@@ -49,8 +49,8 @@ public interface CollisionFilter {
     /**
      *  Returns true if the specified collision should be skipped, ie: filtered.
      */
-    public boolean filterCollision( EntityPhysicsObject object1, 
-                                    EntityPhysicsObject object2, 
-                                    PhysicsCollisionEvent event );
+    boolean filterCollision(EntityPhysicsObject object1,
+                            EntityPhysicsObject object2,
+                            PhysicsCollisionEvent event);
     
 }

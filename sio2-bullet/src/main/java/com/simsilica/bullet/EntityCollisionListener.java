@@ -45,5 +45,5 @@ import com.jme3.bullet.collision.*;
  */
 public interface EntityCollisionListener {
 
-    public void collision( EntityPhysicsObject object1, EntityPhysicsObject object2, PhysicsCollisionEvent event );
+    void collision(EntityPhysicsObject object1, EntityPhysicsObject object2, PhysicsCollisionEvent event);
 }

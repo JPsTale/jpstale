@@ -49,7 +49,7 @@ import com.simsilica.es.common.Decay;
  */
 public class DefaultContactPublisher implements EntityCollisionListener {
 
-    private EntityData ed;
+    private final EntityData ed;
     
     public DefaultContactPublisher( EntityData ed ) {
         this.ed = ed;

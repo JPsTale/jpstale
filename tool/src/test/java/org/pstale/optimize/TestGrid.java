@@ -36,7 +36,7 @@ import com.jme3.scene.VertexBuffer.Type;
 @Slf4j
 public class TestGrid {
 
-    private final static int MAP_SIZE = 256;
+    private final static int MAP_SIZE = 64;
 
     // 网格
     private Mesh mesh;

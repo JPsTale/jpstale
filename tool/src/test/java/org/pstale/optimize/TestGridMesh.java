@@ -289,8 +289,13 @@ public class TestGridMesh extends JFrame {
         for (int row = 0; row < MAP_SIZE; row++) {
             for (int col = 0; col < MAP_SIZE; col++) {
 
-                if (area[row][col] == null)
-                    continue;
+                try {
+                    if (area[row][col] == null)
+                        continue;
+                } catch (Exception e) {
+                    System.out.println(row + " " + col);
+                    e.printStackTrace();
+                }
                 int n = area[row][col].size();
                 if (maxCount < n)
                     maxCount = n;

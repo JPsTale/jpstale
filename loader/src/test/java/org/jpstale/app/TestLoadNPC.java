@@ -36,10 +36,7 @@ public class TestLoadNPC extends TestBase {
     }
 
     public static void main(String[] args) {
-        AppSettings setting = new AppSettings(true);
-
         TestLoadNPC app = new TestLoadNPC();
-        app.setSettings(setting);
         app.start();
     }
 
