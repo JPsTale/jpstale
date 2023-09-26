@@ -13,6 +13,7 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
+import com.jme3.material.Materials;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Ray;
@@ -23,8 +24,10 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.shape.Box;
 
+import com.jme3.system.AppSettings;
 import org.jpstale.app.CheckerBoardState;
 import org.jpstale.assets.AssetFactory;
+import org.jpstale.constants.SceneConstants;
 
 import java.nio.FloatBuffer;
 
@@ -52,7 +55,7 @@ public class TestCollision extends SimpleApplication {
     private final static String JUMP = "jump";
     private final static String DEBUG = "debug";// 是否显示bullet网格
     private final static String CHASE = "chase";// 在第三人称之间切换
-    private final static float scale = 0.1f;
+    private final static float scale = 0.01f;
 
     /**
      * 地图模型
@@ -112,7 +115,7 @@ public class TestCollision extends SimpleApplication {
          * 初始化bullet引擎
          */
         bullet = new BulletAppState();
-        bullet.setDebugEnabled(false);
+        bullet.setDebugEnabled(true);
         stateManager.attach(bullet);
 
         /**
@@ -320,7 +323,15 @@ public class TestCollision extends SimpleApplication {
     }
 
     public static void main(String[] args) {
+        AppSettings settings = new AppSettings(true);
+        settings.setWidth(1280);
+        settings.setHeight(720);
+        settings.setGammaCorrection(true);
+        settings.setSamples(4);
+        settings.setVSync(true);
+
         TestCollision app = new TestCollision();
+        app.setSettings(settings);
         app.start();
     }
 
