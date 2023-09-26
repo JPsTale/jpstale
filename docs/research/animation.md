@@ -362,3 +362,205 @@ Hope it helps somebody, thanks a lot of people especially Vormav, Bobsobol and S
 And SheenBr for empowering my will of doing this 'guide' and for telling me about the MadEdit.
 Last edited: Oct 25, 2011
 ```
+
+```
+Vormav:
+
+Excellent guide clear and full of details at the same time.
+
+
+Here are my two cents:
+
+You might be missing .smb to open knight armors.
+In tmABCD folder you will find:
+
+tmbA01.smb -> bones for MS, FS
+tmbC01.smb -> bones for PS
+tfbD01.smb -> bones for AS, ATA
+MfBC01.smb -> bones for PRS
+MmBD01.smb -> bones for MGS
+
+But you will not find one that can open knight, this one is compiled by me:
+
+MmbA01.smb -> bones for KS
+
+You can DL them here.
+http://forum.ragezone.com/attachment.php?attachmentid=93337&stc=1&d=1319491585
+
+You should know what those names mean now from reading ScreamingFox guide.
+Only thing that I need to explain is that some classes share bones, in other word you can use use AS skills in ATA body and same thing goes for MS and FS.
+
+
+Another problem someone might run into are hands, 3ds plugin imports you physique with broken biped system so you will be missing fingers physique!
+
+To do quick fix for that make yourself real biped next to your model with
+Fingers: 3
+Finger Links: 3
+
+PT models have only 2 finger links but 3rd one we will fake 2nd link that is not working.
+
+So on PT biped (not on one we created) copy/make your fingers a little below so they will look like real fingers (same as they look on real biped) and "Select and link" to original fingers, name them same way biped system did (be sure you use Bip01).
+
+And you have working fingers for gloves when you apply physique.
+
+__edit__
+I added picture so my bumbling is more clear.
+
+attachment:[player_smb.rar]
+```
+
+```
+ScreamingFox:
+
+Thats great (about the SMB's). But i think, maybe a struck of luck of some sort, with these ase's (that i mentioned) you wouldn't even need to convert them.
+(or someone intentionally left those working ase's , if thats the case, its a very good person XD)
+
+But then there's this strange thing, if i use the actual bones (export with the biped) of these files, the biped sort of become useless XD, or, something bugs when i import them (it may very well be it, since the (imported ase) rigs are all messed up/disabled), xd.. Thats why i couldn't export in my very first attempts, and later (when i replicated the bones) i messed the mapping coordinates (unintentionally XDDD) and this was giving me game.exe XD..
+
+So i thought of this (i replaced one armor smd by of those ase's (atalanta) and it actually worked XD, but, if i would import it to 3ds and then export the very same thing, it wouldn't work...), to edit a working ase without importing it to the 3dsmax.
+
+So (if i delete the meshes (on the ase text) i probably wouldn't need to make the replicate biped (it is GREAT (the only way i know so far) indeed to export the full armor at once, like, 'click export'(to the char folder) and run the game XD, but its a very tricky job to get the very same exact positioning/size/names of bones)..
+
+Maybe tomorrow i will extract the bipeds from these files (to make a collection of biped's ase's, to ease a bit XD).
+
+@edit: Oh you actually kind of did it XD =D huhu XD
+```
+
+```
+Vormav:
+
+I see, I did not noticed that "those ASE" have working biped.
+I will compare what smd reader produce with "them" later.
+However you still need bones (smb) to open existing armors or maybe you have some other method?
+So you copy those skeletons to ASE with armor you opened with smd reader and you get working biped, right? (imported physique is still broken but you have full biped) Interesting! I think I will copy those skeletons to my customization mod.
+```
+
+```
+ScreamingFox:
+
+Mmm.. i actually replaced only the meshes on the 'working ase' (not the biped/bones)..
+
+But i thought that i may have misconceived some parts (but if someone uses the information in your post, that misconception wont really be relevant)..
+
+Maybe i did the arm and shoulder pads on my (replicated) biped, and then replaced the 'MESH' information on ase.. i fixed (repositioned/scaled) the new biped so many times that its almost the same XD.. So maybe the biped on these ase's are really useless if you import, but you can still replace parts (on these ase's, on text mode) if its mesh is rigged to a bone ('link') with the same name as the original bone.
+
+
+But since you posted the working counterparts of the SMD in the conversion process (the bones (not animated dummies) SMB's), we do not need to worry much about this =D. That is certainly a key information on this :)
+```
+
+```
+bocadecao:
+
+nice tutorial ...
+My friend said he could add a skin, have not tried it here ...
+Vormav you know something?
+
+His name is Aron, a "designer" of sandurr
+```
+
+```
+bobsobol:
+
+"Skinning" usually refers simply to replacing the texture (bitmap) file. It can go as far as replacing the entire mesh though. :wink: Essentially, this tutorial goes far beyond the usual use of that term.
+```
+
+```
+bocadecao:
+
+bobsobol not say as skin texture, it is in the proper 3D Max is like Physique, but distorts less and is easier to adjust with envelope
+```
+
+```
+ScreamingFox:
+
+Ah, i thought of that initially too.. i had never used physique before, but used the skin deform techniques some times in the remote past..
+
+But its probably because of the article 'a'.. like in "my friend could add a skin", probably would be better as "my friend could add the skin (modifier..to the model...)" or even better as "my friend could apply skin (modifier...)".. but yes i think this 'physique' can be simpler than the skin deforms (and therefore probably better to games)..
+```
+
+```
+bocaboca:
+
+Yes, an example of a game that uses "skin" is Mu Online ...
+```
+
+```
+bobosbol:
+
+I tried checking that out, but it didn't help. In any case, every game every written can be skinned or moded with a greater, or lesser amount of effort.
+
+Here's the best example I could come up with:-
+32390-1-1277036801.jpg
+Original left, "Skinned" Right.
+
+4642-4-1193456514.jpg
+More extreme skin.
+
+24436-4-1242286374.jpg
+Very minor mod, (re-modelled) but already far more altered than the most extreme "skin" can achieve. :wink:
+
+Following this guide you can achieve similar levels of change, and more. ^_^
+
+There is an animation technique known as "Onion Skinning" which is often abbreviated to "Skinning". And a diagrammatic plan of work known as a skin... but, that's spelled differently, and I can't find the correct spelling for it now. >.< It's pronounced the same. (Like "there's" and "theirs" or "plane" and "plain" or "four", "fore" and "for" :lol:)
+
+Spoiler
+The Two Ronnies made the identical pronunciation of "four candles" and "fork handles" quite famous.
+--- EDIT ---
+I think it's spelled the same as a ball of wool, as in "skein". It's used in planning the potential sequences of events in story telling for books, films, TV series and particularly video games. (I guess you could well be said to be "spinning a yarn"... another term for "telling a story")
+```
+
+```
+Vormav:
+
+You don't need skin modifier, many futures skin have PT physique is not supporting, PT does not even support blending. Just use physique modifier, PT have old and simple meshes, most of the time you will be using only few bones.
+
+It's not like you can apply skin and 3DS will do rest, whatever you use you need to fix it yourself. So for PT, skin or physique, it does not meter, you will be converting to physique anyway because that's what PT is using.
+
+Just do as ScreamingFox told you in guide, assign vertexes to link and you will be fine.
+
+__EDIT__
+
+BTW. I found this plugin for 3DS Max
+
+
+Skin to Physique and back.
+http://monsterblues.wordpress.com/2006/04/27/skin-2-physique-and-back/
+
+
+It supports MAX versions we use on PT 6 and 7.
+I did not tested it... yet.
+```
+
+
+```
+ScreamingFox:
+
+Thanks for pinning the thread. =D
+
+
+Tip: You can use those techniques to edit monsters:
+
+To give a 'mesh overlay' to apply selective effecting, for an example, you would not ever even need to use any form of 3d software:
+
+-Go to the (converted) monster ASE.
+-Duplicate the GEOMOBJECT block of the monster, or piece of it (the GEOMOBJECT which is a piece of the monster, not a piece of the GEOMOBJECT that is the monster, ok....;b), and change the Material ID (just before PHYSIQUE block) to the new material.
+-Manage those 2 materials with self illumination subtextures and TGA alpha channels ;b
+-(if the model uses BMP instead, just create a TGA based on it, with the alpha channels..., and of course change the name of the texture (on Material part of ASE) to yours..)
+
+To give a monster a new weapon (horn, etc, not animated parts):
+-Put the converted monster on 3dsmax 7 or 8 with Sandurr ASE exporter.
+-Fix the new weapon to the hand of the monster (scale, move, rotate..)
+-Rig the new weapon with physique, on a single hand link.
+-Export just the new weapon (export selected)
+-If the weapon is a part of the monster's mesh, use TGA alpha channel to make it (the original weapon) invisible.
+-If the (original) weapon is a separate mesh, delete it on the monster's ASE. To know what mesh it is for certain, select the (original) weapon on 3dsmax and export just it, select the part that counts vertex and search it on the original monster ase, it is very unlikely that 2 different stuff have the same number of vertices and faces.. ;)
+-Replace the (original) weapon's GEOMOBJECT for yours, with the same mesh name as the original weapon or the same name as the monster itself..
+
+
+(example of both, it is the 'red clay monster' from RPT, and i made a Lava Golem from it hehehe ;b, very neat effect, and (enlarged) Laxe Lore 1 handed hammer No.8 from Kenni and Sunny collection..)
+
+6gwnk5.jpg
+(replace 'stone golem' to it)(he hits with the hammer just like he would with the 'sword/tomahawk' transition, just hits a little harder hehe ;d)
+
+Lava-Golem.rar
+```
