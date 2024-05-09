@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>org.jmonkeyengine</groupId>
-            <artifactId>jme3-lwjgl</artifactId>
+            <artifactId>jme3-lwjgl3</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jmonkeyengine</groupId>
@@ -74,7 +74,6 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>2.4.5</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -84,10 +83,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
         </dependency>
     </dependencies>
 

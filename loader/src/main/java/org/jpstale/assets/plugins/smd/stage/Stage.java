@@ -74,22 +74,23 @@ public class Stage extends Flyweight {
     public void loadData(LittleEndien in) throws IOException {
 
         // Head = FALSE;
-        in.readInt();// Head
+        int head = in.readInt();// Head
         // *StageArea[MAP_SIZE][MAP_SIZE]; 4 * 256 * 256 = 262144
-        in.readFully(new byte[262144]);
-        in.readInt();// *AreaList;
+        byte[] stageArea = new byte[262144];
+        in.readFully(stageArea);
+        int ptrAreaList = in.readInt();// *AreaList;
         AreaListCnt = in.readInt();
         MemMode = in.readInt();
         SumCount = in.readInt();
         CalcSumCount = in.readInt();
 
-        in.readInt();// *Vertex
-        in.readInt();// *Face
+        int ptrVertex = in.readInt();// *Vertex
+        int ptrFace = in.readInt();// *Face
         lpOldTexLink = in.readInt();// *TexLink
-        in.readInt();// *smLight
-        in.readInt();// *smMaterialGroup
-        in.readInt();// *StageObject
-        in.readInt();// *smMaterial
+        int ptrSmLight = in.readInt();// *smLight
+        int ptrSmMaterialGroup = in.readInt();// *smMaterialGroup
+        int ptrStageObject = in.readInt();// *StageObject
+        int ptrSmMaterial = in.readInt();// *smMaterial
 
         nVertex = in.readInt();
         nFace = in.readInt();

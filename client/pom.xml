@@ -24,18 +24,12 @@
         </dependency>
         <dependency>
             <groupId>org.jmonkeyengine</groupId>
-            <artifactId>jme3-lwjgl</artifactId>
+            <artifactId>jme3-lwjgl3</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jmonkeyengine</groupId>
             <artifactId>jme3-jbullet</artifactId>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>com.github.stephengold</groupId>
-            <artifactId>Minie</artifactId>
-        </dependency>
-        -->
 
         <dependency>
             <groupId>com.simsilica</groupId>
@@ -52,7 +46,6 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <type>pom</type>
         </dependency>
     </dependencies>
 

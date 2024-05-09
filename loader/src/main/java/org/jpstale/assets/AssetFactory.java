@@ -92,11 +92,6 @@ public class AssetFactory {
         assetManager.registerLocator("/", ClasspathLocator.class);
         assetManager.registerLocator("/", FileLocator.class);
         registerFolder("F:/1_DEVELOP/3_素材");
-        registerFolder("I:/game/PTCN-RPT1.0");
-        registerFolder("D:/Priston Tale/0_素材/Client");
-        registerFolder("D:/Priston Tale/0_素材/Server/精灵中国全服务端3060/3060");
-        registerFolder("D:/Priston Tale/PTCN3550/PTCN3550");
-        registerFolder("/Users/yanmaoyuan/PTCN2018V5-725");
         registerFolder("/Users/yanmaoyuan/3060");
         registerFolder("assets");
     }

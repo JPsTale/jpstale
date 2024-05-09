@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>org.jmonkeyengine</groupId>
-            <artifactId>jme3-lwjgl</artifactId>
+            <artifactId>jme3-lwjgl3</artifactId>
         </dependency>
     </dependencies>
 

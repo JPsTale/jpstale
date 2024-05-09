@@ -223,6 +223,7 @@ public class BulletSystem extends AbstractGameSystem {
         
         pSpace = new PhysicsSpace(worldMin, worldMax, broadphaseType);
         pSpace.addCollisionListener(collisionDispatcher);
+        pSpace.addOngoingCollisionListener(collisionDispatcher);
 
         bodies = new BodyContainer(ed);
         ghosts = new GhostContainer(ed);

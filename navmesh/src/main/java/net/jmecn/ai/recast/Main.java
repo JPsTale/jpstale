@@ -60,7 +60,6 @@ public class Main extends SimpleApplication {
     private Crowd crowd;
     private TileCache tileCache;
     private TileCacheParams tileCacheParams;
-    private TileCacheAlloc tileCacheAlloc;
     private TileCacheCompressor tileCacheCompressor;
     private QueryFilter queryFilter;
     private CrowdAgentParams crowdAgentParams;
@@ -80,16 +79,12 @@ public class Main extends SimpleApplication {
         initNavMesh();
 
         // 初始化导航查询
-        initNavMeshQuery();
 
         // 初始化人群
-        initCrowd();
 
         // 初始化寻路代理
-        initCrowdAgent();
 
         // 初始化寻路目标
-        initTargetPosition();
 
         // 设置摄像机初始位置和方向
         cam.setLocation(new Vector3f(-20, 20, -20));
@@ -102,23 +97,5 @@ public class Main extends SimpleApplication {
     }
 
     private void initNavMesh() {
-        // 生成导航网格
-        // 计算网格数据
-        RecastConfig recastConfig = new RecastConfig();
-
-        RecastBuilderConfig builderConfig = new RecastBuilderConfig();
-        builderConfig.walkableSlopeAngle = AGENT_MAX_SLOPE;
-        builderConfig.walkableHeight = (int) Math.ceil(AGENT_HEIGHT / CELL_HEIGHT);
-        builderConfig.walkableClimb = (int) Math.floor(AGENT_MAX_CLIMB / CELL_HEIGHT);
-        builderConfig.walkableRadius = (int) Math.ceil(AGENT_RADIUS / CELL_SIZE);
-        builderConfig.maxEdgeLen = (int) (12 / CELL_SIZE);
-        builderConfig.maxSimplificationError = 1.3f;
-        builderConfig.minRegionArea = 8;
-        builderConfig.mergeRegionArea = 20;
-        builderConfig.maxVertsPerPoly = 6;
-        builderConfig.detailSampleDist = 6;
-        builderConfig.detailSampleMaxError = (float) (1.0 / CELL_HEIGHT);
-        RecastBuilder builder = new RecastBuilder();
-        Heightfield heightfield = builder.buildHeightfield(meshes, builderConfig
     }
 }

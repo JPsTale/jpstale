@@ -258,53 +258,170 @@
 说明：smStage3D类中没有虚函数，不用考虑成员函数占的内存，因此数据结构只列出了成员变量的定义。
 数据结构：
 
-	#define ADD_TEMPFACE	2048
-	#define ADD_TEMPVERTEX	2048
-	#define MAP_SIZE		256
+```cpp
+#define ADD_TEMPFACE	2048
+#define ADD_TEMPVERTEX	2048
+#define MAP_SIZE		256
+
+//可行走的最大高度
+extern int Stage_StepHeight;
+extern int smStage_WaterChk;
+
+class smSTAGE3D {
+public:
+	DWORD	Head;
+
+	WORD *StageArea[MAP_SIZE][MAP_SIZE];	//分块区域缓存列表
+	POINT *AreaList;						//临时保存分块列表
+	int AreaListCnt;						//区域列表计数器
+
+	int	MemMode;							//内存设置模式 ( 待定 )
+
+	DWORD SumCount;							// 渲染检查计数器
+	int CalcSumCount;						// 运算编号计数器
+
+	smSTAGE_VERTEX		*Vertex;			//顶点列表
+	smSTAGE_FACE		*Face;				//面列表
+	smTEXLINK			*TexLink;			//纹理坐标列表
+	smLIGHT3D			*smLight;			//照明设置
+
+	smMATERIAL_GROUP	*smMaterialGroup;	//材质组
+
+	smSTAGE_OBJECT		*StageObject;		//地图区域中的对象
+	smMATERIAL			*smMaterial;		//材质列表指针
+
+	int nVertex;							//顶点数
+	int nFace;								//面数
+	int nTexLink;							//纹理坐标连接数
+	int	nLight;								//照明数
+
+	int	nVertColor;								//顶点颜色输入计数器
+
+	int	Contrast;								//饱和度 ( 清晰度 )
+	int Bright;									//亮度
+
+	POINT3D VectLight;							//用于阴影的光源向量
+
+	WORD	*lpwAreaBuff;						//分区存储缓冲区
+	int		wAreaSize;							//分区存储缓冲区大小
+	RECT	StageMapRect;						//存在整个STAGE的区域位置
+
+	smSTAGE3D();
+	~smSTAGE3D();
+	smSTAGE3D( int nv , int nf );
+
+	//######################################################################################
+	//作者：吴英锡
+	void Init(void);
+	//######################################################################################
+
+	int Init( int nv , int nf );
+	int Close();
+	//添加顶点坐标
+	int AddVertex ( int x, int y, int z );
+	//添加面
+	int AddFace ( int a, int b, int c , int matrial=0 );
+	//设置面的材质
+	int SetFaceMaterial( int FaceNum , int MatNum  );
+
+	//在上下文中设置顶点颜色
+	int SetVertexColor ( DWORD NumVertex , BYTE r , BYTE g, BYTE b , BYTE a=255 );
+	//添加纹理坐标连接
+	int AddTexLink( int FaceNum , DWORD *hTex , 
+							  smFTPOINT *t1 , smFTPOINT *t2 , smFTPOINT *t3 );
 	
-	class smSTAGE3D {
-	public:
-		DWORD	Head;
-	
-		WORD *StageArea[MAP_SIZE][MAP_SIZE];	//备开喊 其捞胶 蔼 滚欺 府胶飘
-		POINT *AreaList;						//备开喊 其捞胶 府胶飘 烙矫历厘 
-		int AreaListCnt;						//备开 其捞胶狼 目款磐
-	
-		int	MemMode;							//皋葛府 汲沥 葛靛 ( 抗沥 )
-	
-		DWORD SumCount;							// 坊歹傅 媒农 墨款磐 
-		int CalcSumCount;						// 楷魂 锅龋 墨款磐
-	
-		smSTAGE_VERTEX		*Vertex;			//滚咆胶 府胶飘
-		smSTAGE_FACE		*Face;				//其捞胶 府胶飘
-		smTEXLINK			*TexLink;			//咆胶媚 谅钎 府胶飘
-		smLIGHT3D			*smLight;			//炼疙 汲沥
-	
-		smMATERIAL_GROUP	*smMaterialGroup;	//皋飘府倔 弊缝
-	
-		smSTAGE_OBJECT		*StageObject;		//甘狼 备开惑狼 坷宏璃飘甸
-		smMATERIAL			*smMaterial;		//皋飘府倔 府胶飘 器牢磐
-	
-		int nVertex;							//滚咆胶 荐
-		int nFace;								//其捞胶 荐
-		int nTexLink;							//咆胶媚谅钎 楷搬 荐
-		int	nLight;								//炼疙 荐
-	
-		int	nVertColor;								//滚咆胶 祸 涝仿 墨款磐
-	
-		int	Contrast;								//盲档 ( 急疙档 )
-		int Bright;									//疙档 ( 灌扁 沥档 )
-	
-		POINT3D VectLight;							//溅捞靛侩 扼捞飘 氦磐
-	
-		WORD	*lpwAreaBuff;						//备开喊 历厘 滚欺
-		int		wAreaSize;							//备开喊 历厘 滚欺 农扁
-		RECT	StageMapRect;						//傈眉 STAGE啊 粮犁窍绰 备开 困摹
-	};
+	//求出法线值，在顶点上添加阴影明暗度
+	//######################################################################################
+	//作者：吴英锡
+	int SetVertexShade( int isSetLight = TRUE );
+	//######################################################################################
+
+	//向所有顶点添加照明值
+	int AddVertexLightRound( POINT3D *LightPos , int r, int g, int b, int Range );
+
+	//初始化动态照明（设置数量）
+	int	InitDynLight( int nl );
+	//向所有顶点添加照明值
+	int AddDynLight( int type , POINT3D *LightPos , int r, int g, int b, int Range );
+
+	//######################################################################################
+	//作者：吴英锡
+	int CheckFaceIceFoot( POINT3D *Pos, POINT3D *Angle, int CheckHeight );
+	//######################################################################################
+
+	//制作临时区域面列表
+	int MakeAreaFaceList( int x,int z, int width, int height , int top , int bottom );
+
+	//求出与面相对应的高度
+	int GetPolyHeight( smSTAGE_FACE *face , int x, int z );
+	//通过检查区域中相应的面来求高度
+	int GetAreaHeight( int ax, int az , int x, int z );
+	//通过检查与区域对应的面来求高度（半透明值也被有效处理）
+	int GetAreaHeight2( int ax, int az , int x, int z );
+
+	//求出与面相对应的高度
+	int GetHeight( int x, int z  );
+	//求出与面相对应的高度
+	int GetHeight2( int x, int z );
+
+	//检查移动位置的障碍物
+	int CheckSolid( int sx, int sy, int sz , int dx, int dy, int dz );
+
+	int GetThroughPlane( smSTAGE_FACE *face , POINT3D *sp , POINT3D *ep );
+
+	//求平面和1点位置的值（平面方程）
+	int GetPlaneProduct( smSTAGE_FACE *face , POINT3D *p );
+	//检查每条线是否穿透面（如果所有线段都不穿透 TRUE 否则 FALSE）
+	int GetTriangleImact( smSTAGE_FACE *face, smLINE3D *pLines , int LineCnt );
+	//检查移动的方向和位置，返回坐标
+	int CheckNextMove( POINT3D *Posi, POINT3D *Angle , POINT3D *MovePosi, int dist , int ObjWidth , int ObjHeight , int CheckOverLap=0 );
+
+	//检查多段线是否与指定方向上的距离相冲突
+	int CheckVecImpact( POINT3D *Posi, POINT3D *Angle , int dist );
+	//检查多段线是否与指定方向上的距离相冲突
+	int CheckVecImpact2( int sx,int sy,int sz, int ex,int ey,int ez );
+
+	//求出当前位置的地板高度
+	int GetFloorHeight( int x, int y, int z , int ObjHeight );
+	//求出当前位置的地板高度
+	int GetFloorHeight2( int x, int y, int z , int ObjHeight );
+	//确认当前高度是否有重叠的聚合体后，求出整个高度。
+	int GetEmptyHeight( int x, int y, int z , int ObjHeight );
+
+	//确保底部聚合体面与y==height匹配
+	int CheckFloorFaceHeight( int x, int y, int z , int hSize );
+
+
+	// 将StageArea初始化为0
+	void clearStageArea();
+	// 获取三角面所在的区域（64x64）并将其设置为AreaList
+	int getPolyAreas( POINT3D *ip1 , POINT3D *ip2, POINT3D *ip3 );
+	//创建并存储每个多面体所处的区域信息
+	int SetupPolyAreas();
+	// 渲染
+	int RenderGeom();
+
+	//按照相机的位置画
+	int DrawStage(int x , int y, int z, int angX, int angY, int angZ , smEMATRIX *eRotMatrix=0 );
+	//根据相机位置绘制（不包括包含的对象）
+	int DrawStage2(int x , int y, int z, int angX, int angY, int angZ , smEMATRIX *eRotMatrix=0 );
+
+	//######################################################################################
+	//作者：吴英锡
+	int DrawOpeningStage(int x, int y, int z, int angX, int angY, int angZ, int FrameStep );
+	//######################################################################################
+
+	//将数据保存为文件
+	int	SaveFile( char *szFile );
+	//从文件读取数据
+	int	LoadFile( char *szFile );
+};
+```
 
 
 ###smSTAGE3D构造方法
 
+```cpp
 	smSTAGE3D::smSTAGE3D()
 	{
 		VectLight.x = fONE;
@@ -388,40 +505,60 @@
 	
 		return TRUE;
 	}
+```
 
 ###smStgObj数据结构
 
+```cpp
+#define		MAX_PATTERN		256
+#define		MAX_STAGEOBJ		1024
 
-	#define		MAX_PATTERN		256
-	#define		MAX_STAGEOBJ		1024
-	
-	
-	struct smSTAGE_OBJ3D {
-	
-		smPAT3D *BipPattern;
-		smPAT3D *Pattern;
-		POINT3D Posi;
-		POINT3D Angle;
-	
-		smSTAGE_OBJ3D *LinkObj;
-		int sum;
-		int LastDrawTime;
-	
-	};
-	
-	
-	class smSTAGE_OBJECT {
-	public:
-		smSTAGE_OBJ3D *ObjectMap[MAP_SIZE][MAP_SIZE];
-	
-		smSTAGE_OBJ3D mObj[ MAX_STAGEOBJ ];
-		int nObj;
-		POINT3D Camera;
-		POINT3D CameraAngle;
-	
-		int SumCnt;
-	};
+struct smSTAGE_OBJ3D {
 
+    smPAT3D *BipPattern;
+    smPAT3D *Pattern;
+    POINT3D Posi;
+    POINT3D Angle;
+
+    smSTAGE_OBJ3D *LinkObj;
+    int sum;
+    int LastDrawTime;
+
+};
+
+
+class smSTAGE_OBJECT {
+public:
+    smSTAGE_OBJ3D *ObjectMap[MAP_SIZE][MAP_SIZE];
+
+    smSTAGE_OBJ3D mObj[ MAX_STAGEOBJ ];
+    int nObj;
+    POINT3D Camera;
+    POINT3D CameraAngle;
+
+    int SumCnt;
+
+	smSTAGE_OBJECT();
+	~smSTAGE_OBJECT();
+
+	int AddObject( smPAT3D *Pat, int x, int y, int z , int angX, int angY, int angZ );
+	//오브젝트 삽입 자동좌표 ( 맵에 삽입된 오브젝트 )
+	int AddObject( smPAT3D *Pat );
+	//파일로 오브젝트 삽입 자동좌표 ( 맵에 삽입된 오브젝트 )
+	int AddObjectFile( char *szFile , char *szBipFile=0 );
+
+	int Draw( smSTAGE_OBJ3D *mobj );
+	int Draw( int x, int y, int z, int ax, int ay, int az );
+	int Draw2( int x, int y, int z, int ax, int ay, int az );
+
+	//######################################################################################
+	//작 성 자 : 오 영 석
+	int DrawOpening( smSTAGE_OBJ3D *mobj, int FrameStep );
+	int DrawOpening( int x, int y, int z, int ax, int ay, int az, int FrameStep );
+	//######################################################################################
+
+};
+```
 ###smStgObj构造方法
 
 	smSTAGE_OBJECT::smSTAGE_OBJECT()
