@@ -45,7 +45,8 @@ public class ModelBuilder {
      */
     public static Node buildModel(PAT3D pat, String name) {
         Node rootNode = new Node("PAT3D:" + name);
-        rootNode.rotate( -FastMath.HALF_PI, 0, 0);
+        // DirectX (Y up, Z forward) → OpenGL (Y up, Z backward) 旋转
+        rootNode.rotate(-FastMath.HALF_PI, 0, 0);
         Skeleton ske = null;
         // 生成骨骼
         if (pat.skeleton != null) {

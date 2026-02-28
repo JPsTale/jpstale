@@ -12,7 +12,7 @@ import org.jpstale.assets.AssetFactory;
 
 /**
  * 测试动画播放
- * 
+ *
  * @author yanmaoyuan
  *
  */
@@ -23,7 +23,9 @@ public class TestAnimation extends TestBase {
 
         float scale = 0.1f;
 
-        Node npc = AssetFactory.loadCharacter("char/monster/death_knight/death_knight.inx");
+        //Node npc = AssetFactory.loadCharacter("char/monster/death_knight/death_knight.inx");
+        Node npc = AssetFactory.loadCharacter("char/monster/hopy/hopy.inx");
+        //Node npc = AssetFactory.loadCharacter("char/npc/arad/arad.inx");
         npc.scale(scale);
         rootNode.attachChild(npc);
 
