@@ -93,6 +93,7 @@ public class AssetFactory {
         assetManager.registerLocator("/", FileLocator.class);
         registerFolder("F:/1_DEVELOP/3_素材");
         registerFolder("/Users/yanmaoyuan/3060");
+        registerFolder("/Users/yanmaoyuan/PTCN2020");
         registerFolder("assets");
     }
     
