@@ -151,10 +151,8 @@ public class Critical {
         // 祭司系和法师系 - 使用精神
         if (jobCode == JobConstant.JOB_CODE_PRIESTESS
                 || jobCode == JobConstant.JOB_CODE_MAGICIAN
-                || jobCode == JobConstant.JOB_CODE_PRIEST
                 || jobCode == JobConstant.JOB_CODE_SAINTESS
                 || jobCode == JobConstant.JOB_CODE_BISHOP
-                || jobCode == JobConstant.JOB_CODE_SAINTESS
                 || jobCode == JobConstant.JOB_CODE_VALHALLA
                 || jobCode == JobConstant.JOB_CODE_CELESTIAL
                 || jobCode == JobConstant.JOB_CODE_ARCHMAGE) {

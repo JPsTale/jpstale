@@ -96,7 +96,13 @@ public class GeomObject extends Flyweight {
      * 最大帧号，用于计算动画时间。
      */
     public int maxFrame = 0;
-    
+
+    /**
+     * 旋转动画中帧号最小的索引，用于计算相对旋转。
+     * 动画数据需要还原到这个起始姿态。
+     */
+    public int lowestRotFrame = 0;
+
     public GeomObject() {
         NodeName = null;
         NodeParent = null;
@@ -250,6 +256,18 @@ public class GeomObject extends Flyweight {
         for (int i = 0; i < TmRotCnt; i++) {
             rotArray[i] = new TransRotation();
             rotArray[i].loadData(in);
+        }
+
+        // 找到帧号最小的旋转索引（用于相对旋转计算）
+        if (TmRotCnt > 0) {
+            lowestRotFrame = 0;
+            int minFrame = rotArray[0].frame;
+            for (int i = 1; i < TmRotCnt; i++) {
+                if (rotArray[i].frame < minFrame) {
+                    minFrame = rotArray[i].frame;
+                    lowestRotFrame = i;
+                }
+            }
         }
 
         posArray = new TransPosition[TmPosCnt];

@@ -24,7 +24,7 @@ public interface JobConstant {
 
 	public final static long JOB_CODE_KNIGHT = 0x00010000;
 	public final static long JOB_CODE_ATALANTA = 0x00020000;
-	public final static long JOB_CODE_PRIEST = 0x00040000;
+	public final static long JOB_CODE_PRIESTESS = 0x00040000;
 	public final static long JOB_CODE_MAGICIAN = 0x00080000;
 
 	public final static long JOB_CODE_PALADIN = 0x00100000;
@@ -71,7 +71,7 @@ public interface JobConstant {
 		// 魔灵
 		new JobDataCode("Knight", "游侠", JOB_CODE_KNIGHT, 6, BROOD_CODE_MORAYION, 190, 2, 2, 2, 1, 2, 0),
 		new JobDataCode("Atalanta", "魔枪手", JOB_CODE_ATALANTA, 5, BROOD_CODE_MORAYION, 200, 2, 2, 2, 2, 1, 0),
-		new JobDataCode("Priestess", "祭司", JOB_CODE_PRIEST, 8, BROOD_CODE_MORAYION, 200, 4, 1, 3, 3, 2, 2),
+		new JobDataCode("Priestess", "祭司", JOB_CODE_PRIESTESS, 8, BROOD_CODE_MORAYION, 200, 4, 1, 3, 3, 2, 2),
 		new JobDataCode("Magician", "魔法师", JOB_CODE_MAGICIAN, 7, BROOD_CODE_MORAYION, 190, 5, 1, 3, 3, 2, 1),
 	
 		new JobDataCode("Paladin", "爵士", JOB_CODE_PALADIN, 6, BROOD_CODE_MORAYION),
