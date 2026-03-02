@@ -88,6 +88,14 @@ public class AnimationBuilder {
             // 确保旋转是规范的
             rotation.normalizeLocal();
 
+            // 应用坐标系转换到绑定姿态，与模型保持一致
+            Quaternion dxToGl = new Quaternion();
+            dxToGl.fromAngles(-FastMath.HALF_PI, 0, 0);
+
+            // 转换位置和旋转到 OpenGL 坐标系
+            translation = dxToGl.mult(translation);
+            rotation = dxToGl.mult(rotation).mult(dxToGl.inverse());
+
             bone.setBindTransforms(translation, rotation, scale);
 
             // 建立父子关系
@@ -143,7 +151,10 @@ public class AnimationBuilder {
         int endFrame = endTick * FramePerTick;
 
         // 计算动画时常
-        float length = (float) (endTick - startTick) / TickPerSecond;
+        // 原版使用 4800 FPS，但实际播放可能需要调整
+        // 根据观察，原版动画在 30 FPS 下播放正常，所以这里调整系数
+        float timeScale = 160.0f / 4800.0f; // 帧间隔调整
+        float length = (float) (endTick - startTick) / TickPerSecond * timeScale;
 
         String name = getAnimationNameById(motionInfo.State);
         if (log.isDebugEnabled()) {
@@ -157,6 +168,10 @@ public class AnimationBuilder {
             GeomObject obj = pat.objArray[i];
             BoneTrack track = buildBoneTrack(pat, obj, startFrame, endFrame);
             if (track != null) {
+                // 应用动画平滑处理
+                int boneIndex = pat.getObjIndex(obj.NodeName);
+                track = AnimationInterpolator.preprocess(track, boneIndex);
+                track = AnimationInterpolator.interpolate(track, boneIndex, 30.0f); // 目标 30 FPS
                 anim.addTrack(track);
             }
         }
@@ -181,7 +196,9 @@ public class AnimationBuilder {
         }
 
         // 计算动画时常
-        float length = (float) maxFrame / FramePerSecond;
+        // 考虑原版 4800 FPS 与实际播放速度的差异
+        float timeScale = 160.0f / 4800.0f; // 帧间隔调整
+        float length = (float) maxFrame / FramePerSecond * timeScale;
 
         if (log.isDebugEnabled()) {
             log.debug("MaxFrame:{}, Tick:{}, Time:{}", maxFrame, maxFrame / FramePerTick, length);
@@ -194,6 +211,10 @@ public class AnimationBuilder {
             GeomObject obj = pat.objArray[i];
             BoneTrack track = buildBoneTrack(pat, obj, 0, maxFrame);
             if (track != null) {
+                // 应用动画平滑处理
+                int boneIndex = pat.getObjIndex(obj.NodeName);
+                track = AnimationInterpolator.preprocess(track, boneIndex);
+                track = AnimationInterpolator.interpolate(track, boneIndex, 30.0f); // 目标 30 FPS
                 anim.addTrack(track);
             }
         }
@@ -243,7 +264,9 @@ public class AnimationBuilder {
 
             Keyframe k = getOrMakeKeyframe(keyframes, pos.frame);
             // 原始位置 - bind位置
-            k.translation.set(pos.x - bindPosition.x, pos.y - bindPosition.y, pos.z - bindPosition.z);
+            Vector3f tempPos = new Vector3f(pos.x - bindPosition.x, pos.y - bindPosition.y, pos.z - bindPosition.z);
+            // 应用 DX 到 GL 的坐标转换
+            k.translation.set(dxToGl.mult(tempPos));
         }
 
         // ============== 处理旋转关键帧 ==============
@@ -261,12 +284,9 @@ public class AnimationBuilder {
             // 将动画旋转变换到 OpenGL 坐标系：T^-1 * DX * T
             Quaternion rotGL = glToDx.mult(rotQ).mult(dxToGl);
 
-            if (j == obj.lowestRotFrame) {
-                // 第一帧：计算相对于变换后绑定姿态的相对旋转
-                bindRotationGLInverse.mult(rotGL, k.rotation);
-            } else {
-                k.rotation.set(rotGL);
-            }
+            // 所有帧都使用相对旋转，确保动画的连续性
+            // 计算相对于变换后绑定姿态的相对旋转
+            bindRotationGLInverse.mult(rotGL, k.rotation);
         }
 
         // ============== 处理缩放关键帧 ==============
@@ -323,7 +343,9 @@ public class AnimationBuilder {
                 }
             }
 
-            times[n] = (float) frame / FramePerSecond;
+            // 调整时间计算，考虑帧率差异
+            float timeScale = 160.0f / 4800.0f;
+            times[n] = (float) frame / FramePerSecond * timeScale;
             translations[n] = current.translation;
             rotations[n] = current.rotation.normalizeLocal();
             scales[n] = current.scale;

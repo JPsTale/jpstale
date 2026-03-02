@@ -17,6 +17,7 @@
         <module>sio2-bullet</module>
         <module>demos</module>
         <module>navmesh</module>
+        <module>gamedata-viewer</module>
     </modules>
 
     <packaging>pom</packaging>
