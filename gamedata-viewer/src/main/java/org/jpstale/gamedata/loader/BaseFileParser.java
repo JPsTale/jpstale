@@ -130,6 +130,50 @@ public abstract class BaseFileParser {
     }
 
     /**
+     * 使用正则表达式提取字符串值
+     */
+    protected String extractValue(String line, Pattern pattern) {
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    /**
+     * 使用正则表达式提取整数值
+     */
+    protected Integer extractInt(String line, Pattern pattern) {
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find()) {
+            try {
+                return Integer.parseInt(matcher.group(1));
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 使用正则表达式提取两个整数值
+     */
+    protected Integer[] extractTwoInts(String line, Pattern pattern) {
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find()) {
+            try {
+                return new Integer[]{
+                    Integer.parseInt(matcher.group(1)),
+                    Integer.parseInt(matcher.group(2))
+                };
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 解析数值列表
      */
     protected int[] parseIntArray(String str) {

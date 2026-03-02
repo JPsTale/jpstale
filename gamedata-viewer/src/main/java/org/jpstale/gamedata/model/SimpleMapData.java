@@ -8,6 +8,11 @@ public class SimpleMapData {
     private String name;
     private int minLevel;
     private int maxLevel;
+    private String monsters;
+    private String npcs;
+    private int monsterCount;
+    private int respawnTime;
+    private boolean hasStartPoint;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -20,4 +25,24 @@ public class SimpleMapData {
 
     public int getMaxLevel() { return maxLevel; }
     public void setMaxLevel(int maxLevel) { this.maxLevel = maxLevel; }
+
+    public String getMonsters() { return monsters; }
+    public void setMonsters(String monsters) { this.monsters = monsters; }
+
+    public String getNpcs() { return npcs; }
+    public void setNpcs(String npcs) { this.npcs = npcs; }
+
+    public int getMonsterCount() { return monsterCount; }
+    public void setMonsterCount(int monsterCount) { this.monsterCount = monsterCount; }
+
+    public int getRespawnTime() { return respawnTime; }
+    public void setRespawnTime(int respawnTime) { this.respawnTime = respawnTime; }
+
+    public boolean isHasStartPoint() { return hasStartPoint; }
+    public void setHasStartPoint(boolean hasStartPoint) { this.hasStartPoint = hasStartPoint; }
+
+    @Override
+    public String toString() {
+        return id + ":" + name;
+    }
 }

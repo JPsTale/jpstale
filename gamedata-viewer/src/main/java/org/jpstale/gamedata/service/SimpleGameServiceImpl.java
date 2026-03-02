@@ -1,7 +1,7 @@
 package org.jpstale.gamedata.service;
 
 import org.jpstale.gamedata.model.*;
-import org.jpstale.gamedata.loader.*;
+import org.jpstale.gamedata.loader.DataConverter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,16 +17,30 @@ public class SimpleGameServiceImpl implements SimpleGameDataService {
     private List<SimpleItemData> items = new ArrayList<>();
     private List<SimpleMapData> maps = new ArrayList<>();
 
-    // private final MonsterLoader monsterLoader = new MonsterLoader();
-    // private final NPCLoader npcLoader = new NPCLoader();
-    private final ItemListLoader itemLoader = new ItemListLoader();
-    private final MapListLoader mapLoader = new MapListLoader();
-
     @Override
     public void loadGameData(File gameServerDir) {
-        // 暂时不调用实际的加载器，防止编译错误
-        // 使用测试数据
-        loadTestData();
+        if (gameServerDir == null) {
+            // 如果没有指定目录，加载测试数据
+            loadTestData();
+        } else {
+            System.out.println("正在从GameServer目录加载数据: " + gameServerDir.getAbsolutePath());
+
+            // 使用 DataConverter 加载真实数据
+            DataConverter.GameDataContainer container = new DataConverter.GameDataContainer();
+            DataConverter.loadAllData(gameServerDir, container);
+
+            // 将加载的数据保存到服务中
+            monsters = container.getMonsters() != null ? container.getMonsters() : new ArrayList<>();
+            npcs = container.getNpcs() != null ? container.getNpcs() : new ArrayList<>();
+            items = container.getItems() != null ? container.getItems() : new ArrayList<>();
+            maps = container.getMaps() != null ? container.getMaps() : new ArrayList<>();
+
+            System.out.println("数据加载完成!");
+            System.out.println(" - 怪物: " + monsters.size() + " 个");
+            System.out.println(" - NPC: " + npcs.size() + " 个");
+            System.out.println(" - 道具: " + items.size() + " 个");
+            System.out.println(" - 地图: " + maps.size() + " 个");
+        }
     }
 
     private void loadTestData() {

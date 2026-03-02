@@ -6,6 +6,7 @@ package org.jpstale.gamedata.model;
 public class SimpleNPCData {
     private String id;
     private String name;
+    private int level;
     private boolean shopkeeper;
 
     public String getId() { return id; }
@@ -14,6 +15,14 @@ public class SimpleNPCData {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
+    public int getLevel() { return level; }
+    public void setLevel(int level) { this.level = level; }
+
     public boolean isShopkeeper() { return shopkeeper; }
     public void setShopkeeper(boolean shopkeeper) { this.shopkeeper = shopkeeper; }
+
+    @Override
+    public String toString() {
+        return level + ":" + id + ":" + name;
+    }
 }

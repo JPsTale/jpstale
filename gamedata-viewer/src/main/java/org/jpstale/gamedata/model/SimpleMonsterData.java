@@ -13,6 +13,14 @@ public class SimpleMonsterData {
     private int defense;
     private int life;
     private int experience;
+    private int fire;
+    private int ice;
+    private int lightning;
+    private int poison;
+    private int earth;
+    private float moveSpeed;
+    private int sight;
+    private String dropItems; // 掉落物信息
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -40,4 +48,33 @@ public class SimpleMonsterData {
 
     public int getExperience() { return experience; }
     public void setExperience(int experience) { this.experience = experience; }
+
+    public int getFire() { return fire; }
+    public void setFire(int fire) { this.fire = fire; }
+
+    public int getIce() { return ice; }
+    public void setIce(int ice) { this.ice = ice; }
+
+    public int getLightning() { return lightning; }
+    public void setLightning(int lightning) { this.lightning = lightning; }
+
+    public int getPoison() { return poison; }
+    public void setPoison(int poison) { this.poison = poison; }
+
+    public int getEarth() { return earth; }
+    public void setEarth(int earth) { this.earth = earth; }
+
+    public float getMoveSpeed() { return moveSpeed; }
+    public void setMoveSpeed(float moveSpeed) { this.moveSpeed = moveSpeed; }
+
+    public int getSight() { return sight; }
+    public void setSight(int sight) { this.sight = sight; }
+
+    public String getDropItems() { return dropItems; }
+    public void setDropItems(String dropItems) { this.dropItems = dropItems; }
+
+    @Override
+    public String toString() {
+        return level + ":" + id + ":" + name;
+    }
 }

@@ -21,6 +21,11 @@
 			<artifactId>loader</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jpstale</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<!-- Java Swing -->
 		<dependency>
