@@ -5,6 +5,8 @@ import com.jme3.asset.DesktopAssetManager;
 import org.jpstale.assets.AssetFactory;
 import org.jpstale.assets.plugins.script.character.FallItem;
 import org.jpstale.assets.plugins.script.character.Monster;
+import org.jpstale.entity.item.Item;
+import org.jpstale.entity.item.ItemConstant;
 import org.jpstale.entity.item.ItemInfo;
 import org.jpstale.entity.field.RespawnList;
 import org.jpstale.entity.field.StartPoint;
@@ -19,6 +21,8 @@ import org.jpstale.gamedata.model.SimpleMapData;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * 用于将AssetFactory加载的原始数据转换为简化版的GUI数据模型
@@ -47,23 +51,38 @@ public class DataConverter {
         // 设置游戏资源目录
         AssetFactory.setFolder(gameRootPath);
 
-        // 加载怪物数据
-        loadMonsterData(container);
-
-        // 加载NPC数据
-        loadNPCData(container);
-
-        // 加载道具数据
+        // 先加载道具数据，以便怪物/NPC 的掉落与商店能解析为真实物品名
         loadItemData(container);
+
+        Map<Long, SimpleItemData> codeToItem = buildCodeToItemMap(container.getItems());
+
+        // 加载怪物数据（使用 codeToItem 解析掉落物）
+        loadMonsterData(container, codeToItem);
+
+        // 加载NPC数据（使用 codeToItem 解析商店物品）
+        loadNPCData(container, codeToItem);
 
         // 加载地图数据
         loadMapData(container);
     }
 
     /**
+     * 根据已加载的道具列表构建 code -> SimpleItemData 映射
+     */
+    private static Map<Long, SimpleItemData> buildCodeToItemMap(List<SimpleItemData> items) {
+        Map<Long, SimpleItemData> map = new HashMap<>();
+        if (items != null) {
+            for (SimpleItemData item : items) {
+                map.put(item.getItemCode(), item);
+            }
+        }
+        return map;
+    }
+
+    /**
      * 加载怪物数据
      */
-    private static void loadMonsterData(GameDataContainer container) {
+    private static void loadMonsterData(GameDataContainer container, Map<Long, SimpleItemData> codeToItem) {
         File monsterDir = new File(gameRootPath, "GameServer/Monster");
         if (!monsterDir.exists()) {
             return;
@@ -82,7 +101,7 @@ public class DataConverter {
 
                 Monster monster = AssetFactory.loadMonsterScript(baseName);
                 if (monster != null) {
-                    SimpleMonsterData simpleData = convertToSimpleMonsterData(monster, baseName);
+                    SimpleMonsterData simpleData = convertToSimpleMonsterData(monster, baseName, codeToItem);
                     monsters.add(simpleData);
                 }
             } catch (Exception e) {
@@ -96,7 +115,7 @@ public class DataConverter {
     /**
      * 加载NPC数据
      */
-    private static void loadNPCData(GameDataContainer container) {
+    private static void loadNPCData(GameDataContainer container, Map<Long, SimpleItemData> codeToItem) {
         File npcDir = new File(gameRootPath, "GameServer/NPC");
         if (!npcDir.exists()) {
             return;
@@ -115,7 +134,7 @@ public class DataConverter {
 
                 Monster npc = AssetFactory.loadNpcScript(baseName);
                 if (npc != null) {
-                    SimpleNPCData simpleData = convertToSimpleNPCData(npc, baseName);
+                    SimpleNPCData simpleData = convertToSimpleNPCData(npc, baseName, codeToItem);
                     npcs.add(simpleData);
                 }
             } catch (Exception e) {
@@ -155,6 +174,23 @@ public class DataConverter {
                 System.err.println("Failed to load item file: " + txtFile.getName() + ", error: " + e.getMessage());
             }
         }
+
+        // 两件不通过文件加载的写死道具（与 ItemLoader 注释中的 Gold/Exp 一致）
+        SimpleItemData gold = new SimpleItemData();
+        gold.setId("GG101");
+        gold.setItemCode(0x05010100L);
+        gold.setName("Gold");
+        gold.setCategory((int) (0x05010100L / 1000));
+        gold.setWeight(0);
+        items.add(gold);
+
+        SimpleItemData exp = new SimpleItemData();
+        exp.setId("GG102");
+        exp.setItemCode(0x05010200L);
+        exp.setName("Exp");
+        exp.setCategory((int) (0x05010200L / 1000));
+        exp.setWeight(0);
+        items.add(exp);
 
         container.setItems(items);
     }
@@ -261,7 +297,7 @@ public class DataConverter {
     /**
      * 转换Monster到SimpleMonsterData
      */
-    private static SimpleMonsterData convertToSimpleMonsterData(Monster monster, String id) {
+    private static SimpleMonsterData convertToSimpleMonsterData(Monster monster, String id, Map<Long, SimpleItemData> codeToItem) {
         SimpleMonsterData data = new SimpleMonsterData();
 
         data.setId(id);
@@ -316,13 +352,12 @@ public class DataConverter {
         // 提取掉落物信息
         StringBuilder dropInfo = new StringBuilder();
 
-        // 普通掉落物
+        // 普通掉落物：名称 (0xCODE) (百分比%)
         if (monster.FallItems != null) {
             for (FallItem item : monster.FallItems) {
-                // 检查item是否为null
                 if (item != null && item.dwItemCode > 0 && item.Percentage > 0) {
                     if (dropInfo.length() > 0) dropInfo.append(", ");
-                    dropInfo.append(itemCodeToName(item.dwItemCode)).append(" (")
+                    dropInfo.append(itemCodeToDisplay(item.dwItemCode, codeToItem)).append(" (")
                            .append(item.Percentage).append("%)");
                 }
             }
@@ -331,10 +366,9 @@ public class DataConverter {
         // 特殊掉落物（打孔宝石等稀有物品）
         if (monster.FallItems_Plus != null) {
             for (FallItem item : monster.FallItems_Plus) {
-                // 检查item是否为null
                 if (item != null && item.dwItemCode > 0 && item.Percentage > 0) {
                     if (dropInfo.length() > 0) dropInfo.append(", ");
-                    dropInfo.append("[+]").append(itemCodeToName(item.dwItemCode)).append(" (")
+                    dropInfo.append("[+]").append(itemCodeToDisplay(item.dwItemCode, codeToItem)).append(" (")
                            .append(item.Percentage).append("%)");
                 }
             }
@@ -348,7 +382,7 @@ public class DataConverter {
     /**
      * 转换Monster到SimpleNPCData
      */
-    private static SimpleNPCData convertToSimpleNPCData(Monster npc, String id) {
+    private static SimpleNPCData convertToSimpleNPCData(Monster npc, String id, Map<Long, SimpleItemData> codeToItem) {
         SimpleNPCData data = new SimpleNPCData();
 
         data.setId(id);
@@ -362,26 +396,23 @@ public class DataConverter {
                                npc.SellEtcItemCount > 0);
         data.setShopkeeper(isShopkeeper);
 
-        // 提取商店商品
+        // 提取商店商品：名称 (0xCODE)
         if (isShopkeeper) {
-            // 攻击装备
             String[] attackItems = new String[npc.SellAttackItemCount];
             for (int i = 0; i < npc.SellAttackItemCount; i++) {
-                attackItems[i] = itemCodeToName(npc.SellAttackItem[i]);
+                attackItems[i] = itemCodeToDisplay(npc.SellAttackItem[i], codeToItem);
             }
             data.setSellAttackItems(attackItems);
 
-            // 防御装备
             String[] defenceItems = new String[npc.SellDefenceItemCount];
             for (int i = 0; i < npc.SellDefenceItemCount; i++) {
-                defenceItems[i] = itemCodeToName(npc.SellDefenceItem[i]);
+                defenceItems[i] = itemCodeToDisplay(npc.SellDefenceItem[i], codeToItem);
             }
             data.setSellDefenceItems(defenceItems);
 
-            // 其他道具
             String[] etcItems = new String[npc.SellEtcItemCount];
             for (int i = 0; i < npc.SellEtcItemCount; i++) {
-                etcItems[i] = itemCodeToName(npc.SellEtcItem[i]);
+                etcItems[i] = itemCodeToDisplay(npc.SellEtcItem[i], codeToItem);
             }
             data.setSellEtcItems(etcItems);
         }
@@ -426,9 +457,21 @@ public class DataConverter {
         SimpleItemData data = new SimpleItemData();
 
         data.setId(id);
+        long code = item.CODE;
+        // 若 loader 未解析出数值 CODE（仍为 0），用脚本中的字符串 code 在 ItemConstant 中查表
+        if (code == 0 && item.code != null && !item.code.trim().isEmpty()) {
+            String codeStr = item.code.trim().replace("\"", "");
+            for (Item it : ItemConstant.itemDataBase) {
+                if (it != null && it.category != null && it.category.equalsIgnoreCase(codeStr)) {
+                    code = it.code & 0xFFFFFFFFL;
+                    break;
+                }
+            }
+        }
+        data.setItemCode(code);
         data.setName((item.localeName != null && !item.localeName.isEmpty()) ? item.localeName : id);
         data.setEnName(item.enName);
-        data.setCategory((int) (item.CODE / 1000)); // 简单的类别计算
+        data.setCategory((int) (code / 1000)); // 简单的类别计算
 
         // 基础属性
         data.setPrice(item.Price);
@@ -508,40 +551,13 @@ public class DataConverter {
 
 
     /**
-     * 将物品代码转换为名称（简化版本）
+     * 将物品代码转换为展示字符串：名称 (0xCODE)；若未在道具表中则返回 未知(0xCODE)
      */
-    private static String itemCodeToName(long code) {
-        // 某些常见的物品代码映射
-        switch ((int)code) {
-            // 常见材料
-            case 8: return "力量药水";
-            case 9: return "魔法药水";
-            case 10: return "体力药水";
-            case 11: return "精神药水";
-            case 12: return "全体药水";
-
-            // 常见装备类型代码的前缀
-            case 1: return "武器";
-            case 2: return "防具";
-            case 3: return "饰品";
-            case 4: return "双手武器";
-            case 5: return "消耗品";
-
-            // 某些特殊物品
-            case 1001: return "打孔钻1";
-            case 1002: return "打孔钻2";
-            case 1003: return "打孔钻3";
-
-            default:
-                // 根据物品代码返回分类
-                int category = (int)(code / 1000);
-                if (category == 1) return "武器[" + code + "]";
-                if (category == 2) return "防具[" + code + "]";
-                if (category == 3) return "饰品[" + code + "]";
-                if (category == 4) return "双手[" + code + "]";
-                if (category == 5) return "消耗品[" + code + "]";
-                return "物品[" + code + "]";
-        }
+    private static String itemCodeToDisplay(long code, Map<Long, SimpleItemData> codeToItem) {
+        String hex = String.format("0x%08X", code);
+        SimpleItemData item = codeToItem != null ? codeToItem.get(code) : null;
+        String name = (item != null && item.getName() != null) ? item.getName() : "未知";
+        return name + " (" + hex + ")";
     }
 
     /**

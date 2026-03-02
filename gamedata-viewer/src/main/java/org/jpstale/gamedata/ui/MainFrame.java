@@ -1,7 +1,14 @@
 package org.jpstale.gamedata.ui;
 
-import org.jpstale.gamedata.service.SimpleGameDataService;
+import org.jpstale.gamedata.service.GameDataService;
 import org.jpstale.gamedata.service.SimpleGameServiceImpl;
+import org.jpstale.gamedata.preview.EmbeddedPreviewApp;
+import org.jpstale.gamedata.preview.JmePreviewHolder;
+import org.jpstale.gamedata.preview.PreviewProcessRunner;
+import org.jpstale.gamedata.preview.ItemIconLoader;
+
+import java.awt.image.BufferedImage;
+import javax.swing.ImageIcon;
 import org.jpstale.gamedata.model.SimpleMonsterData;
 import org.jpstale.gamedata.model.SimpleNPCData;
 import org.jpstale.gamedata.model.SimpleItemData;
@@ -13,23 +20,28 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultTreeSelectionModel;
+import javax.swing.tree.TreePath;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
 import java.awt.*;
 import java.io.File;
 import java.util.*;
+import java.util.prefs.Preferences;
 
 /**
  * 主窗口界面
  */
 public class MainFrame extends JFrame {
 
+    private static final String PREF_LAST_GAME_SERVER_PATH = "lastGameServerPath";
+    private static final String PREF_LAST_CLIENT_ROOT_PATH = "lastClientRootPath";
+    private static final Preferences PREFS = Preferences.userNodeForPackage(MainFrame.class);
+
     private static int DEFAULT_WIDTH = 1200;
     private static int DEFAULT_HEIGHT = 800;
 
-    private SimpleGameDataService gameDataService;
+    private GameDataService gameDataService;
 
     // UI组件
     private JTextArea logArea;
@@ -38,13 +50,24 @@ public class MainFrame extends JFrame {
     private DetailPanel detailPanel;
     private SearchPanel searchPanel;
     private JLabel statusLabel;
+    private JTree dataTree;
+
+    /** 主线程创建的 JME 预览 Canvas 持有者，为 null 时预览将用备用方式（子线程新窗口） */
+    private final JmePreviewHolder jmePreviewHolder;
 
     public MainFrame() {
-        // 默认使用简化版服务，但允许切换
-        gameDataService = new SimpleGameServiceImpl();
+        this(null);
+    }
 
+    public MainFrame(JmePreviewHolder jmePreviewHolder) {
+        this.jmePreviewHolder = jmePreviewHolder;
+        gameDataService = new SimpleGameServiceImpl();
+        String savedClientRoot = getLastClientRootPath();
+        if (savedClientRoot != null && !savedClientRoot.isEmpty()) {
+            gameDataService.setClientRootPath(savedClientRoot);
+        }
         initializeUI();
-        loadTestData(); // 最初加载测试数据
+        tryLoadLastGameServerDirectory();
     }
 
     /**
@@ -79,6 +102,11 @@ public class MainFrame extends JFrame {
         openItem.addActionListener(e -> openGameServerDirectory());
         fileMenu.add(openItem);
 
+        JMenuItem clientRootItem = new JMenuItem("设置客户端资源目录...");
+        clientRootItem.setToolTipText("3D 预览与道具图标从此目录加载 char/、image/ 等资源；若与 GameServer 不在同一根目录请单独设置");
+        clientRootItem.addActionListener(e -> openClientRootDirectory());
+        fileMenu.add(clientRootItem);
+
         fileMenu.addSeparator();
 
         JMenuItem exitItem = new JMenuItem("退出");
@@ -89,10 +117,6 @@ public class MainFrame extends JFrame {
 
         // 工具菜单
         JMenu toolsMenu = new JMenu("工具");
-
-        JMenuItem exportItem = new JMenuItem("导出为Groovy脚本...");
-        exportItem.addActionListener(e -> exportToGroovy());
-        toolsMenu.add(exportItem);
 
         JMenuItem exportJsonItem = new JMenuItem("导出为JSON...");
         exportJsonItem.addActionListener(e -> exportToJson());
@@ -114,9 +138,19 @@ public class MainFrame extends JFrame {
 
         toolsMenu.addSeparator();
 
-        JCheckBoxMenuItem useFullLoader = new JCheckBoxMenuItem("使用完整加载器");
-        useFullLoader.addActionListener(e -> toggleLoaderMode(useFullLoader.isSelected()));
-        toolsMenu.add(useFullLoader);
+        JMenuItem locateItemItem = new JMenuItem("定位到道具...");
+        locateItemItem.addActionListener(e -> showLocateItemByCode());
+        toolsMenu.add(locateItemItem);
+
+        toolsMenu.addSeparator();
+
+        JMenuItem preview3DItem = new JMenuItem("预览3D模型");
+        preview3DItem.addActionListener(e -> showPreview3D());
+        toolsMenu.add(preview3DItem);
+
+        JMenuItem previewIconItem = new JMenuItem("预览道具图标");
+        previewIconItem.addActionListener(e -> showPreviewItemIcon());
+        toolsMenu.add(previewIconItem);
 
         menuBar.add(toolsMenu);
 
@@ -141,8 +175,8 @@ public class MainFrame extends JFrame {
 
         // 创建简单的树
         DefaultTreeModel model = createTreeModel(gameDataService);
-        JTree tree = new JTree(model);
-        JScrollPane treeScrollPane = new JScrollPane(tree);
+        dataTree = new JTree(model);
+        JScrollPane treeScrollPane = new JScrollPane(dataTree);
         treeScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         // 创建右侧详情面板
@@ -176,7 +210,7 @@ public class MainFrame extends JFrame {
         add(logScrollPane, BorderLayout.SOUTH);
 
         // 添加树选择监听器
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
+        dataTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
                 handleTreeSelection(e);
@@ -201,15 +235,53 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * 加载测试数据
+     * 尝试从上次记住的 GameServer 目录加载；若目录不存在则加载空数据
+     */
+    private void tryLoadLastGameServerDirectory() {
+        String savedPath = getLastGameServerPath();
+        File gameServerDir = (savedPath != null && !savedPath.isEmpty()) ? new File(savedPath) : null;
+
+        if (gameServerDir != null && gameServerDir.exists() && gameServerDir.isDirectory()) {
+            SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    publish("正在从上次目录加载: " + gameServerDir.getAbsolutePath());
+                    gameDataService.loadGameData(gameServerDir);
+                    return null;
+                }
+
+                @Override
+                protected void process(java.util.List<String> chunks) {
+                    for (String message : chunks) {
+                        log(message);
+                    }
+                }
+
+                @Override
+                protected void done() {
+                    updateUI();
+                    updateStatusText("就绪");
+                }
+            };
+            worker.execute();
+        } else {
+            loadTestData();
+            if (savedPath != null && !savedPath.isEmpty()) {
+                log("上次的 GameServer 目录不存在: " + savedPath + "，请使用「文件 > 打开GameServer目录」重新选择");
+            } else {
+                log("请使用「文件 > 打开GameServer目录」选择游戏目录");
+            }
+        }
+    }
+
+    /**
+     * 加载空数据（未选择目录或目录无效时）
      */
     private void loadTestData() {
         SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
             @Override
             protected Void doInBackground() throws Exception {
-                // 加载测试数据
                 gameDataService.loadGameData(null);
-                publish("已加载测试数据");
                 return null;
             }
 
@@ -229,42 +301,54 @@ public class MainFrame extends JFrame {
         worker.execute();
     }
 
+    private static String getLastGameServerPath() {
+        return PREFS.get(PREF_LAST_GAME_SERVER_PATH, null);
+    }
+
+    private static void saveLastGameServerPath(String path) {
+        if (path != null && !path.isEmpty()) {
+            PREFS.put(PREF_LAST_GAME_SERVER_PATH, path);
+            try {
+                PREFS.flush();
+            } catch (Exception ignored) { }
+        }
+    }
+
+    private static String getLastClientRootPath() {
+        return PREFS.get(PREF_LAST_CLIENT_ROOT_PATH, null);
+    }
+
+    private static void saveLastClientRootPath(String path) {
+        if (path != null && !path.isEmpty()) {
+            PREFS.put(PREF_LAST_CLIENT_ROOT_PATH, path);
+            try {
+                PREFS.flush();
+            } catch (Exception ignored) { }
+        }
+    }
+
     /**
-     * 加载游戏数据
+     * 选择并保存客户端资源根目录（用于 3D 预览、道具图标等）
      */
-    private void loadGameData() {
-        SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                // 尝试从默认路径加载
-                String defaultPath = "/Users/yanmaoyuan/3060/GameServer";
-                File gameServerDir = new File(defaultPath);
-
-                if (gameServerDir.exists()) {
-                    publish("从默认路径加载: " + defaultPath);
-                    gameDataService.loadGameData(gameServerDir);
-                } else {
-                    publish("未找到GameServer目录，请使用文件菜单手动选择");
-                }
-
-                return null;
+    private void openClientRootDirectory() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setDialogTitle("选择客户端资源目录（含 char、image 等文件夹的根目录）");
+        String lastPath = getLastClientRootPath();
+        if (lastPath != null && !lastPath.isEmpty()) {
+            File lastDir = new File(lastPath);
+            if (lastDir.exists()) {
+                fileChooser.setCurrentDirectory(lastDir);
+                fileChooser.setSelectedFile(lastDir);
             }
-
-            @Override
-            protected void process(java.util.List<String> chunks) {
-                for (String message : chunks) {
-                    log(message);
-                }
-            }
-
-            @Override
-            protected void done() {
-                updateUI();
-                updateTree();
-            }
-        };
-
-        worker.execute();
+        }
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File selectedDir = fileChooser.getSelectedFile();
+            saveLastClientRootPath(selectedDir.getAbsolutePath());
+            gameDataService.setClientRootPath(selectedDir.getAbsolutePath());
+            log("客户端资源目录已设为: " + selectedDir.getAbsolutePath());
+            updateStatusText("客户端资源: " + selectedDir.getName());
+        }
     }
 
     /**
@@ -274,6 +358,14 @@ public class MainFrame extends JFrame {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setDialogTitle("选择GameServer目录");
+        String lastPath = getLastGameServerPath();
+        if (lastPath != null && !lastPath.isEmpty()) {
+            File lastDir = new File(lastPath);
+            if (lastDir.exists()) {
+                fileChooser.setCurrentDirectory(lastDir.getParentFile() != null ? lastDir.getParentFile() : lastDir);
+                fileChooser.setSelectedFile(lastDir);
+            }
+        }
 
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             File selectedDir = fileChooser.getSelectedFile();
@@ -295,95 +387,9 @@ public class MainFrame extends JFrame {
 
                 @Override
                 protected void done() {
+                    saveLastGameServerPath(selectedDir.getAbsolutePath());
                     updateUI();
                     log("数据加载完成");
-                }
-            };
-
-            worker.execute();
-        }
-    }
-
-    /**
-     * 导出为Groovy脚本
-     */
-    private void exportToGroovy() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("导出Groovy脚本");
-        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Groovy文件 (*.groovy)", "groovy"));
-        fileChooser.setSelectedFile(new java.io.File("gamedata.groovy"));
-
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-
-            SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
-                @Override
-                protected Void doInBackground() throws Exception {
-                    try {
-                        publish("正在导出Groovy脚本...");
-
-                        try (java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.FileWriter(file))) {
-                            writer.println("// JPsTale GameServer Data Export");
-                            writer.println("// Exported at: " + new java.util.Date());
-                            writer.println();
-
-                            // 导出怪物数据
-                            writer.println("// ========== 怪物数据 ==========");
-                            for (SimpleMonsterData monster : gameDataService.getAllMonsters()) {
-                                writer.printf("monster {\n");
-                                writer.printf("    id = '%s'\n", monster.getId());
-                                writer.printf("    name = '%s'\n", monster.getName());
-                                writer.printf("    level = %d\n", monster.getLevel());
-                                writer.printf("    life = %d\n", monster.getLife());
-                                writer.printf("    attack = [%d, %d]\n", monster.getMinAttack(), monster.getMaxAttack());
-                                writer.printf("    defense = %d\n", monster.getDefense());
-                                writer.printf("    exp = %d\n", monster.getExperience());
-                                if (monster.getDropItems() != null && !monster.getDropItems().isEmpty()) {
-                                    writer.printf("    drops = '%s'\n", monster.getDropItems());
-                                }
-                                writer.printf("}\n\n");
-                            }
-
-                            // 导出NPC数据
-                            writer.println("// ========== NPC数据 ==========");
-                            for (SimpleNPCData npc : gameDataService.getAllNPCs()) {
-                                writer.printf("npc {\n");
-                                writer.printf("    id = '%s'\n", npc.getId());
-                                writer.printf("    name = '%s'\n", npc.getName());
-                                writer.printf("    level = %d\n", npc.getLevel());
-                                writer.printf("    isShopkeeper = %s\n", npc.isShopkeeper());
-                                writer.printf("}\n\n");
-                            }
-
-                            // 导出地图数据
-                            writer.println("// ========== 地图数据 ==========");
-                            for (SimpleMapData map : gameDataService.getAllMaps()) {
-                                writer.printf("map {\n");
-                                writer.printf("    id = '%s'\n", map.getId());
-                                writer.printf("    name = '%s'\n", map.getName());
-                                writer.printf("    minLevel = %d\n", map.getMinLevel());
-                                writer.printf("    maxLevel = %d\n", map.getMaxLevel());
-                                writer.printf("    monsterCount = %d\n", map.getMonsterCount());
-                                if (map.getMonsters() != null && !map.getMonsters().isEmpty()) {
-                                    writer.printf("    monsters = '%s'\n", map.getMonsters());
-                                }
-                                writer.printf("}\n\n");
-                            }
-                        }
-
-                        publish("Groovy脚本导出完成: " + file.getAbsolutePath());
-
-                    } catch (Exception e) {
-                        publish("导出失败: " + e.getMessage());
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void process(java.util.List<String> chunks) {
-                    for (String message : chunks) {
-                        log(message);
-                    }
                 }
             };
 
@@ -459,11 +465,18 @@ public class MainFrame extends JFrame {
      * 显示掉落物分析
      */
     private void showDropAnalysis() {
-        String itemId = JOptionPane.showInputDialog(this, "请输入要查询的物品代码:", "掉落物分析", JOptionPane.QUESTION_MESSAGE);
+        String itemId = JOptionPane.showInputDialog(this, "请输入要查询的物品代码（十六进制，如 0x05010100 或 05010100）:", "掉落物分析", JOptionPane.QUESTION_MESSAGE);
 
         if (itemId != null && !itemId.trim().isEmpty()) {
-            // 创建结果窗口
-            JDialog resultDialog = new JDialog(this, "掉落物分析 - 物品代码: " + itemId, false);
+            String hexPart = itemId.trim().toUpperCase().replaceFirst("^0X", "");
+            if (!hexPart.matches("[0-9A-F]+")) {
+                JOptionPane.showMessageDialog(this, "请输入有效的十六进制代码（如 05010100 或 0x05010100）", "输入错误", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (hexPart.length() > 8) hexPart = hexPart.substring(hexPart.length() - 8);
+            String searchHex = "0x" + String.format("%8s", hexPart).replace(' ', '0');
+
+            JDialog resultDialog = new JDialog(this, "掉落物分析 - 物品代码: " + searchHex, false);
             resultDialog.setSize(600, 400);
             resultDialog.setLocationRelativeTo(this);
 
@@ -473,14 +486,13 @@ public class MainFrame extends JFrame {
             JScrollPane scrollPane = new JScrollPane(textArea);
             resultDialog.add(scrollPane);
 
-            // 查找掉落该物品的怪物
             StringBuilder result = new StringBuilder();
-            result.append("掉落物品 ").append(itemId).append(" 的怪物:\n");
+            result.append("掉落物品 ").append(searchHex).append(" 的怪物:\n");
             result.append("=================================\n\n");
 
             int count = 0;
             for (SimpleMonsterData monster : gameDataService.getAllMonsters()) {
-                if (monster.getDropItems() != null && monster.getDropItems().contains("[" + itemId + "]")) {
+                if (monster.getDropItems() != null && monster.getDropItems().contains("(" + searchHex + ")")) {
                     count++;
                     result.append(String.format("%3d. %-20s (等级 %d) - %s\n",
                         count, monster.getName(), monster.getLevel(), monster.getId()));
@@ -502,6 +514,220 @@ public class MainFrame extends JFrame {
 
             resultDialog.setVisible(true);
         }
+    }
+
+    /**
+     * 按物品代码定位到道具并在树中选中、显示详情
+     */
+    private void showLocateItemByCode() {
+        String itemId = JOptionPane.showInputDialog(this, "请输入物品代码（十六进制，如 0x05010100 或 05010100）:", "定位到道具", JOptionPane.QUESTION_MESSAGE);
+        if (itemId == null || itemId.trim().isEmpty()) return;
+        String hexPart = itemId.trim().toUpperCase().replaceFirst("^0X", "");
+        if (!hexPart.matches("[0-9A-F]+")) {
+            JOptionPane.showMessageDialog(this, "请输入有效的十六进制代码。", "输入错误", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        long code;
+        try {
+            code = Long.parseLong(hexPart, 16);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "物品代码格式错误。", "输入错误", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        SimpleItemData target = null;
+        for (SimpleItemData item : gameDataService.getAllItems()) {
+            if (item.getItemCode() == code) {
+                target = item;
+                break;
+            }
+        }
+        if (target == null) {
+            JOptionPane.showMessageDialog(this, "未找到物品代码 " + String.format("0x%08X", code) + " 对应的道具。", "未找到", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        if (dataTree == null) return;
+        DefaultTreeModel model = (DefaultTreeModel) dataTree.getModel();
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+        TreePath path = findPathToNode(root, target);
+        if (path != null) {
+            dataTree.expandPath(path.getParentPath());
+            dataTree.setSelectionPath(path);
+            dataTree.scrollPathToVisible(path);
+            displayItemDetails(target);
+            updateStatusText("已定位到道具: " + target.getName());
+        }
+    }
+
+    private TreePath findPathToNode(DefaultMutableTreeNode node, Object userObject) {
+        if (node.getUserObject() == userObject) {
+            return new TreePath(node.getPath());
+        }
+        for (int i = 0; i < node.getChildCount(); i++) {
+            TreePath found = findPathToNode((DefaultMutableTreeNode) node.getChildAt(i), userObject);
+            if (found != null) return found;
+        }
+        return null;
+    }
+
+    /**
+     * 预览当前选中的怪物、NPC 或道具的 3D 模型。优先使用主线程创建的嵌入 Canvas，否则用子线程新窗口。
+     */
+    private void showPreview3D() {
+        if (dataTree == null) return;
+        TreePath path = dataTree.getSelectionPath();
+        if (path == null) {
+            JOptionPane.showMessageDialog(this, "请先在左侧树中选中一个怪物、NPC 或道具。", "预览3D模型", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        Object node = path.getLastPathComponent();
+        if (!(node instanceof DefaultMutableTreeNode)) return;
+        Object userObject = ((DefaultMutableTreeNode) node).getUserObject();
+
+        String gameRoot = gameDataService.getGameRootPath();
+        if (gameRoot == null || gameRoot.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "请先通过「文件 > 打开GameServer目录」加载游戏目录后再预览。", "预览3D模型", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // 3D 资源（char/、image/）从客户端资源目录加载；未设置时用 GameServer 父目录
+        String assetRoot = gameDataService.getClientRootPath();
+        if (assetRoot == null || assetRoot.isEmpty()) {
+            assetRoot = gameRoot;
+        }
+
+        if (jmePreviewHolder != null) {
+            // 使用主线程已创建的嵌入 Canvas（当前未启用，仅保留逻辑）
+            EmbeddedPreviewApp app = jmePreviewHolder.getApp();
+            if (userObject instanceof SimpleMonsterData) {
+                SimpleMonsterData m = (SimpleMonsterData) userObject;
+                String characterPath = toCharacterPath(m.getId(), m.getModelName(), true);
+                jmePreviewHolder.setTitle("3D 预览 - " + characterPath);
+                app.enqueue(() -> app.loadCharacter(gameRoot, characterPath));
+            } else if (userObject instanceof SimpleNPCData) {
+                SimpleNPCData n = (SimpleNPCData) userObject;
+                String characterPath = toCharacterPath(n.getId(), n.getModelName(), false);
+                jmePreviewHolder.setTitle("3D 预览 - " + characterPath);
+                app.enqueue(() -> app.loadCharacter(gameRoot, characterPath));
+            } else if (userObject instanceof SimpleItemData) {
+                SimpleItemData item = (SimpleItemData) userObject;
+                long code = item.getItemCode();
+                jmePreviewHolder.setTitle("3D 预览 - 道具 0x" + Long.toHexString(code).toUpperCase());
+                app.enqueue(() -> app.loadItem(gameRoot, code));
+            } else {
+                JOptionPane.showMessageDialog(this, "请选中一个怪物、NPC 或道具节点再预览。", "预览3D模型", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            jmePreviewHolder.showPreview();
+            return;
+        }
+
+        // 在独立进程中启动 3D 预览（macOS 上使用 -XstartOnFirstThread，避免 libdispatch 断言崩溃）
+        String characterPathArg = null;
+        long itemCodeArg = 0L;
+        if (userObject instanceof SimpleMonsterData) {
+            SimpleMonsterData m = (SimpleMonsterData) userObject;
+            characterPathArg = toCharacterPath(m.getId(), m.getModelName(), true);
+        } else if (userObject instanceof SimpleNPCData) {
+            SimpleNPCData n = (SimpleNPCData) userObject;
+            characterPathArg = toCharacterPath(n.getId(), n.getModelName(), false);
+        } else if (userObject instanceof SimpleItemData) {
+            itemCodeArg = ((SimpleItemData) userObject).getItemCode();
+        } else {
+            JOptionPane.showMessageDialog(this, "请选中一个怪物、NPC 或道具节点再预览。", "预览3D模型", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        boolean ok = PreviewProcessRunner.launch(assetRoot, characterPathArg, itemCodeArg);
+        if (!ok) {
+            JOptionPane.showMessageDialog(this, "无法启动 3D 预览进程，请查看控制台错误信息。", "预览3D模型", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * 根据怪物/NPC 的 id 与脚本中的 modelName 拼出 loadCharacter 用的路径。
+     * 脚本里 modelName 可能是完整路径（如 "char\\monster\\ssnail\\ssnail.INI"），
+     * 需规范化后直接使用；否则按 TestLoadNPC 风格拼 char/monster/{id}/{name}.inx 或 char/npc/{id}/{id}.inx。
+     */
+    private static String toCharacterPath(String id, String modelName, boolean isMonster) {
+        String raw = (modelName != null) ? modelName.trim() : "";
+        raw = raw.replace('\\', '/');
+        if (raw.startsWith("\"") && raw.endsWith("\"")) {
+            raw = raw.substring(1, raw.length() - 1).trim();
+        }
+        if (raw.isEmpty()) {
+            raw = id;
+        }
+        // 已是完整路径（如 char/monster/ssnail/ssnail.INI）则只做扩展名与斜杠统一
+        if (raw.toLowerCase().startsWith("char/")) {
+            int lastDot = raw.lastIndexOf('.');
+            if (lastDot > raw.lastIndexOf('/') && lastDot < raw.length() - 1) {
+                String ext = raw.substring(lastDot + 1);
+                if ("ini".equalsIgnoreCase(ext)) {
+                    raw = raw.substring(0, lastDot) + ".inx";
+                } else if (!"inx".equalsIgnoreCase(ext)) {
+                    raw = raw + ".inx";
+                }
+            } else if (!raw.toLowerCase().endsWith(".inx")) {
+                raw = raw + ".inx";
+            }
+            return raw;
+        }
+        // 否则按 id + 短名拼路径（与 TestLoadNPC 一致）
+        String simpleName = raw;
+        int lastSlash = raw.lastIndexOf('/');
+        if (lastSlash >= 0) {
+            simpleName = raw.substring(lastSlash + 1);
+        }
+        int dot = simpleName.indexOf('.');
+        if (dot > 0) {
+            simpleName = simpleName.substring(0, dot);
+        }
+        if (simpleName.isEmpty()) {
+            simpleName = id;
+        }
+        if (isMonster) {
+            return "char/monster/" + id + "/" + simpleName + ".inx";
+        } else {
+            return "char/npc/" + id + "/" + id + ".inx";
+        }
+    }
+
+    /**
+     * 预览当前选中道具的图标（BMP），在对话框中显示
+     */
+    private void showPreviewItemIcon() {
+        if (dataTree == null) return;
+        TreePath path = dataTree.getSelectionPath();
+        if (path == null) {
+            JOptionPane.showMessageDialog(this, "请先在左侧树中选中一个道具。", "预览道具图标", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        Object node = path.getLastPathComponent();
+        if (!(node instanceof DefaultMutableTreeNode)) return;
+        Object userObject = ((DefaultMutableTreeNode) node).getUserObject();
+        if (!(userObject instanceof SimpleItemData)) {
+            JOptionPane.showMessageDialog(this, "请选中一个道具节点再预览图标。", "预览道具图标", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        SimpleItemData item = (SimpleItemData) userObject;
+        String assetRoot = gameDataService.getClientRootPath();
+        if (assetRoot == null || assetRoot.isEmpty()) {
+            assetRoot = gameDataService.getGameRootPath();
+        }
+        if (assetRoot == null || assetRoot.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "请先通过「文件 > 打开GameServer目录」加载，或「设置客户端资源目录」指定资源路径。", "预览道具图标", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        BufferedImage img = ItemIconLoader.loadIcon(assetRoot, item.getItemCode());
+        if (img == null) {
+            JOptionPane.showMessageDialog(this, "未找到该道具的图标资源（或物品代码在 ItemConstant 中无对应项）。", "预览道具图标", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        JDialog dialog = new JDialog(this, "道具图标 - " + item.getName(), false);
+        JLabel label = new JLabel(new ImageIcon(img));
+        dialog.add(label);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     /**
@@ -560,39 +786,6 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * 切换加载器模式
-     */
-    private void toggleLoaderMode(boolean useFullLoader) {
-        SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                publish("正在切换加载器模式...");
-
-                gameDataService = new SimpleGameServiceImpl();
-                publish("已切换到简化模式");
-                loadTestData(); // 重新加载测试数据
-
-                return null;
-            }
-
-            @Override
-            protected void process(java.util.List<String> chunks) {
-                for (String message : chunks) {
-                    log(message);
-                }
-            }
-
-            @Override
-            protected void done() {
-                updateTree();
-                updateStatusText("就绪");
-            }
-        };
-        worker.execute();
-    }
-
-
-    /**
      * 显示关于对话框
      */
     private void showAboutDialog() {
@@ -625,7 +818,7 @@ public class MainFrame extends JFrame {
     /**
      * 创建树模型
      */
-    private DefaultTreeModel createTreeModel(SimpleGameDataService gameDataService) {
+    private DefaultTreeModel createTreeModel(GameDataService gameDataService) {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("游戏数据");
 
         // 创建分类节点
@@ -678,6 +871,7 @@ public class MainFrame extends JFrame {
         }
 
         if (currentTree != null) {
+            dataTree = currentTree;
             // 更新树模型
             DefaultTreeModel newModel = createTreeModel(gameDataService);
             currentTree.setModel(newModel);
@@ -892,6 +1086,7 @@ public class MainFrame extends JFrame {
             details.append("英文名: ").append(item.getEnName()).append("\n");
         }
         details.append("道具ID: ").append(item.getId()).append("\n");
+        details.append("物品代码: ").append(String.format("0x%08X", item.getItemCode())).append("\n");
         details.append("类别: ").append(getCategoryName(item.getCategory())).append("\n");
 
         // 基础属性
@@ -1045,7 +1240,7 @@ public class MainFrame extends JFrame {
         //     details.append("\n描述: ").append(map.getDescription()).append("\n");
         // }
 
-        detailPanel.append(details.toString());
+        detailPanel.setText(details.toString());
         updateStatusText("查看地图: " + map.getName());
     }
 

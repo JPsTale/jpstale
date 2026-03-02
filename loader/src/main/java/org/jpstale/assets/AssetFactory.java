@@ -69,7 +69,7 @@ public class AssetFactory {
     /**
      * 设置资源目录
      * 
-     * @param folder
+     * @param f
      */
     public static void setFolder(String f) {
         folder = f;
@@ -87,13 +87,16 @@ public class AssetFactory {
         assetManager.registerLoader(SppLoader.class, "spp");
         assetManager.registerLoader(CharInfoLoader.class, "inf", "npc");
         assetManager.registerLoader(ItemLoader.class, "txt");
+        // 纹理：运行时解密游戏加密的 BMP/TGA（魔数 0x41 0x38 / 0x47 0x38）
+        assetManager.registerLoader(DecryptTextureLoader.class, "bmp", "tga");
 
         // 注册资源加载路径
         assetManager.registerLocator("/", ClasspathLocator.class);
         assetManager.registerLocator("/", FileLocator.class);
+        // 以下为本地调试用路径，若目录存在则参与资源解析；正式使用依赖 setFolder() 或调用方传入的根目录
         registerFolder("F:/1_DEVELOP/3_素材");
-        registerFolder("/Users/yanmaoyuan/3060");
-        registerFolder("/Users/yanmaoyuan/PTCN2020");
+        registerFolder("/Users/yanmaoyuan/3060");   // 服务端
+        registerFolder("/Users/yanmaoyuan/PTCN2020"); // 客户端
         registerFolder("assets");
     }
     
@@ -404,7 +407,7 @@ public class AssetFactory {
         } catch (Exception ex) {
             texture = assetManager.loadTexture("Common/Textures/MissingTexture.png");
             texture.setWrap(WrapMode.EdgeClamp);
-            log.warn("Missing Texture: {}, {}, msg:{}", folder, name, ex.getMessage());
+            log.error("Missing Texture: {}, {}, msg:{}", folder, name, ex.getMessage(), ex);
         }
         return texture;
     }

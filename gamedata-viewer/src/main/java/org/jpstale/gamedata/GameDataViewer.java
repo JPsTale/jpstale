@@ -5,12 +5,12 @@ import org.jpstale.gamedata.ui.MainFrame;
 import javax.swing.SwingUtilities;
 
 /**
- * GameServer配置查看器主程序
+ * GameServer配置查看器主程序。
  */
 public class GameDataViewer {
 
     public static void main(String[] args) {
-        // 设置系统外观
+
         try {
             javax.swing.UIManager.setLookAndFeel(
                 javax.swing.UIManager.getSystemLookAndFeelClassName());
@@ -18,9 +18,8 @@ public class GameDataViewer {
             e.printStackTrace();
         }
 
-        // 在事件调度线程中创建GUI
         SwingUtilities.invokeLater(() -> {
-            MainFrame mainFrame = new MainFrame();
+            MainFrame mainFrame = new MainFrame(null);
             mainFrame.setVisible(true);
         });
     }

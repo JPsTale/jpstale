@@ -1,14 +1,11 @@
 package org.jpstale.gamedata.ui;
 
 import org.jpstale.gamedata.model.*;
-import org.jpstale.gamedata.service.SimpleGameDataService;
+import org.jpstale.gamedata.service.GameDataService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
@@ -16,9 +13,9 @@ import java.util.List;
  * 数据统计对话框
  */
 public class DataStatisticsDialog extends JDialog {
-    private SimpleGameDataService gameDataService;
+    private GameDataService gameDataService;
 
-    public DataStatisticsDialog(JFrame parent, SimpleGameDataService gameDataService) {
+    public DataStatisticsDialog(JFrame parent, GameDataService gameDataService) {
         super(parent, "数据统计", true);
         this.gameDataService = gameDataService;
         initializeUI();
@@ -241,13 +238,17 @@ public class DataStatisticsDialog extends JDialog {
                 String[] items = drops.split(", ");
 
                 for (String item : items) {
-                    // 提取物品代码
-                    if (item.contains("[")) {
-                        String code = item.substring(item.indexOf("[") + 1, item.indexOf("]"));
-                        String name = item.substring(0, item.indexOf("[")).trim();
-
-                        dropCount.put(code, dropCount.getOrDefault(code, 0) + 1);
-                        dropNameMap.put(code, name);
+                    // 解析格式：名称 (0xCODE) (percent%) 或 [+]名称 (0xCODE) (percent%)
+                    int codeStart = item.indexOf("(0x");
+                    if (codeStart >= 0) {
+                        int codeEnd = item.indexOf(")", codeStart);
+                        if (codeEnd > codeStart) {
+                            String code = item.substring(codeStart + 1, codeEnd).trim();
+                            String name = item.substring(0, codeStart).trim();
+                            if (name.startsWith("[+]")) name = name.substring(3).trim();
+                            dropCount.put(code, dropCount.getOrDefault(code, 0) + 1);
+                            dropNameMap.put(code, name);
+                        }
                     }
                 }
             }
@@ -291,7 +292,7 @@ public class DataStatisticsDialog extends JDialog {
 
             gbc.gridx = 0; gbc.gridy = y;
             String name = dropNameMap.getOrDefault(entry.getKey(), entry.getKey());
-            contentPanel.add(new JLabel(name + " [" + entry.getKey() + "]"), gbc);
+            contentPanel.add(new JLabel(name + " (" + entry.getKey() + ")"), gbc);
             gbc.gridx = 1;
             contentPanel.add(new JLabel(entry.getValue() + " 个怪物掉落"), gbc);
             y++;

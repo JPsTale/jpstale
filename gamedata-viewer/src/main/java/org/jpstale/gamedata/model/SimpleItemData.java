@@ -5,6 +5,7 @@ package org.jpstale.gamedata.model;
  */
 public class SimpleItemData {
     private String id;
+    private long itemCode;         // 物品代码 (ItemInfo.CODE)，用于与掉落/商店关联及十六进制显示
     private String name;
     private String enName;          // 英文名称
     private int category;          // 类别
@@ -49,6 +50,9 @@ public class SimpleItemData {
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
+    public long getItemCode() { return itemCode; }
+    public void setItemCode(long itemCode) { this.itemCode = itemCode; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

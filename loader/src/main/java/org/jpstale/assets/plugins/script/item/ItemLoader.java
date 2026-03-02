@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.plugins.script.PTScriptLoader;
 import org.jpstale.entity.item.ItemInfo;
+import org.jpstale.entity.item.Item;
+import org.jpstale.entity.item.ItemConstant;
 
 /**
  * 服务器的装备信息加载
@@ -158,6 +160,16 @@ public class ItemLoader extends PTScriptLoader<ItemInfo> {
 
             if (startWith(CODE)) {
                 iteminfo.code = getString();
+                // 脚本中只有字符串 code（如 WA101），需从 ItemConstant 解析出数值 CODE
+                String codeStr = (iteminfo.code != null) ? iteminfo.code.trim().replace("\"", "") : "";
+                if (!codeStr.isEmpty()) {
+                    for (Item it : ItemConstant.itemDataBase) {
+                        if (it != null && it.category != null && it.category.equalsIgnoreCase(codeStr)) {
+                            iteminfo.CODE = it.code & 0xFFFFFFFFL;
+                            break;
+                        }
+                    }
+                }
             }
 
             if (startWith(UniqueItem)) {

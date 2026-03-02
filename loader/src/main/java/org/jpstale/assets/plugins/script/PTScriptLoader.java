@@ -101,10 +101,15 @@ public abstract class PTScriptLoader<T> implements AssetLoader {
      */
     protected boolean startWith(final String token, final int argCnt) {
         boolean startToken = false;
-        for (String start : token.split("\\|")) {
-            if (start.equals(this.token[0])) {
-                startToken = true;
-                break;
+        // 先匹配整行首 token 与常量完全一致（如脚本里是 *内靛|*代码 一个 token）
+        if (this.token[0].equals(token)) {
+            startToken = true;
+        } else {
+            for (String start : token.split("\\|")) {
+                if (start.equals(this.token[0])) {
+                    startToken = true;
+                    break;
+                }
             }
         }
         boolean flag = !handleToken && startToken && this.token.length > argCnt;

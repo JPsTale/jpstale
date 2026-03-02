@@ -10,26 +10,42 @@ import java.util.List;
 /**
  * 简化版游戏数据服务实现
  */
-public class SimpleGameServiceImpl implements SimpleGameDataService {
+public class SimpleGameServiceImpl implements GameDataService {
 
+    private String gameRootPath;
+    /** 客户端资源根目录（3D 模型、贴图等），未设置时预览使用 gameRootPath */
+    private String clientRootPath;
     private List<SimpleMonsterData> monsters = new ArrayList<>();
     private List<SimpleNPCData> npcs = new ArrayList<>();
     private List<SimpleItemData> items = new ArrayList<>();
     private List<SimpleMapData> maps = new ArrayList<>();
 
     @Override
+    public String getGameRootPath() {
+        return gameRootPath;
+    }
+
+    @Override
+    public String getClientRootPath() {
+        return clientRootPath;
+    }
+
+    @Override
+    public void setClientRootPath(String path) {
+        this.clientRootPath = (path == null || path.isEmpty()) ? null : path;
+    }
+
+    @Override
     public void loadGameData(File gameServerDir) {
         if (gameServerDir == null) {
-            // 如果没有指定目录，加载测试数据
             loadTestData();
         } else {
+            this.gameRootPath = gameServerDir.getParent();
             System.out.println("正在从GameServer目录加载数据: " + gameServerDir.getAbsolutePath());
 
-            // 使用 DataConverter 加载真实数据
             DataConverter.GameDataContainer container = new DataConverter.GameDataContainer();
             DataConverter.loadAllData(gameServerDir, container);
 
-            // 将加载的数据保存到服务中
             monsters = container.getMonsters() != null ? container.getMonsters() : new ArrayList<>();
             npcs = container.getNpcs() != null ? container.getNpcs() : new ArrayList<>();
             items = container.getItems() != null ? container.getItems() : new ArrayList<>();
@@ -61,6 +77,7 @@ public class SimpleGameServiceImpl implements SimpleGameDataService {
         // 测试道具数据
         SimpleItemData item = new SimpleItemData();
         item.setId("item1");
+        item.setItemCode(0x05010100L);
         item.setName("测试道具");
         item.setCategory(1);
         item.setLevel(5);

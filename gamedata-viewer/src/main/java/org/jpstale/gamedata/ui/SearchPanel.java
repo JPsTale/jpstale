@@ -1,6 +1,6 @@
 package org.jpstale.gamedata.ui;
 
-import org.jpstale.gamedata.service.SimpleGameDataService;
+import org.jpstale.gamedata.service.GameDataService;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -13,7 +13,7 @@ import java.awt.*;
  */
 public class SearchPanel extends JPanel {
 
-    private SimpleGameDataService gameDataService;
+    private GameDataService gameDataService;
 
     // 搜索选项
     private JTextField searchField;
@@ -24,7 +24,7 @@ public class SearchPanel extends JPanel {
     private JList<String> resultList;
     private DefaultListModel<String> listModel;
 
-    public SearchPanel(SimpleGameDataService gameDataService) {
+    public SearchPanel(GameDataService gameDataService) {
         this.gameDataService = gameDataService;
         initializeUI();
     }
