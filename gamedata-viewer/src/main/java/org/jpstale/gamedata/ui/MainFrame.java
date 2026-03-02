@@ -19,6 +19,7 @@ import javax.swing.event.TreeSelectionListener;
 
 import java.awt.*;
 import java.io.File;
+import java.util.*;
 
 /**
  * 主窗口界面
@@ -96,6 +97,20 @@ public class MainFrame extends JFrame {
         JMenuItem exportJsonItem = new JMenuItem("导出为JSON...");
         exportJsonItem.addActionListener(e -> exportToJson());
         toolsMenu.add(exportJsonItem);
+
+        toolsMenu.addSeparator();
+
+        JMenuItem statsItem = new JMenuItem("数据统计...");
+        statsItem.addActionListener(e -> showDataStatistics());
+        toolsMenu.add(statsItem);
+
+        JMenuItem dropAnalysisItem = new JMenuItem("掉落物分析...");
+        dropAnalysisItem.addActionListener(e -> showDropAnalysis());
+        toolsMenu.add(dropAnalysisItem);
+
+        JMenuItem mapAnalysisItem = new JMenuItem("地图分析...");
+        mapAnalysisItem.addActionListener(e -> showMapAnalysis());
+        toolsMenu.add(mapAnalysisItem);
 
         toolsMenu.addSeparator();
 
@@ -293,16 +308,255 @@ public class MainFrame extends JFrame {
      * 导出为Groovy脚本
      */
     private void exportToGroovy() {
-        // TODO: 实现导出Groovy脚本功能
-        JOptionPane.showMessageDialog(this, "Groovy脚本导出功能开发中...", "提示", JOptionPane.INFORMATION_MESSAGE);
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("导出Groovy脚本");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Groovy文件 (*.groovy)", "groovy"));
+        fileChooser.setSelectedFile(new java.io.File("gamedata.groovy"));
+
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+
+            SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    try {
+                        publish("正在导出Groovy脚本...");
+
+                        try (java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.FileWriter(file))) {
+                            writer.println("// JPsTale GameServer Data Export");
+                            writer.println("// Exported at: " + new java.util.Date());
+                            writer.println();
+
+                            // 导出怪物数据
+                            writer.println("// ========== 怪物数据 ==========");
+                            for (SimpleMonsterData monster : gameDataService.getAllMonsters()) {
+                                writer.printf("monster {\n");
+                                writer.printf("    id = '%s'\n", monster.getId());
+                                writer.printf("    name = '%s'\n", monster.getName());
+                                writer.printf("    level = %d\n", monster.getLevel());
+                                writer.printf("    life = %d\n", monster.getLife());
+                                writer.printf("    attack = [%d, %d]\n", monster.getMinAttack(), monster.getMaxAttack());
+                                writer.printf("    defense = %d\n", monster.getDefense());
+                                writer.printf("    exp = %d\n", monster.getExperience());
+                                if (monster.getDropItems() != null && !monster.getDropItems().isEmpty()) {
+                                    writer.printf("    drops = '%s'\n", monster.getDropItems());
+                                }
+                                writer.printf("}\n\n");
+                            }
+
+                            // 导出NPC数据
+                            writer.println("// ========== NPC数据 ==========");
+                            for (SimpleNPCData npc : gameDataService.getAllNPCs()) {
+                                writer.printf("npc {\n");
+                                writer.printf("    id = '%s'\n", npc.getId());
+                                writer.printf("    name = '%s'\n", npc.getName());
+                                writer.printf("    level = %d\n", npc.getLevel());
+                                writer.printf("    isShopkeeper = %s\n", npc.isShopkeeper());
+                                writer.printf("}\n\n");
+                            }
+
+                            // 导出地图数据
+                            writer.println("// ========== 地图数据 ==========");
+                            for (SimpleMapData map : gameDataService.getAllMaps()) {
+                                writer.printf("map {\n");
+                                writer.printf("    id = '%s'\n", map.getId());
+                                writer.printf("    name = '%s'\n", map.getName());
+                                writer.printf("    minLevel = %d\n", map.getMinLevel());
+                                writer.printf("    maxLevel = %d\n", map.getMaxLevel());
+                                writer.printf("    monsterCount = %d\n", map.getMonsterCount());
+                                if (map.getMonsters() != null && !map.getMonsters().isEmpty()) {
+                                    writer.printf("    monsters = '%s'\n", map.getMonsters());
+                                }
+                                writer.printf("}\n\n");
+                            }
+                        }
+
+                        publish("Groovy脚本导出完成: " + file.getAbsolutePath());
+
+                    } catch (Exception e) {
+                        publish("导出失败: " + e.getMessage());
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void process(java.util.List<String> chunks) {
+                    for (String message : chunks) {
+                        log(message);
+                    }
+                }
+            };
+
+            worker.execute();
+        }
     }
 
     /**
      * 导出为JSON
      */
     private void exportToJson() {
-        // TODO: 实现导出JSON功能
-        JOptionPane.showMessageDialog(this, "JSON导出功能开发中...", "提示", JOptionPane.INFORMATION_MESSAGE);
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("导出JSON文件");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JSON文件 (*.json)", "json"));
+        fileChooser.setSelectedFile(new java.io.File("gamedata.json"));
+
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+
+            SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    try {
+                        publish("正在导出JSON数据...");
+
+                        // 使用Gson导出
+                        com.google.gson.Gson gson = new com.google.gson.GsonBuilder()
+                            .setPrettyPrinting()
+                            .create();
+
+                        // 创建数据容器
+                        java.util.Map<String, Object> data = new java.util.HashMap<>();
+                        data.put("monsters", gameDataService.getAllMonsters());
+                        data.put("npcs", gameDataService.getAllNPCs());
+                        data.put("items", gameDataService.getAllItems());
+                        data.put("maps", gameDataService.getAllMaps());
+                        data.put("exportTime", new java.util.Date().toString());
+
+                        // 写入文件
+                        try (java.io.FileWriter writer = new java.io.FileWriter(file)) {
+                            gson.toJson(data, writer);
+                        }
+
+                        publish("JSON导出完成: " + file.getAbsolutePath());
+
+                    } catch (Exception e) {
+                        publish("导出失败: " + e.getMessage());
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void process(java.util.List<String> chunks) {
+                    for (String message : chunks) {
+                        log(message);
+                    }
+                }
+            };
+
+            worker.execute();
+        }
+    }
+
+    /**
+     * 显示数据统计
+     */
+    private void showDataStatistics() {
+        DataStatisticsDialog dialog = new DataStatisticsDialog(this, gameDataService);
+        dialog.setVisible(true);
+    }
+
+    /**
+     * 显示掉落物分析
+     */
+    private void showDropAnalysis() {
+        String itemId = JOptionPane.showInputDialog(this, "请输入要查询的物品代码:", "掉落物分析", JOptionPane.QUESTION_MESSAGE);
+
+        if (itemId != null && !itemId.trim().isEmpty()) {
+            // 创建结果窗口
+            JDialog resultDialog = new JDialog(this, "掉落物分析 - 物品代码: " + itemId, false);
+            resultDialog.setSize(600, 400);
+            resultDialog.setLocationRelativeTo(this);
+
+            JTextArea textArea = new JTextArea();
+            textArea.setEditable(false);
+            textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            resultDialog.add(scrollPane);
+
+            // 查找掉落该物品的怪物
+            StringBuilder result = new StringBuilder();
+            result.append("掉落物品 ").append(itemId).append(" 的怪物:\n");
+            result.append("=================================\n\n");
+
+            int count = 0;
+            for (SimpleMonsterData monster : gameDataService.getAllMonsters()) {
+                if (monster.getDropItems() != null && monster.getDropItems().contains("[" + itemId + "]")) {
+                    count++;
+                    result.append(String.format("%3d. %-20s (等级 %d) - %s\n",
+                        count, monster.getName(), monster.getLevel(), monster.getId()));
+                    if (count >= 100) {
+                        result.append("\n... (最多显示100个结果)\n");
+                        break;
+                    }
+                }
+            }
+
+            if (count == 0) {
+                result.append("没有找到掉落该物品的怪物。");
+            } else {
+                result.append(String.format("\n总共找到 %d 个怪物\n", count));
+            }
+
+            textArea.setText(result.toString());
+            textArea.setCaretPosition(0);
+
+            resultDialog.setVisible(true);
+        }
+    }
+
+    /**
+     * 显示地图分析
+     */
+    private void showMapAnalysis() {
+        JDialog resultDialog = new JDialog(this, "地图分析", false);
+        resultDialog.setSize(700, 500);
+        resultDialog.setLocationRelativeTo(this);
+
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        resultDialog.add(scrollPane);
+
+        // 分析地图数据
+        StringBuilder result = new StringBuilder();
+        result.append("地图分析报告\n");
+        result.append("=================================\n\n");
+
+        // 按怪物数量排序
+        java.util.List<SimpleMapData> maps = new ArrayList<>(gameDataService.getAllMaps());
+        maps.sort((a, b) -> Integer.compare(b.getMonsterCount(), a.getMonsterCount()));
+
+        result.append("怪物数量最多的地图 (Top 20):\n");
+        result.append("---------------------------------\n");
+        for (int i = 0; i < Math.min(20, maps.size()); i++) {
+            SimpleMapData map = maps.get(i);
+            result.append(String.format("%3d. %-20s - %d个怪物 (等级 %d-%d)\n",
+                i + 1, map.getName(), map.getMonsterCount(), map.getMinLevel(), map.getMaxLevel()));
+        }
+
+        result.append("\n\n各级别地图分布:\n");
+        result.append("---------------------------------\n");
+        Map<String, Integer> levelRangeCount = new TreeMap<>();
+        Map<String, java.util.List<String>> rangeMaps = new HashMap<>();
+
+        for (SimpleMapData map : gameDataService.getAllMaps()) {
+            if (map.getMonsterCount() > 0) {
+                String range = String.format("%d-%d", map.getMinLevel(), map.getMaxLevel());
+                levelRangeCount.put(range, levelRangeCount.getOrDefault(range, 0) + 1);
+
+                rangeMaps.computeIfAbsent(range, k -> new java.util.ArrayList<>()).add(map.getName());
+            }
+        }
+
+        for (Map.Entry<String, Integer> entry : levelRangeCount.entrySet()) {
+            result.append(String.format("%s: %d个地图\n", entry.getKey(), entry.getValue()));
+        }
+
+        textArea.setText(result.toString());
+        textArea.setCaretPosition(0);
+
+        resultDialog.setVisible(true);
     }
 
     /**
@@ -470,34 +724,83 @@ public class MainFrame extends JFrame {
         clearDetailPanel();
 
         StringBuilder details = new StringBuilder();
+
+        // 基本信息
+        details.append("========== 基本信息 ==========\n");
         details.append("怪物名称: ").append(monster.getName()).append("\n");
         details.append("怪物ID: ").append(monster.getId()).append("\n");
+        if (monster.getModelName() != null) {
+            details.append("模型名称: ").append(monster.getModelName()).append("\n");
+        }
         details.append("等级: ").append(monster.getLevel()).append("\n");
+        details.append("性质: ").append(monster.getNature() != null ? monster.getNature() : "未知").append("\n");
+        if (monster.getUndead() > 0) {
+            details.append("不死属性: 是\n");
+        }
+
+        // 基础属性
+        details.append("\n========== 基础属性 ==========\n");
+        details.append("力量: ").append(monster.getStrength()).append("\n");
+        details.append("精神: ").append(monster.getSpirit()).append("\n");
+        details.append("才能: ").append(monster.getTalent()).append("\n");
+        details.append("敏捷: ").append(monster.getDexterity()).append("\n");
+        details.append("体质: ").append(monster.getHealth()).append("\n");
+
+        // 战斗属性
+        details.append("\n========== 战斗属性 ==========\n");
         details.append("生命值: ").append(monster.getLife()).append("\n");
-        details.append("攻击力: ").append(monster.getMinAttack()).append(" - ").append(monster.getMaxAttack()).append("\n");
+        if (monster.getMinAttack() > 0 || monster.getMaxAttack() > 0) {
+            details.append("攻击力: ").append(monster.getMinAttack()).append(" - ").append(monster.getMaxAttack()).append("\n");
+        }
+        if (monster.getAttackSpeed() > 0) {
+            details.append("攻击速度: ").append(monster.getAttackSpeed()).append("\n");
+        }
+        if (monster.getAttackRating() > 0) {
+            details.append("命中率: ").append(monster.getAttackRating()).append("\n");
+        }
+        if (monster.getCriticalHit() > 0) {
+            details.append("必杀率: ").append(monster.getCriticalHit()).append("\n");
+        }
+        if (monster.getShootingRange() > 0) {
+            details.append("攻击范围: ").append(monster.getShootingRange()).append("\n");
+        }
         details.append("防御力: ").append(monster.getDefense()).append("\n");
+        if (monster.getChanceBlock() > 0) {
+            details.append("格挡率: ").append(monster.getChanceBlock()).append("\n");
+        }
+        if (monster.getAbsorption() > 0) {
+            details.append("吸收率: ").append(monster.getAbsorption()).append("\n");
+        }
         details.append("经验值: ").append(monster.getExperience()).append("\n");
 
+        // 元素抗性
         if (monster.getFire() > 0 || monster.getIce() > 0 || monster.getLightning() > 0 ||
             monster.getPoison() > 0 || monster.getEarth() > 0) {
-            details.append("\n元素抗性:\n");
-            if (monster.getFire() > 0) details.append("  火焰: ").append(monster.getFire()).append("\n");
-            if (monster.getIce() > 0) details.append("  冰霜: ").append(monster.getIce()).append("\n");
-            if (monster.getLightning() > 0) details.append("  雷电: ").append(monster.getLightning()).append("\n");
-            if (monster.getPoison() > 0) details.append("  毒素: ").append(monster.getPoison()).append("\n");
-            if (monster.getEarth() > 0) details.append("  大地: ").append(monster.getEarth()).append("\n");
+            details.append("\n========== 元素抗性 ==========\n");
+            if (monster.getFire() > 0) details.append("火焰抗性: ").append(monster.getFire()).append("\n");
+            if (monster.getIce() > 0) details.append("冰霜抗性: ").append(monster.getIce()).append("\n");
+            if (monster.getLightning() > 0) details.append("雷电抗性: ").append(monster.getLightning()).append("\n");
+            if (monster.getPoison() > 0) details.append("毒素抗性: ").append(monster.getPoison()).append("\n");
+            if (monster.getEarth() > 0) details.append("大地抗性: ").append(monster.getEarth()).append("\n");
         }
 
-        if (monster.getMoveSpeed() > 0) {
-            details.append("\n移动速度: ").append(String.format("%.2f", monster.getMoveSpeed())).append("\n");
-        }
-        if (monster.getSight() > 0) {
-            details.append("视野范围: ").append(monster.getSight()).append("\n");
+        // 移动和视野
+        if (monster.getMoveSpeed() > 0 || monster.getSight() > 0 || monster.getSizeLevel() > 0) {
+            details.append("\n========== 移动属性 ==========\n");
+            if (monster.getMoveSpeed() > 0) {
+                details.append("移动速度: ").append(String.format("%.2f", monster.getMoveSpeed())).append("\n");
+            }
+            if (monster.getSight() > 0) {
+                details.append("视野范围: ").append(monster.getSight()).append("\n");
+            }
+            if (monster.getSizeLevel() > 0) {
+                details.append("尺寸等级: ").append(monster.getSizeLevel()).append("\n");
+            }
         }
 
-        // 显示掉落物信息
+        // 掉落物信息
         if (monster.getDropItems() != null && !monster.getDropItems().isEmpty()) {
-            details.append("\n掉落物:\n");
+            details.append("\n========== 掉落物 ==========\n");
             details.append(monster.getDropItems()).append("\n");
         }
 
@@ -513,12 +816,64 @@ public class MainFrame extends JFrame {
         clearDetailPanel();
 
         StringBuilder details = new StringBuilder();
+
+        // 基本信息
+        details.append("========== 基本信息 ==========\n");
         details.append("NPC名称: ").append(npc.getName()).append("\n");
         details.append("NPC ID: ").append(npc.getId()).append("\n");
+        if (npc.getModelName() != null) {
+            details.append("模型名称: ").append(npc.getModelName()).append("\n");
+        }
         details.append("等级: ").append(npc.getLevel()).append("\n");
-        details.append("是否商人: ").append(npc.isShopkeeper() ? "是" : "否").append("\n");
+        details.append("类型: ").append(npc.isShopkeeper() ? "商人" : "普通NPC").append("\n");
 
-        detailPanel.append(details.toString());
+        // 商店商品
+        if (npc.isShopkeeper()) {
+            if (npc.getSellAttackItems() != null && npc.getSellAttackItems().length > 0) {
+                details.append("\n========== 攻击装备 ==========\n");
+                for (String item : npc.getSellAttackItems()) {
+                    if (item != null) {
+                        details.append("- ").append(item).append("\n");
+                    }
+                }
+            }
+
+            if (npc.getSellDefenceItems() != null && npc.getSellDefenceItems().length > 0) {
+                details.append("\n========== 防御装备 ==========\n");
+                for (String item : npc.getSellDefenceItems()) {
+                    if (item != null) {
+                        details.append("- ").append(item).append("\n");
+                    }
+                }
+            }
+
+            if (npc.getSellEtcItems() != null && npc.getSellEtcItems().length > 0) {
+                details.append("\n========== 其他道具 ==========\n");
+                for (String item : npc.getSellEtcItems()) {
+                    if (item != null) {
+                        details.append("- ").append(item).append("\n");
+                    }
+                }
+            }
+        }
+
+        // 特殊功能
+        if (npc.getFunctions() != null && !npc.getFunctions().isEmpty()) {
+            details.append("\n========== 特殊功能 ==========\n");
+            details.append(npc.getFunctions()).append("\n");
+        }
+
+        // NPC对话
+        if (npc.getMessages() != null && npc.getMessages().length > 0) {
+            details.append("\n========== NPC对话 ==========\n");
+            for (String message : npc.getMessages()) {
+                if (message != null) {
+                    details.append(message).append("\n");
+                }
+            }
+        }
+
+        detailPanel.setText(details.toString());
         updateStatusText("查看NPC: " + npc.getName());
     }
 
@@ -529,13 +884,133 @@ public class MainFrame extends JFrame {
         clearDetailPanel();
 
         StringBuilder details = new StringBuilder();
-        details.append("道具名称: ").append(item.getName()).append("\n");
-        details.append("道具ID: ").append(item.getId()).append("\n");
-        details.append("等级: ").append(item.getLevel()).append("\n");
-        details.append("价格: ").append(item.getPrice()).append("\n");
 
-        detailPanel.append(details.toString());
+        // 基本信息
+        details.append("========== 基本信息 ==========\n");
+        details.append("道具名称: ").append(item.getName()).append("\n");
+        if (item.getEnName() != null && !item.getEnName().isEmpty()) {
+            details.append("英文名: ").append(item.getEnName()).append("\n");
+        }
+        details.append("道具ID: ").append(item.getId()).append("\n");
+        details.append("类别: ").append(getCategoryName(item.getCategory())).append("\n");
+
+        // 基础属性
+        details.append("\n========== 基础属性 ==========\n");
+        details.append("等级需求: ").append(item.getLevel()).append("\n");
+        if (item.getPrice() > 0) {
+            details.append("价格: ").append(item.getPrice()).append("\n");
+        }
+        if (item.getWeight() > 0) {
+            details.append("重量: ").append(item.getWeight()).append("\n");
+        }
+
+        // 需求属性
+        if (item.getStrengthReq() > 0 || item.getSpiritReq() > 0 ||
+            item.getTalentReq() > 0 || item.getDexterityReq() > 0 ||
+            item.getHealthReq() > 0) {
+            details.append("\n========== 属性需求 ==========\n");
+            if (item.getStrengthReq() > 0) {
+                details.append("力量需求: ").append(item.getStrengthReq()).append("\n");
+            }
+            if (item.getSpiritReq() > 0) {
+                details.append("精神需求: ").append(item.getSpiritReq()).append("\n");
+            }
+            if (item.getTalentReq() > 0) {
+                details.append("才能需求: ").append(item.getTalentReq()).append("\n");
+            }
+            if (item.getDexterityReq() > 0) {
+                details.append("敏捷需求: ").append(item.getDexterityReq()).append("\n");
+            }
+            if (item.getHealthReq() > 0) {
+                details.append("体质需求: ").append(item.getHealthReq()).append("\n");
+            }
+        }
+
+        // 攻击属性
+        if (item.getMinDamage() > 0 || item.getMaxDamage() > 0 ||
+            item.getAttackSpeed() > 0 || item.getAttackRating() > 0 ||
+            item.getCriticalHit() > 0) {
+            details.append("\n========== 攻击属性 ==========\n");
+            if (item.getMinDamage() > 0 || item.getMaxDamage() > 0) {
+                details.append("攻击力: ").append(item.getMinDamage()).append(" - ").append(item.getMaxDamage()).append("\n");
+            }
+            if (item.getAttackSpeed() > 0) {
+                details.append("攻击速度: ").append(item.getAttackSpeed()).append("\n");
+            }
+            if (item.getAttackRating() > 0) {
+                details.append("命中率: ").append(item.getAttackRating()).append("\n");
+            }
+            if (item.getCriticalHit() > 0) {
+                details.append("必杀率: ").append(item.getCriticalHit()).append("\n");
+            }
+        }
+
+        // 防御属性
+        if (item.getDefense() > 0 || item.getChanceBlock() > 0 ||
+            item.getAbsorption() > 0) {
+            details.append("\n========== 防御属性 ==========\n");
+            if (item.getDefense() > 0) {
+                details.append("防御力: ").append(item.getDefense()).append("\n");
+            }
+            if (item.getChanceBlock() > 0) {
+                details.append("格挡率: ").append(item.getChanceBlock()).append("\n");
+            }
+            if (item.getAbsorption() > 0) {
+                details.append("吸收率: ").append(item.getAbsorption()).append("\n");
+            }
+        }
+
+        // 元素抗性
+        if (item.getFireResist() > 0 || item.getIceResist() > 0 ||
+            item.getLightningResist() > 0 || item.getPoisonResist() > 0 ||
+            item.getEarthResist() > 0) {
+            details.append("\n========== 元素抗性 ==========\n");
+            if (item.getFireResist() > 0) {
+                details.append("火焰抗性: ").append(item.getFireResist()).append("\n");
+            }
+            if (item.getIceResist() > 0) {
+                details.append("冰霜抗性: ").append(item.getIceResist()).append("\n");
+            }
+            if (item.getLightningResist() > 0) {
+                details.append("雷电抗性: ").append(item.getLightningResist()).append("\n");
+            }
+            if (item.getPoisonResist() > 0) {
+                details.append("毒素抗性: ").append(item.getPoisonResist()).append("\n");
+            }
+            if (item.getEarthResist() > 0) {
+                details.append("大地抗性: ").append(item.getEarthResist()).append("\n");
+            }
+        }
+
+        // 耐久度
+        if (item.getDurability() > 0 || item.getMaxDurability() > 0) {
+            details.append("\n========== 耐久度 ==========\n");
+            details.append("当前耐久: ").append(item.getDurability()).append("\n");
+            details.append("最大耐久: ").append(item.getMaxDurability()).append("\n");
+        }
+
+        // 特殊效果
+        if (item.getSpecialEffect() != null && !item.getSpecialEffect().isEmpty()) {
+            details.append("\n========== 特殊效果 ==========\n");
+            details.append(item.getSpecialEffect()).append("\n");
+        }
+
+        detailPanel.setText(details.toString());
         updateStatusText("查看道具: " + item.getName());
+    }
+
+    /**
+     * 根据类别代码获取类别名称
+     */
+    private String getCategoryName(int category) {
+        switch (category) {
+            case 1: return "武器";
+            case 2: return "防具";
+            case 3: return "饰品";
+            case 4: return "双手武器";
+            case 5: return "消耗品";
+            default: return "未知(" + category + ")";
+        }
     }
 
     /**

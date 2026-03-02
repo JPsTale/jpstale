@@ -266,7 +266,20 @@ public class DataConverter {
 
         data.setId(id);
         data.setName(monster.szName != null ? monster.szName : id);
+        data.setModelName(monster.szModelName);
         data.setLevel(monster.Level);
+
+        // 基础属性
+        data.setStrength(monster.Strength);
+        data.setSpirit(monster.Spirit);
+        data.setTalent(monster.Talent);
+        data.setDexterity(monster.Dexterity);
+        data.setHealth(monster.Health);
+        data.setSizeLevel(monster.SizeLevel);
+        data.setUndead(monster.Undead);
+
+        // 怪物性质（主动/被动）
+        data.setNature(monster.Nature == 0 ? "被动" : "主动");
 
         // 生命值使用最大值
         if (monster.Life != null && monster.Life.length > 1) {
@@ -279,7 +292,14 @@ public class DataConverter {
             data.setMaxAttack(monster.Attack_Damage[1]);
         }
 
+        // 战斗属性
+        data.setAttackSpeed(monster.Attack_Speed);
+        data.setAttackRating(monster.Attack_Rating);
+        data.setCriticalHit(monster.Critical_Hit);
+        data.setShootingRange(monster.Shooting_Range);
         data.setDefense(monster.Defence);
+        data.setChanceBlock(monster.Chance_Block);
+        data.setAbsorption(monster.Absorption);
         data.setExperience(monster.GetExp);
         data.setMoveSpeed((float) (monster.Move_Speed / 100.0)); // 转换为浮点数
         data.setSight(monster.Sight);
@@ -333,6 +353,7 @@ public class DataConverter {
 
         data.setId(id);
         data.setName(npc.szName != null ? npc.szName : id);
+        data.setModelName(npc.szModelName);
         data.setLevel(npc.Level);
 
         // 判断是否是商人（通过检查是否有商品）
@@ -340,6 +361,60 @@ public class DataConverter {
                                npc.SellDefenceItemCount > 0 ||
                                npc.SellEtcItemCount > 0);
         data.setShopkeeper(isShopkeeper);
+
+        // 提取商店商品
+        if (isShopkeeper) {
+            // 攻击装备
+            String[] attackItems = new String[npc.SellAttackItemCount];
+            for (int i = 0; i < npc.SellAttackItemCount; i++) {
+                attackItems[i] = itemCodeToName(npc.SellAttackItem[i]);
+            }
+            data.setSellAttackItems(attackItems);
+
+            // 防御装备
+            String[] defenceItems = new String[npc.SellDefenceItemCount];
+            for (int i = 0; i < npc.SellDefenceItemCount; i++) {
+                defenceItems[i] = itemCodeToName(npc.SellDefenceItem[i]);
+            }
+            data.setSellDefenceItems(defenceItems);
+
+            // 其他道具
+            String[] etcItems = new String[npc.SellEtcItemCount];
+            for (int i = 0; i < npc.SellEtcItemCount; i++) {
+                etcItems[i] = itemCodeToName(npc.SellEtcItem[i]);
+            }
+            data.setSellEtcItems(etcItems);
+        }
+
+        // 特殊功能
+        StringBuilder functions = new StringBuilder();
+        if (npc.SkillMaster == 1) functions.append("技能导师, ");
+        if (npc.SkillChangeJob == 1) functions.append("转职NPC, ");
+        if (npc.WareHouseMaster == 1) functions.append("仓库管理员, ");
+        if (npc.ItemMix == 1) functions.append("物品合成, ");
+        if (npc.ItemAging == 1) functions.append("装备锻造, ");
+        if (npc.Smelting == 1) functions.append("装备精炼, ");
+        if (npc.Manufacture == 1) functions.append("装备制造, ");
+        if (npc.MixtureReset == 1) functions.append("属性重置, ");
+        if (npc.SoketNPC == 1) functions.append("打孔镶嵌, ");
+        if (npc.TelePortNpc == 1) functions.append("传送NPC, ");
+
+        // 去掉最后的逗号空格
+        if (functions.length() > 0) {
+            functions = new StringBuilder(functions.substring(0, functions.length() - 2));
+        }
+        data.setFunctions(functions.toString());
+
+        // NPC对话信息（取前3条）
+        if (npc.NpcMessage != null && npc.NpcMsgCount > 0) {
+            String[] messages = new String[Math.min(3, npc.NpcMsgCount)];
+            for (int i = 0; i < messages.length; i++) {
+                if (npc.NpcMessage[i] != null && !npc.NpcMessage[i].isEmpty()) {
+                    messages[i] = npc.NpcMessage[i];
+                }
+            }
+            data.setMessages(messages);
+        }
 
         return data;
     }
@@ -352,26 +427,81 @@ public class DataConverter {
 
         data.setId(id);
         data.setName((item.localeName != null && !item.localeName.isEmpty()) ? item.localeName : id);
+        data.setEnName(item.enName);
         data.setCategory((int) (item.CODE / 1000)); // 简单的类别计算
 
-        // 等级需求
-        if (item.require != null) {
-            data.setLevel(item.require.level);
-        }
-
+        // 基础属性
         data.setPrice(item.Price);
         data.setWeight(item.Weight);
 
-        // 攻击力
-        if (item.attack != null && item.attack.Damage != null && item.attack.Damage.length >= 2) {
-            data.setMinAttack(item.attack.Damage[0]);
-            data.setMaxAttack(item.attack.Damage[1]);
+        // 需求属性
+        if (item.require != null) {
+            data.setLevel(item.require.level);
+            data.setStrengthReq(item.require.strength);
+            data.setSpiritReq(item.require.spirit);
+            data.setTalentReq(item.require.talent);
+            data.setDexterityReq(item.require.dexterity);
+            data.setHealthReq(item.require.health);
         }
 
-        // 防御力
-        if (item.defence != null && item.defence.Absorb != null && item.defence.Absorb.length >= 1) {
-            data.setDefense((int) item.defence.Absorb[0]);
+        // 攻击属性
+        if (item.attack != null) {
+            if (item.attack.Damage != null && item.attack.Damage.length >= 2) {
+                data.setMinDamage(item.attack.Damage[0]);
+                data.setMaxDamage(item.attack.Damage[1]);
+            }
+            data.setAttackSpeed(item.attack.Attack_Speed);
+            if (item.attack.Attack_Rating != null && item.attack.Attack_Rating.length >= 2) {
+                data.setAttackRating(item.attack.Attack_Rating[0]);
+            }
+            data.setCriticalHit(item.attack.Critical_Hit);
         }
+
+        // 防御属性
+        if (item.defence != null) {
+            if (item.defence.Defence != null && item.defence.Defence.length >= 1) {
+                data.setDefense((int) item.defence.Defence[0]);
+            }
+            if (item.defence.Block_Rating != null && item.defence.Block_Rating.length >= 1) {
+                data.setChanceBlock((int) item.defence.Block_Rating[0]);
+            }
+            if (item.defence.Absorb != null && item.defence.Absorb.length >= 1) {
+                data.setAbsorption((int) item.defence.Absorb[0]);
+            }
+        }
+
+        // 元素抗性
+        if (item.resistance != null) {
+            if (item.resistance.Fire != null && item.resistance.Fire.length >= 1) {
+                data.setFireResist(item.resistance.Fire[0]);
+            }
+            if (item.resistance.Ice != null && item.resistance.Ice.length >= 1) {
+                data.setIceResist(item.resistance.Ice[0]);
+            }
+            if (item.resistance.Lighting != null && item.resistance.Lighting.length >= 1) {
+                data.setLightningResist(item.resistance.Lighting[0]);
+            }
+            if (item.resistance.Poison != null && item.resistance.Poison.length >= 1) {
+                data.setPoisonResist(item.resistance.Poison[0]);
+            }
+            if (item.resistance.Earth != null && item.resistance.Earth.length >= 1) {
+                data.setEarthResist(item.resistance.Earth[0]);
+            }
+        }
+
+        // 耐久度
+        if (item.durability != null) {
+            data.setDurability(item.durability.durabilityCur);
+            data.setMaxDurability(item.durability.durabilityMax);
+        }
+
+        // 特殊效果（简化处理）
+        StringBuilder effect = new StringBuilder();
+        if (item.speed != null && item.speed.Speed != null && item.speed.Speed.length >= 1) {
+            effect.append("移动速度+").append(item.speed.Speed[0]);
+        }
+        // 这里可以添加更多特殊效果的检测
+        data.setSpecialEffect(effect.toString());
 
         return data;
     }
