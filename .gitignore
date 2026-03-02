@@ -1,4 +1,5 @@
 /.gradle/
+.run/
 **/.idea/
 **/.DS_Store
 **/.settings/
