@@ -172,6 +172,7 @@ public class MainFrame extends JFrame {
     private void createMainContent() {
         // 创建左侧搜索面板
         searchPanel = new SearchPanel(gameDataService);
+        searchPanel.setSearchResultListener(this::onSearchResultSelected);
 
         // 创建简单的树
         DefaultTreeModel model = createTreeModel(gameDataService);
@@ -890,6 +891,48 @@ public class MainFrame extends JFrame {
                 gameDataService.getAllItems().size() + " 道具, " +
                 gameDataService.getAllMaps().size() + " 地图");
         }
+    }
+
+    /**
+     * 从左侧搜索结果选中一条时：显示详情并同步选中树中对应节点
+     */
+    private void onSearchResultSelected(Object entity) {
+        if (entity instanceof SimpleMonsterData) {
+            displayMonsterDetails((SimpleMonsterData) entity);
+        } else if (entity instanceof SimpleNPCData) {
+            displayNPCDetails((SimpleNPCData) entity);
+        } else if (entity instanceof SimpleItemData) {
+            displayItemDetails((SimpleItemData) entity);
+        } else if (entity instanceof SimpleMapData) {
+            displayMapDetails((SimpleMapData) entity);
+        }
+        selectTreeNodeWithUserObject(entity);
+    }
+
+    /**
+     * 在树中定位并选中指定 userObject 的节点（展开父节点）
+     */
+    private void selectTreeNodeWithUserObject(Object userObject) {
+        if (dataTree == null || userObject == null) return;
+        DefaultTreeModel model = (DefaultTreeModel) dataTree.getModel();
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+        DefaultMutableTreeNode found = findNodeWithUserObject(root, userObject);
+        if (found != null) {
+            TreePath path = new TreePath(found.getPath());
+            dataTree.expandPath(path.getParentPath());
+            dataTree.setSelectionPath(path);
+            dataTree.scrollPathToVisible(path);
+        }
+    }
+
+    private static DefaultMutableTreeNode findNodeWithUserObject(DefaultMutableTreeNode node, Object target) {
+        if (target.equals(node.getUserObject())) return node;
+        for (int i = 0; i < node.getChildCount(); i++) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
+            DefaultMutableTreeNode found = findNodeWithUserObject(child, target);
+            if (found != null) return found;
+        }
+        return null;
     }
 
     /**
