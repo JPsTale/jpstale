@@ -51,6 +51,7 @@ public class ModelPreviewApp extends SimpleApplication {
                 model.scale(SCALE);
                 rootNode.attachChild(model);
 
+                /*
                 AnimControl ac = findAnimControl(model);
                 if (ac != null) {
                     AnimChannel channel = ac.createChannel();
@@ -60,6 +61,7 @@ public class ModelPreviewApp extends SimpleApplication {
                     }
                     channel.setAnim(animName);
                 }
+                */
             }
         } catch (Exception e) {
             e.printStackTrace();
