@@ -11,6 +11,7 @@ import org.jpstale.assets.plugins.smd.material.TEXLINK;
 import org.jpstale.assets.plugins.smd.math.Matrix4D;
 import org.jpstale.constants.SceneConstants;
 
+import com.jme3.anim.util.AnimMigrationUtils;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.Animation;
 import com.jme3.animation.Skeleton;
@@ -103,6 +104,7 @@ public class ModelBuilder {
             }
         }
 
+        AnimMigrationUtils.migrate(rootNode);
         return rootNode;
     }
 
