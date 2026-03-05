@@ -49,8 +49,7 @@ public class TestSkeleton extends TestBase {
             SkeletonDebugger debugger = new SkeletonDebugger("skeleton", ske);
             debugger.setMaterial(mat);
             debugger.scale(SceneConstants.scale);
-            debugger.rotate(-FastMath.HALF_PI, 0, 0);
-            
+
             rootNode.attachChild(debugger);
         }
 

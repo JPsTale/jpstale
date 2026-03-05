@@ -98,7 +98,6 @@ public class TestSubAnimation extends TestBase {
         SkeletonDebugger debugger = new SkeletonDebugger("skeleton", ske);
         debugger.setMaterial(mat);
         debugger.scale(0.1f);
-        debugger.rotate(-FastMath.HALF_PI, 0, 0);
 
         rootNode.attachChild(debugger);
     }
