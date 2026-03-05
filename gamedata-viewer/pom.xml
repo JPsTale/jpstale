@@ -46,6 +46,13 @@
 			<artifactId>gson</artifactId>
 		</dependency>
 
+		<!-- Lemur GUI（3D 预览动画控制面板） -->
+		<dependency>
+			<groupId>com.simsilica</groupId>
+			<artifactId>lemur</artifactId>
+			<version>1.16.0</version>
+		</dependency>
+
 		<!-- 日志 -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
