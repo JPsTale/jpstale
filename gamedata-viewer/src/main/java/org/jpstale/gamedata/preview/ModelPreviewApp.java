@@ -1,14 +1,13 @@
 package org.jpstale.gamedata.preview;
 
-import com.jme3.animation.AnimControl;
-import com.jme3.animation.AnimChannel;
+import com.jme3.anim.AnimComposer;
 import com.jme3.app.SimpleApplication;
 import com.jme3.light.AmbientLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
+import com.simsilica.lemur.GuiGlobals;
 import org.jpstale.assets.AssetFactory;
 
 /**
@@ -34,6 +33,7 @@ public class ModelPreviewApp extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        GuiGlobals.initialize(this);
         AssetFactory.setAssetManager(assetManager);
         if (gameRootPath != null && !gameRootPath.isEmpty()) {
             AssetFactory.setFolder(gameRootPath);
@@ -50,18 +50,11 @@ public class ModelPreviewApp extends SimpleApplication {
             if (model != null) {
                 model.scale(SCALE);
                 rootNode.attachChild(model);
-
-                /*
-                AnimControl ac = findAnimControl(model);
-                if (ac != null) {
-                    AnimChannel channel = ac.createChannel();
-                    String animName = "Anim";
-                    if (ac.getAnimationNames() != null && !ac.getAnimationNames().isEmpty()) {
-                        animName = ac.getAnimationNames().iterator().next();
-                    }
-                    channel.setAnim(animName);
+                AnimComposer composer = findAnimComposer(model);
+                if (composer != null && !composer.getAnimClipsNames().isEmpty()) {
+                    composer.setCurrentAction(composer.getAnimClipsNames().iterator().next());
                 }
-                */
+                getStateManager().attach(new CharacterPreviewState(rootNode));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,13 +65,13 @@ public class ModelPreviewApp extends SimpleApplication {
         flyCam.setMoveSpeed(8f);
     }
 
-    private static AnimControl findAnimControl(Spatial spatial) {
-        AnimControl ac = spatial.getControl(AnimControl.class);
-        if (ac != null) return ac;
-        if (spatial instanceof Node) {
-            for (Spatial child : ((Node) spatial).getChildren()) {
-                ac = findAnimControl(child);
-                if (ac != null) return ac;
+    private static AnimComposer findAnimComposer(Spatial spatial) {
+        AnimComposer c = spatial.getControl(AnimComposer.class);
+        if (c != null) return c;
+        if (spatial instanceof com.jme3.scene.Node) {
+            for (Spatial child : ((com.jme3.scene.Node) spatial).getChildren()) {
+                c = findAnimComposer(child);
+                if (c != null) return c;
             }
         }
         return null;
