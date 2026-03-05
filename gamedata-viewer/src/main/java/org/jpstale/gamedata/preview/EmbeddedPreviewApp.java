@@ -48,15 +48,13 @@ public class EmbeddedPreviewApp extends SimpleApplication {
         detachPreviewState();
         try {
             Spatial model = AssetFactory.loadCharacter(characterPath);
-            if (model != null) {
-                model.scale(CHAR_SCALE);
-                rootNode.attachChild(model);
-                AnimComposer composer = findAnimComposer(model);
-                if (composer != null && !composer.getAnimClipsNames().isEmpty()) {
-                    composer.setCurrentAction(composer.getAnimClipsNames().iterator().next());
-                }
-                getStateManager().attach(new CharacterPreviewState(rootNode));
+            model.scale(CHAR_SCALE);
+            rootNode.attachChild(model);
+            AnimComposer composer = findAnimComposer(model);
+            if (composer != null && !composer.getAnimClipsNames().isEmpty()) {
+                composer.setCurrentAction(composer.getAnimClipsNames().iterator().next());
             }
+            getStateManager().attach(new CharacterPreviewState(rootNode));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,10 +77,8 @@ public class EmbeddedPreviewApp extends SimpleApplication {
             try {
                 String path = "image/Sinimage/Items/DropItem/it" + item.dorpItem + ".smd";
                 Spatial model = AssetFactory.loadStageObj(path, false);
-                if (model != null) {
-                    model.scale(SceneConstants.scale);
-                    rootNode.attachChild(model);
-                }
+                model.scale(SceneConstants.scale);
+                rootNode.attachChild(model);
             } catch (Exception e) {
                 e.printStackTrace();
             }

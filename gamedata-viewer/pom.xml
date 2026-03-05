@@ -46,11 +46,33 @@
 			<artifactId>gson</artifactId>
 		</dependency>
 
-		<!-- Lemur GUI（3D 预览动画控制面板） -->
+		<!-- Lemur GUI（3D 预览动画控制面板），扩展参考 /Users/yanmaoyuan/repo/Lemur/extensions -->
 		<dependency>
 			<groupId>com.simsilica</groupId>
 			<artifactId>lemur</artifactId>
 			<version>1.16.0</version>
+		</dependency>
+		<!-- LemurProto：Selector/ListBox/Spinner 等组件，Maven Central 最新 1.13.0 -->
+		<dependency>
+			<groupId>com.simsilica</groupId>
+			<artifactId>lemur-proto</artifactId>
+			<version>1.13.0</version>
+		</dependency>
+		<!-- LemurProps：基于 Lemur 的自动属性面板 -->
+		<dependency>
+			<groupId>com.simsilica</groupId>
+			<artifactId>lemur-props</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<!-- Guava：LemurProto 使用 com.google.common.base.Function 等，需显式引入 -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
 		</dependency>
 
 		<!-- 日志 -->

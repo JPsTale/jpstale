@@ -27,6 +27,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
+import com.jme3.scene.VertexBuffer.Format;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.util.BufferUtils;
 
@@ -212,9 +213,9 @@ public class ModelBuilder {
         mesh.setBuffer(Type.Index, 3, f);
         mesh.setBuffer(Type.TexCoord, 2, BufferUtils.createFloatBuffer(uv));
 
-        // 骨骼蒙皮
+        // 骨骼蒙皮（BoneIndex 须为 ByteBuffer，否则 AnimMigrationUtils 中 IndexBuffer.wrapIndexBuffer 会抛 UnsupportedOperationException）
         if (obj.boneArray != null && ske != null) {
-            float[] boneIndex = new float[count * 12];
+            byte[] boneIndex = new byte[count * 3 * 4];  // count=面数，顶点数=count*3，每顶点4字节
             float[] boneWeight = new float[count * 12];
 
             index = 0;
@@ -246,11 +247,11 @@ public class ModelBuilder {
             }
 
             mesh.setMaxNumWeights(1);
-            // apply software skinning
-            mesh.setBuffer(Type.BoneIndex, 4, boneIndex);
+            // apply software skinning（jME3 Mesh.isAnimatedByBone 要求 BoneIndex 为 ByteBuffer/ShortBuffer/IntBuffer）
+            mesh.setBuffer(Type.BoneIndex, 4, Format.UnsignedByte, BufferUtils.createByteBuffer(boneIndex));
             mesh.setBuffer(Type.BoneWeight, 4, boneWeight);
             // apply hardware skinning
-            mesh.setBuffer(Type.HWBoneIndex, 4, boneIndex);
+            mesh.setBuffer(Type.HWBoneIndex, 4, Format.UnsignedByte, BufferUtils.createByteBuffer(boneIndex));
             mesh.setBuffer(Type.HWBoneWeight, 4, boneWeight);
 
             mesh.generateBindPose(true);
