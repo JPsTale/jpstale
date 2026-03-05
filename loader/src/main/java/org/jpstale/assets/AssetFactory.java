@@ -301,8 +301,8 @@ public class AssetFactory {
         smdFile = AssetNameUtils.getName(smdFile);
         PAT3D model = AssetFactory.loadSmd(folder + smdFile);
         model.setSkeleton(skeleton);
-        
-        return ModelBuilder.buildModel(model, path);
+
+        return ModelBuilder.buildModel(model, path, modelInfo);
     }
     
     @SuppressWarnings("unchecked")

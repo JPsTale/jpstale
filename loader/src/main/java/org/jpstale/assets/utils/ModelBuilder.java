@@ -4,7 +4,9 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jpstale.assets.AssetFactory;
+import org.jpstale.assets.plugins.smd.geom.AnimateModel;
 import org.jpstale.assets.plugins.smd.geom.GeomObject;
+import org.jpstale.assets.plugins.smd.geom.MotionInfo;
 import org.jpstale.assets.plugins.smd.geom.PAT3D;
 import org.jpstale.assets.plugins.smd.material.SmMaterial;
 import org.jpstale.assets.plugins.smd.material.TEXLINK;
@@ -38,13 +40,25 @@ import com.jme3.util.BufferUtils;
 public class ModelBuilder {
 
     /**
-     * 生成模型
-     * 
-     * @param pat
-     * @param name
-     * @return
+     * 生成模型（使用 INX 分段动画信息时请使用 {@link #buildModel(PAT3D, String, AnimateModel)}）
+     *
+     * @param pat  PAT3D 结构
+     * @param name 名称
+     * @return 根节点
      */
     public static Node buildModel(PAT3D pat, String name) {
+        return buildModel(pat, name, null);
+    }
+
+    /**
+     * 生成模型，可选按 INX 的 subMotions 生成多段动画
+     *
+     * @param pat       PAT3D 结构
+     * @param name      名称
+     * @param modelInfo INX 模型信息，为 null 或无有效分段时只生成一整段 "Anim"
+     * @return 根节点
+     */
+    public static Node buildModel(PAT3D pat, String name, AnimateModel modelInfo) {
         Node rootNode = new Node("PAT3D:" + name);
         // DirectX (Y up, Z forward) → OpenGL (Y up, Z backward) 旋转
         rootNode.rotate(-FastMath.HALF_PI, 0, 0);
@@ -52,10 +66,23 @@ public class ModelBuilder {
         // 生成骨骼
         if (pat.skeleton != null) {
             ske = AnimationBuilder.buildSkeleton(pat.skeleton);
-            // 绑定动画控制器
-            Animation anim = AnimationBuilder.buildAnimation(pat.skeleton);
             AnimControl ac = new AnimControl(ske);
-            ac.addAnim(anim);
+            boolean added = false;
+            if (modelInfo != null && modelInfo.subMotionCount > 0) {
+                for (int i = 0; i < modelInfo.subMotionCount; i++) {
+                    MotionInfo mi = modelInfo.subMotions[i];
+                    if (mi == null) continue;
+                    if ((mi.motionStartFrame <= 0 && mi.talkStartFrame <= 0) || mi.endFrame <= 0) continue;
+                    Animation anim = AnimationBuilder.buildAnimation(pat.skeleton, mi);
+                    if (anim != null) {
+                        ac.addAnim(anim);
+                        added = true;
+                    }
+                }
+            }
+            if (!added) {
+                ac.addAnim(AnimationBuilder.buildAnimation(pat.skeleton));
+            }
             rootNode.addControl(ac);
             rootNode.addControl(new SkeletonControl(ske));
         }
