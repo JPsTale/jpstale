@@ -19,7 +19,6 @@ import com.jme3.animation.Animation;
 import com.jme3.animation.Skeleton;
 import com.jme3.animation.SkeletonControl;
 import com.jme3.material.Material;
-import com.jme3.math.FastMath;
 import com.jme3.math.Matrix4f;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector2f;
@@ -61,8 +60,6 @@ public class ModelBuilder {
      */
     public static Node buildModel(PAT3D pat, String name, AnimateModel modelInfo) {
         Node rootNode = new Node("PAT3D:" + name);
-        // DirectX (Y up, Z forward) → OpenGL (Y up, Z backward) 旋转
-        rootNode.rotate(-FastMath.HALF_PI, 0, 0);
         Skeleton ske = null;
         // 生成骨骼
         if (pat.skeleton != null) {

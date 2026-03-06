@@ -2,6 +2,7 @@ package org.jpstale.gamedata.ui;
 
 import org.jpstale.gamedata.service.GameDataService;
 import org.jpstale.gamedata.service.SimpleGameServiceImpl;
+import org.jpstale.gamedata.tools.SkeletonAnimationExportTool;
 import org.jpstale.gamedata.preview.EmbeddedPreviewApp;
 import org.jpstale.gamedata.preview.JmePreviewHolder;
 import org.jpstale.gamedata.preview.PreviewProcessRunner;
@@ -121,6 +122,10 @@ public class MainFrame extends JFrame {
         JMenuItem exportJsonItem = new JMenuItem("导出为JSON...");
         exportJsonItem.addActionListener(e -> exportToJson());
         toolsMenu.add(exportJsonItem);
+
+        JMenuItem exportSkeletonItem = new JMenuItem("导出选中角色骨骼动画为JSON...");
+        exportSkeletonItem.addActionListener(e -> exportSelectedSkeletonAnimation());
+        toolsMenu.add(exportSkeletonItem);
 
         toolsMenu.addSeparator();
 
@@ -452,6 +457,82 @@ public class MainFrame extends JFrame {
 
             worker.execute();
         }
+    }
+
+    /**
+     * 将当前选中的怪物 / NPC 对应的 INX + SMB 骨骼动画导出为 JSON。
+     */
+    private void exportSelectedSkeletonAnimation() {
+        if (dataTree == null) return;
+        TreePath path = dataTree.getSelectionPath();
+        if (path == null) {
+            JOptionPane.showMessageDialog(this, "请先在左侧树中选中一个怪物或 NPC。", "导出骨骼动画", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        Object node = path.getLastPathComponent();
+        if (!(node instanceof DefaultMutableTreeNode)) return;
+        Object userObject = ((DefaultMutableTreeNode) node).getUserObject();
+
+        if (!(userObject instanceof SimpleMonsterData) && !(userObject instanceof SimpleNPCData)) {
+            JOptionPane.showMessageDialog(this, "当前选中节点不是怪物或 NPC，请先选中对应节点。", "导出骨骼动画", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        String gameRoot = gameDataService.getGameRootPath();
+        if (gameRoot == null || gameRoot.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "请先通过「文件 > 打开GameServer目录」加载游戏目录。", "导出骨骼动画", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // 3D 资源（char/、image/）从客户端资源目录加载；未设置时用 GameServer 父目录
+        String root = gameDataService.getClientRootPath();
+        if (root == null || root.isEmpty()) {
+            root = gameRoot;
+        }
+
+        final String characterPath;
+        final String defaultName;
+        if (userObject instanceof SimpleMonsterData) {
+            SimpleMonsterData m = (SimpleMonsterData) userObject;
+            characterPath = toCharacterPath(m.getId(), m.getModelName(), true);
+            defaultName = m.getId() + "_skeleton.json";
+        } else {
+            SimpleNPCData n = (SimpleNPCData) userObject;
+            characterPath = toCharacterPath(n.getId(), n.getModelName(), false);
+            defaultName = n.getId() + "_skeleton.json";
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("导出骨骼动画 JSON");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JSON文件 (*.json)", "json"));
+        fileChooser.setSelectedFile(new java.io.File(defaultName));
+
+        if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        File file = fileChooser.getSelectedFile();
+        final String assetRoot = root;
+
+        SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
+            @Override
+            protected Void doInBackground() {
+                try {
+                    publish("正在导出骨骼动画 JSON: " + characterPath);
+                    SkeletonAnimationExportTool.exportWithNewManager(assetRoot, characterPath, file);
+                    publish("骨骼动画 JSON 导出完成: " + file.getAbsolutePath());
+                } catch (Exception ex) {
+                    publish("导出失败: " + ex.getMessage());
+                }
+                return null;
+            }
+
+            @Override
+            protected void process(java.util.List<String> chunks) {
+                for (String message : chunks) {
+                    log(message);
+                }
+            }
+        };
+        worker.execute();
     }
 
     /**

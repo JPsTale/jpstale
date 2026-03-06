@@ -80,22 +80,11 @@ public class AnimationBuilder {
             Bone bone = new Bone(obj.NodeName);
             bones[i] = bone;
 
-            // 骨骼绑定变换 - 原始 DirectX 数据
+            // 骨骼绑定变换：使用 SMB 原始数据，与顶点 transformInvert 空间一致；整体坐标系由 ModelBuilder 的 rootNode.rotate(-HALF_PI,0,0) 统一处理
             Vector3f translation = new Vector3f(obj.px, obj.py, obj.pz);
             Quaternion rotation = new Quaternion(obj.qx, obj.qy, obj.qz, -obj.qw);
-            Vector3f scale = new Vector3f(obj.sx, obj.sy, obj.sz);
-
-            // 确保旋转是规范的
             rotation.normalizeLocal();
-
-            // 应用坐标系转换到绑定姿态，与模型保持一致
-            Quaternion dxToGl = new Quaternion();
-            dxToGl.fromAngles(-FastMath.HALF_PI, 0, 0);
-
-            // 转换位置和旋转到 OpenGL 坐标系
-            translation = dxToGl.mult(translation);
-            rotation = dxToGl.mult(rotation).mult(dxToGl.inverse());
-
+            Vector3f scale = new Vector3f(obj.sx, obj.sy, obj.sz);
             bone.setBindTransforms(translation, rotation, scale);
 
             // 建立父子关系
@@ -121,57 +110,46 @@ public class AnimationBuilder {
      * @return jME3 Animation
      */
     public static Animation buildAnimation(PAT3D pat, MotionInfo motionInfo) {
-        // 起始帧
-        int startTick = 0;
-        // 结束帧数
-        int endTick = 0;
-
+        int startFrame;
+        int endFrame;
         if (motionInfo.motionStartFrame > 0) {
-            startTick = motionInfo.motionStartFrame / 256;
+            startFrame = motionInfo.motionStartFrame;
         } else if (motionInfo.talkStartFrame > 0) {
-            startTick = motionInfo.talkStartFrame / 256;
+            startFrame = motionInfo.talkStartFrame;
         } else {
             log.warn("No animation included for {}", getAnimationNameById(motionInfo.State));
             return null;
         }
-        endTick = motionInfo.endFrame / 256;
+        endFrame = motionInfo.endFrame;
 
-        // 这种是需要倒放的动画
-        boolean backForward = false;
-        if (endTick < startTick) {
-            int tmp = endTick;
-            endTick = startTick;
-            startTick = tmp;
-            backForward = true;
-            log.debug("需要倒放的动画!");
+        // 动画时长与“跨 0 点”分段（如 Die: start=48640, end=768，表示从 48640 播到片尾再 0 到 768）
+        int maxFrame = 0;
+        for (int i = 0; i < pat.objCount; i++) {
+            GeomObject o = pat.objArray[i];
+            if (o != null && o.maxFrame > maxFrame) maxFrame = o.maxFrame;
         }
-
-        // 计算开始和结束的帧，用于截取动画数据
-        int startFrame = startTick * FramePerTick;
-        int endFrame = endTick * FramePerTick;
-
-        // 计算动画时常
-        // 原版使用 4800 FPS，但实际播放可能需要调整
-        // 根据观察，原版动画在 30 FPS 下播放正常，所以这里调整系数
-        float timeScale = 160.0f / 4800.0f; // 帧间隔调整
-        float length = (float) (endTick - startTick) / TickPerSecond * timeScale;
+        float length;
+        boolean wrap = endFrame < startFrame;
+        if (wrap) {
+            length = (float) ((maxFrame - startFrame + 1) + (endFrame + 1)) / FramePerSecond;
+        } else {
+            length = (float) (endFrame - startFrame) / FramePerSecond;
+        }
 
         String name = getAnimationNameById(motionInfo.State);
         if (log.isDebugEnabled()) {
-            log.debug("{} startKey:{} endKey:{} length:{}", name, startTick, endTick, length);
+            log.debug("{} startFrame:{} endFrame:{} wrap:{} length:{}", name, startFrame, endFrame, wrap, length);
         }
 
         Animation anim = new Animation(name, length);
 
-        // 构建每个骨骼的动画轨迹
         for (int i = 0; i < pat.objCount; i++) {
             GeomObject obj = pat.objArray[i];
-            BoneTrack track = buildBoneTrack(pat, obj, startFrame, endFrame);
+            BoneTrack track = buildBoneTrack(pat, obj, startFrame, endFrame, wrap, maxFrame);
             if (track != null) {
-                // 应用动画平滑处理
                 int boneIndex = pat.getObjIndex(obj.NodeName);
                 track = AnimationInterpolator.preprocess(track, boneIndex);
-                track = AnimationInterpolator.interpolate(track, boneIndex, 30.0f); // 目标 30 FPS
+                track = AnimationInterpolator.interpolate(track, boneIndex, 30.0f);
                 anim.addTrack(track);
             }
         }
@@ -209,7 +187,7 @@ public class AnimationBuilder {
         // 构建每个骨骼的动画轨迹
         for (int i = 0; i < pat.objCount; i++) {
             GeomObject obj = pat.objArray[i];
-            BoneTrack track = buildBoneTrack(pat, obj, 0, maxFrame);
+            BoneTrack track = buildBoneTrack(pat, obj, 0, maxFrame, false, maxFrame);
             if (track != null) {
                 // 应用动画平滑处理
                 int boneIndex = pat.getObjIndex(obj.NodeName);
@@ -223,148 +201,93 @@ public class AnimationBuilder {
     }
 
     /**
-     * 为单个骨骼构建动画轨迹（BoneTrack）
-     *
-     * 注意：ModelBuilder 中有 rootNode.rotate(-HALF_PI, 0, 0) 将整个模型旋转
-     * 为了让骨骼动画与模型对齐，骨骼的旋转也需要应用相同的变换
-     *
-     * @param pat        PAT3D 结构
-     * @param obj        GeomObject（骨骼节点）
-     * @param startFrame 起始帧
-     * @param endFrame   结束帧
-     * @return BoneTrack 或 null（如果没有动画数据）
+     * 判断帧是否落在当前动画区间内。wrap 为 true 表示跨 0 点（如 Die：startFrame..maxFrame 再 0..endFrame）。
      */
-    private static BoneTrack buildBoneTrack(PAT3D pat, GeomObject obj, int startFrame, int endFrame) {
-        // 骨骼的初始姿态（Bind Pose）- 原始 DirectX 数据
+    private static boolean inRange(int frame, int startFrame, int endFrame, boolean wrap, int maxFrame) {
+        if (wrap) {
+            return frame >= startFrame || frame <= endFrame;
+        }
+        return frame >= startFrame && frame <= endFrame;
+    }
+
+    /**
+     * 计算该帧在动画时间轴上的时间（秒）。wrap 时前半段 [startFrame,maxFrame]，后半段 [0,endFrame]。
+     */
+    private static float frameToTime(int frame, int startFrame, int endFrame, boolean wrap, int maxFrame) {
+        if (!wrap) {
+            return (float) (frame - startFrame) / FramePerSecond;
+        }
+        if (frame >= startFrame) {
+            return (float) (frame - startFrame) / FramePerSecond;
+        }
+        return (float) (maxFrame - startFrame + 1 + frame) / FramePerSecond;
+    }
+
+    /**
+     * 为单个骨骼构建动画轨迹（BoneTrack）。坐标系与 bind 一致，由 rootNode 统一做 DX→GL。
+     */
+    private static BoneTrack buildBoneTrack(PAT3D pat, GeomObject obj, int startFrame, int endFrame, boolean wrap, int maxFrame) {
         Vector3f bindPosition = new Vector3f(obj.px, obj.py, obj.pz);
         Quaternion bindRotation = new Quaternion(obj.qx, obj.qy, obj.qz, -obj.qw);
         bindRotation.normalizeLocal();
         Quaternion bindRotationInverse = bindRotation.inverse();
         Vector3f bindScale = new Vector3f(obj.sx, obj.sy, obj.sz);
 
-        // ModelBuilder 中的变换：绕 X 轴旋转 -90 度 (T)
-        // 需要计算坐标系基变更：T^-1 * DX * T
-        Quaternion dxToGl = new Quaternion();
-        dxToGl.fromAngles(-FastMath.HALF_PI, 0, 0);
-        Quaternion glToDx = dxToGl.inverse();
-
-        // 变换后的绑定旋转（用于计算相对变换）
-        Quaternion bindRotationGL = glToDx.mult(bindRotation).mult(dxToGl);
-        Quaternion bindRotationGLInverse = bindRotationGL.inverse();
-
-        // 统计关键帧
         TreeMap<Integer, Keyframe> keyframes = new TreeMap<Integer, Keyframe>();
 
-        // ============== 处理位置关键帧 ==============
         for (int j = 0; j < obj.TmPosCnt; j++) {
             TransPosition pos = obj.posArray[j];
-            if (pos.frame < startFrame || pos.frame > endFrame) {
-                continue;
-            }
-
+            if (!inRange(pos.frame, startFrame, endFrame, wrap, maxFrame)) continue;
             Keyframe k = getOrMakeKeyframe(keyframes, pos.frame);
-            // 原始位置 - bind位置
-            Vector3f tempPos = new Vector3f(pos.x - bindPosition.x, pos.y - bindPosition.y, pos.z - bindPosition.z);
-            // 应用 DX 到 GL 的坐标转换
-            k.translation.set(dxToGl.mult(tempPos));
+            k.translation.set(pos.x - bindPosition.x, pos.y - bindPosition.y, pos.z - bindPosition.z);
         }
 
-        // ============== 处理旋转关键帧 ==============
         for (int j = 0; j < obj.TmRotCnt; j++) {
             TransRotation rot = obj.rotArray[j];
-            if (rot.frame < startFrame || rot.frame > endFrame) {
-                continue;
-            }
-
+            if (!inRange(rot.frame, startFrame, endFrame, wrap, maxFrame)) continue;
             Keyframe k = getOrMakeKeyframe(keyframes, rot.frame);
-            // 原始四元数 (qx, qy, qz, -qw)
             Quaternion rotQ = new Quaternion(rot.axisX, rot.axisY, rot.axisZ, -rot.cosHalfAngle);
             rotQ.normalizeLocal();
-
-            // 将动画旋转变换到 OpenGL 坐标系：T^-1 * DX * T
-            Quaternion rotGL = glToDx.mult(rotQ).mult(dxToGl);
-
-            // 所有帧都使用相对旋转，确保动画的连续性
-            // 计算相对于变换后绑定姿态的相对旋转
-            bindRotationGLInverse.mult(rotGL, k.rotation);
+            bindRotationInverse.mult(rotQ, k.rotation);
         }
 
-        // ============== 处理缩放关键帧 ==============
         for (int j = 0; j < obj.TmScaleCnt; j++) {
             TransScale scale = obj.scaleArray[j];
-            if (scale.frame < startFrame || scale.frame > endFrame) {
-                continue;
-            }
-
+            if (!inRange(scale.frame, startFrame, endFrame, wrap, maxFrame)) continue;
             Keyframe k = getOrMakeKeyframe(keyframes, scale.frame);
-            // 相对缩放
             k.scale.set(scale.x / bindScale.x, scale.y / bindScale.y, scale.z / bindScale.z);
         }
 
-        int size = keyframes.size();
-        if (size == 0) {
-            return null; // 没有动画数据
-        }
+        if (keyframes.isEmpty()) return null;
 
-        // 准备 BoneTrack 数据
-        float[] times = new float[size];
-        Vector3f[] translations = new Vector3f[size];
-        Quaternion[] rotations = new Quaternion[size];
-        Vector3f[] scales = new Vector3f[size];
+        // 按播放时间排序（wrap 时 0..endFrame 在 maxFrame 之后）
+        Integer[] frameArr = keyframes.keySet().toArray(new Integer[0]);
+        Arrays.sort(frameArr, (a, b) -> Float.compare(
+            frameToTime(a.intValue(), startFrame, endFrame, wrap, maxFrame),
+            frameToTime(b.intValue(), startFrame, endFrame, wrap, maxFrame)));
+
+        int n = frameArr.length;
+        float[] times = new float[n];
+        Vector3f[] translations = new Vector3f[n];
+        Quaternion[] rotations = new Quaternion[n];
+        Vector3f[] scales = new Vector3f[n];
 
         Keyframe last = null;
-        int n = 0;
-
-        for (Integer frame : keyframes.keySet()) {
+        for (int i = 0; i < n; i++) {
+            int frame = frameArr[i].intValue();
             Keyframe current = keyframes.get(frame);
-
-            // 补全缺失的数据（使用上一帧的数据）
-            if (current.translation == null) {
-                if (n == 0) {
-                    current.translation = new Vector3f(0, 0, 0);
-                } else {
-                    current.translation = new Vector3f(last.translation);
-                }
-            }
-
-            if (current.rotation == null) {
-                if (n == 0) {
-                    current.rotation = new Quaternion(0, 0, 0, 1);
-                } else {
-                    current.rotation = new Quaternion(last.rotation);
-                }
-            }
-
-            if (current.scale == null) {
-                if (n == 0) {
-                    current.scale = new Vector3f(1, 1, 1);
-                } else {
-                    current.scale = new Vector3f(last.scale);
-                }
-            }
-
-            // 调整时间计算，考虑帧率差异
-            float timeScale = 160.0f / 4800.0f;
-            times[n] = (float) frame / FramePerSecond * timeScale;
-            translations[n] = current.translation;
-            rotations[n] = current.rotation.normalizeLocal();
-            scales[n] = current.scale;
-
-            // 记录当前帧
+            if (current.translation == null) current.translation = last != null ? new Vector3f(last.translation) : new Vector3f(0, 0, 0);
+            if (current.rotation == null) current.rotation = last != null ? new Quaternion(last.rotation) : new Quaternion(0, 0, 0, 1);
+            if (current.scale == null) current.scale = last != null ? new Vector3f(last.scale) : new Vector3f(1, 1, 1);
+            times[i] = frameToTime(frame, startFrame, endFrame, wrap, maxFrame);
+            translations[i] = current.translation;
+            rotations[i] = current.rotation.normalizeLocal();
+            scales[i] = current.scale;
             last = current;
-
-            n++;
         }
-
-        // 截取有效数据
-        times = Arrays.copyOfRange(times, 0, n);
-        translations = Arrays.copyOfRange(translations, 0, n);
-        rotations = Arrays.copyOfRange(rotations, 0, n);
-        scales = Arrays.copyOfRange(scales, 0, n);
 
         BoneTrack track = new BoneTrack(pat.getObjIndex(obj.NodeName));
         track.setKeyframes(times, translations, rotations, scales);
-
         return track;
     }
 
