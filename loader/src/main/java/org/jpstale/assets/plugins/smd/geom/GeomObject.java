@@ -230,7 +230,7 @@ public class GeomObject extends Flyweight {
     /**
      * 读取OBJ3D文件数据
      * 
-     * @param skeleton
+     * @param in
      */
     public void loadFile(LittleEndien in) throws IOException {
 
