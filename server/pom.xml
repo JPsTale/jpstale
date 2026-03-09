@@ -10,8 +10,49 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>server</artifactId>
+    <packaging>pom</packaging>
 
-    <dependencies>
-    </dependencies>
+    <description>PristonTale server: login + game (pt-common, pt-login-server, pt-game-server)</description>
+
+    <modules>
+        <module>pt-common</module>
+        <module>pt-login-server</module>
+        <module>pt-game-server</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <spring-boot.version>3.2.5</spring-boot.version>
+        <netty.version>4.1.109.Final</netty.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jpstale</groupId>
+                <artifactId>pt-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-postgresql</artifactId>
+                <version>10.14.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

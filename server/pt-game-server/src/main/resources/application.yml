@@ -1,0 +1,12 @@
+server:
+  port: 8485
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gamedb
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration

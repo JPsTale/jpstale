@@ -1,0 +1,2 @@
+-- UserDB migrations: copy or symlink from PristonTale-EU-main/docs/postgresql-scripts/01-UserDB.sql
+-- This file is a placeholder so Flyway does not fail on empty schema.

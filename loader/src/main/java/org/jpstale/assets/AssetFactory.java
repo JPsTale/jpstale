@@ -48,8 +48,6 @@ import org.jpstale.entity.field.RespawnList;
 import org.jpstale.entity.field.StartPoint;
 import org.jpstale.entity.item.ItemInfo;
 import org.jpstale.utils.FileLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
