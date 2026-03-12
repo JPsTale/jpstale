@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class PartyUserInfo {
+    public static final int SIZE_OF = 28;
+
     private int objectId;  // DWORD dwObjectID
     private int level;     // int iLevel
     private CurMax hp;      // CurMax sHP
@@ -26,6 +28,10 @@ public final class PartyUserInfo {
         gold = in.getInt();
         x = in.getInt();
         z = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

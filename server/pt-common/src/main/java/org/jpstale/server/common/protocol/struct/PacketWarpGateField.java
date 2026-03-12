@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketWarpGateField extends Packet {
 
-    private int z;  // int iZ
-    private int stage;  // int iStage
-    private int x;  // int iX
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int z;  // int iZ  size: 4 bytes
+    private int stage;  // int iStage  size: 4 bytes
+    private int x;  // int iX  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

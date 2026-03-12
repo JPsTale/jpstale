@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNPCClick extends Packet {
 
-    private int tarObjectSerial;  // DWORD dwTarObjectSerial
-    private int npcid;  // int iNPCId
-    private int questData;  // int iQuestData
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int tarObjectSerial;  // DWORD dwTarObjectSerial  size: 4 bytes
+    private int npcid;  // int iNPCId  size: 4 bytes
+    private int questData;  // int iQuestData  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

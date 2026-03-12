@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 /**
  * 对应 packets.h 中 struct PacketBuffData : Packet。
  * <p>
- * C 端包体为 union：同一段内存可为多种 struct 变体，由包头 {@link Packet#getHeader() iHeader} 区分
+ * C 端包体为 union：同一段内存可为多种 struct 变体，由包头 {@link Packet#getPktHeader() iHeader} 区分
  * （例如 PTKHDR_Effect_Debuff 表示按 Debuff 解释）。当前仅生成 union 中第一个 struct 的字段布局；
  * 若协议中仅使用该变体，则语义一致。
  */
@@ -15,17 +15,25 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketBuffData extends Packet {
 
-    private byte poison;  // BYTE bPoison
-    private byte burning;  // BYTE bBurning
-    private byte distortion;  // BYTE bDistortion
-    private byte curse;  // BYTE bCurse
-    private byte spare1;  // BYTE bSpare1
-    private byte iceOverlay;  // BYTE bIceOverlay
-    private byte spare3;  // BYTE bSpare3
-    private byte spare4;  // BYTE bSpare4
-    private int stunCount;  // int iStunCount
-    private int damageReduction;  // int iDamageReduction
-    private int[] spare = new int[4];  // int iaSpare[4]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 32;
+
+    private byte poison;  // BYTE bPoison  size: 1 bytes
+    private byte burning;  // BYTE bBurning  size: 1 bytes
+    private byte distortion;  // BYTE bDistortion  size: 1 bytes
+    private byte curse;  // BYTE bCurse  size: 1 bytes
+    private byte spare1;  // BYTE bSpare1  size: 1 bytes
+    private byte iceOverlay;  // BYTE bIceOverlay  size: 1 bytes
+    private byte spare3;  // BYTE bSpare3  size: 1 bytes
+    private byte spare4;  // BYTE bSpare4  size: 1 bytes
+    private int stunCount;  // int iStunCount  size: 4 bytes
+    private int damageReduction;  // int iDamageReduction  size: 4 bytes
+    private int[] spare = new int[4];  // int iaSpare[4]  size: 16 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

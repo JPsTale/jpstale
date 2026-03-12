@@ -7,12 +7,14 @@ import org.jpstale.server.common.protocol.GameXor;
 import org.jpstale.server.common.protocol.PacketIds;
 import org.jpstale.server.common.protocol.PtCodec;
 import org.jpstale.server.common.protocol.struct.Packet;
-import org.jpstale.server.common.protocol.struct.PacketAccountLoginCode;
+import org.jpstale.server.common.protocol.account.PacketAccountLoginCode;
 import org.jpstale.server.common.protocol.struct.PacketLoginUser;
 import org.jpstale.server.login.service.AccountLoginServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Handles decoded PT packets; dispatches PKTHDR_LoginUser to account login and sends PKTHDR_AccountLoginCode.
@@ -30,15 +32,18 @@ public class PtLoginHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) {
         int readable = msg.readableBytes();
-        if (readable < Packet.HEADER_SIZE) return;
+        if (readable < Packet.SIZE_OF) {
+            return;
+        }
 
         byte[] arr = new byte[readable];
         msg.readBytes(arr);
-        short length = PtCodec.readLength(arr);
-        int header = java.nio.ByteBuffer.wrap(arr, 4, 4).order(java.nio.ByteOrder.LITTLE_ENDIAN).getInt();
+        int header = ByteBuffer.wrap(arr, 4, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
 
         if (header == PacketIds.PKTHDR_LoginUser) {
-            PacketLoginUser login = PtCodec.readPacketLoginUser(arr);
+            ByteBuffer buf = ByteBuffer.wrap(arr).order(ByteOrder.LITTLE_ENDIAN);
+            PacketLoginUser login = new PacketLoginUser();
+            login.readFrom(buf);
             int code = accountLoginService.authenticate(login.getUserId(), login.getPassword(), login.getVersion());
             sendLoginCode(ctx, code);
         } else {
@@ -48,13 +53,13 @@ public class PtLoginHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     private void sendLoginCode(ChannelHandlerContext ctx, int code) {
         PacketAccountLoginCode p = new PacketAccountLoginCode();
-        p.setHeader(PacketIds.PKTHDR_AccountLoginCode);
+        p.setPktHeader(PacketIds.PKTHDR_AccountLoginCode);
         p.setCode(code);
         p.setFailCode(1);
         p.setReserved(0);
         p.setMessage("");
 
-        byte[] encoded = PtCodec.writePacketAccountLoginCode(p);
+        byte[] encoded = p.toWireBytes();
         PtCodec.xorEncode(encoded, encoded.length, GameXor.XOR_KEY);
         ctx.writeAndFlush(ctx.alloc().buffer(encoded.length).writeBytes(encoded));
     }

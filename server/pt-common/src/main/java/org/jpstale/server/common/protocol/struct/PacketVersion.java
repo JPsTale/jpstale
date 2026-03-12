@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketVersion extends Packet {
 
-    private boolean serverFull;  // BOOL bServerFull
-    private int version;  // int iVersion
-    private int unk2;  // int iUnk2
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private boolean serverFull;  // BOOL bServerFull  size: 4 bytes
+    private int version;  // int iVersion  size: 4 bytes
+    private int unk2;  // int iUnk2  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

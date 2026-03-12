@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketEventGirlReset extends Packet {
 
-    private byte resetType;  // BYTE bResetType
-    private int[] reset = new int[5];  // BOOL baReset[5]
-    private int totalCost;  // int iTotalCost
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 25;
+
+    private byte resetType;  // BYTE bResetType  size: 1 bytes
+    private int[] reset = new int[5];  // BOOL baReset[5]  size: 20 bytes
+    private int totalCost;  // int iTotalCost  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

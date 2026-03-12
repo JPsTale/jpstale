@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketUpdatePetData extends Packet {
 
-    private boolean autoAttack;  // BOOL bAutoAttack
-    private int skillId;  // int dwSkillID
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private boolean autoAttack;  // BOOL bAutoAttack  size: 4 bytes
+    private int skillId;  // int dwSkillID  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

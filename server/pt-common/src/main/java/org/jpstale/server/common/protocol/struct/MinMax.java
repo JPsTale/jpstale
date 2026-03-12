@@ -9,12 +9,18 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class MinMax {
+    public static final int SIZE_OF = 4;
+
     private short min;  // short sMin
     private short max;  // short sMax
 
     public void readFrom(ByteBuffer in) {
         min = in.getShort();
         max = in.getShort();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

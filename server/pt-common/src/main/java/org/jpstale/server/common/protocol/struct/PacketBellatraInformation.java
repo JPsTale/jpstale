@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketBellatraInformation extends Packet {
 
-    private int round;  // int iRound
-    private int type;  // int iType
-    private int unk;  // int iUnk
-    private int value;  // int iValue
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 16;
+
+    private int round;  // int iRound  size: 4 bytes
+    private int type;  // int iType  size: 4 bytes
+    private int unk;  // int iUnk  size: 4 bytes
+    private int value;  // int iValue  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

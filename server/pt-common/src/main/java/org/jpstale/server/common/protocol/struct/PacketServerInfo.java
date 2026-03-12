@@ -11,15 +11,23 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketServerInfo extends Packet {
 
-    private int users;  // int iUsers
-    private int maxUsers;  // int iMaxUsers
-    private int bossTime;  // int iBossTime
-    private int serverVersion;  // int iServerVersion
-    private short siegeWarDay;  // short sSiegeWarDay
-    private short siegeWarHour;  // short sSiegeWarHour
-    private byte siegeWarType;  // BYTE bSiegeWarType
-    private boolean gameMaster;  // BOOL bGameMaster
-    private SystemTime serverTime;  // SYSTEMTIME sServerTime
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 41;
+
+    private int users;  // int iUsers  size: 4 bytes
+    private int maxUsers;  // int iMaxUsers  size: 4 bytes
+    private int bossTime;  // int iBossTime  size: 4 bytes
+    private int serverVersion;  // int iServerVersion  size: 4 bytes
+    private short siegeWarDay;  // short sSiegeWarDay  size: 2 bytes
+    private short siegeWarHour;  // short sSiegeWarHour  size: 2 bytes
+    private byte siegeWarType;  // BYTE bSiegeWarType  size: 1 bytes
+    private boolean gameMaster;  // BOOL bGameMaster  size: 4 bytes
+    private SystemTime serverTime;  // SYSTEMTIME sServerTime  size: 16 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

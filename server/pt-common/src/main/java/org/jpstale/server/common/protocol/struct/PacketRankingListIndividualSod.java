@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketRankingListIndividualSod extends Packet {
 
-    private String[] sodplayer = new String[10];  // char szSODPlayer[10][32]
-    private int[] sodplayerPoints = new int[10];  // int iSODPlayerPoints[10]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 360;
+
+    private String[] sodplayer = new String[10];  // char szSODPlayer[10][32]  size: 320 bytes
+    private int[] sodplayerPoints = new int[10];  // int iSODPlayerPoints[10]  size: 40 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

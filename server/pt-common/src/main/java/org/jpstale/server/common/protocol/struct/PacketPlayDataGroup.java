@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketPlayDataGroup extends Packet {
 
-    private int playDataCount;  // int iPlayDataCount
-    private int sendCode;  // DWORD dwSendCode
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private int playDataCount;  // int iPlayDataCount  size: 4 bytes
+    private int sendCode;  // DWORD dwSendCode  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

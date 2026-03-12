@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketStageItemData extends Packet {
 
-    private boolean active;  // BOOL bActive
-    private int count;  // int iCount
-    private StageItemData[] items = new StageItemData[50];  // StageItemData saItems[50]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 3158;
+
+    private boolean active;  // BOOL bActive  size: 4 bytes
+    private int count;  // int iCount  size: 4 bytes
+    private StageItemData[] items = new StageItemData[50];  // StageItemData saItems[50]  size: 3150 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

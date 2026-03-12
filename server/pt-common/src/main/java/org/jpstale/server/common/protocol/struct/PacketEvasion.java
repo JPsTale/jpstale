@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketEvasion extends Packet {
 
-    private int skillId;  // int iSkillID
-    private int unk;  // int iUnk
-    private int objectId;  // DWORD dwObjectID
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int skillId;  // int iSkillID  size: 4 bytes
+    private int unk;  // int iUnk  size: 4 bytes
+    private int objectId;  // DWORD dwObjectID  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -14,12 +14,20 @@ import org.jpstale.server.common.enums.ItemTimerType;
 @Data
 public class PacketNewItemTimer extends Packet {
 
-    private ItemTimerType type;  // EItemTimerType iType
-    private ItemId itemId;  // EItemID iItemID
-    private int chk1;  // int iChk1
-    private int chk2;  // int iChk2
-    private int timeLeft;  // DWORD dwTimeLeft
-    private int timeTotal;  // DWORD dwTimeTotal
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 24;
+
+    private ItemTimerType type;  // EItemTimerType iType  size: 4 bytes
+    private ItemId itemId;  // EItemID iItemID  size: 4 bytes
+    private int chk1;  // int iChk1  size: 4 bytes
+    private int chk2;  // int iChk2  size: 4 bytes
+    private int timeLeft;  // DWORD dwTimeLeft  size: 4 bytes
+    private int timeTotal;  // DWORD dwTimeTotal  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

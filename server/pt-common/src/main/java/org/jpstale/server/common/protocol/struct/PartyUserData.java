@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class PartyUserData {
+    public static final int SIZE_OF = 196;
+
     private String name;    // char szName[32]
     private String model;  // char szModel[64]
     private String head;   // char szHead[64]
@@ -32,6 +34,10 @@ public final class PartyUserData {
         gold = in.getInt();
         x = in.getInt();
         z = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketLoseExperience extends Packet {
 
-    private long subExp;  // INT64 iSubExp
-    private int level;  // int iLevel
-    private int mapId;  // int iMapID
-    private boolean ressurectionItem;  // BOOL bRessurectionItem
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 20;
+
+    private long subExp;  // INT64 iSubExp  size: 8 bytes
+    private int level;  // int iLevel  size: 4 bytes
+    private int mapId;  // int iMapID  size: 4 bytes
+    private boolean ressurectionItem;  // BOOL bRessurectionItem  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

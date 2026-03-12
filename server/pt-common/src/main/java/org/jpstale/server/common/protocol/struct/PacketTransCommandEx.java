@@ -11,14 +11,22 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketTransCommandEx extends Packet {
 
-    private int lparam;  // int LParam
-    private int wParam;  // int WParam
-    private int sParam;  // int SParam
-    private int eParam;  // int EParam
-    private int lxParam;  // int LxParam
-    private int wxParam;  // int WxParam
-    private int sxParam;  // int SxParam
-    private int exParam;  // int ExParam
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 32;
+
+    private int lparam;  // int LParam  size: 4 bytes
+    private int wParam;  // int WParam  size: 4 bytes
+    private int sParam;  // int SParam  size: 4 bytes
+    private int eParam;  // int EParam  size: 4 bytes
+    private int lxParam;  // int LxParam  size: 4 bytes
+    private int wxParam;  // int WxParam  size: 4 bytes
+    private int sxParam;  // int SxParam  size: 4 bytes
+    private int exParam;  // int ExParam  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

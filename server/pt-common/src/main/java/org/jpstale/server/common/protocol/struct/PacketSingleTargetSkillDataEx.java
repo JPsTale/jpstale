@@ -14,9 +14,17 @@ import org.jpstale.server.common.enums.AttackState;
 @Data
 public class PacketSingleTargetSkillDataEx extends PacketSingleTargetSkillData {
 
-    private AttackState secondaryAttackState;  // EAttackState eSecondaryAttackState
-    private AttackProperty secondaryAttackProperty;  // EAttackProperty eSecondaryAttackProperty
-    private ElementalAttackSetting secondaryElementalAttackSetting;  // ElementalAttackSetting sSecondaryElementalAttackSetting
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private AttackState secondaryAttackState;  // EAttackState eSecondaryAttackState  size: 2 bytes
+    private AttackProperty secondaryAttackProperty;  // EAttackProperty eSecondaryAttackProperty  size: 2 bytes
+    private ElementalAttackSetting secondaryElementalAttackSetting;  // ElementalAttackSetting sSecondaryElementalAttackSetting  size: 8 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

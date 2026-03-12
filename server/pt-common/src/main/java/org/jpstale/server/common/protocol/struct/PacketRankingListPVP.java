@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketRankingListPVP extends Packet {
 
-    private String[] pvpcharName = new String[10];  // char szPVPCharName[10][32]
-    private int[] pvpkills = new int[10];  // int iPVPKills[10]
-    private int[] pvpdeaths = new int[10];  // int iPVPDeaths[10]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 400;
+
+    private String[] pvpcharName = new String[10];  // char szPVPCharName[10][32]  size: 320 bytes
+    private int[] pvpkills = new int[10];  // int iPVPKills[10]  size: 40 bytes
+    private int[] pvpdeaths = new int[10];  // int iPVPDeaths[10]  size: 40 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

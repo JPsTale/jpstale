@@ -9,10 +9,16 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class ItemMixDesc {
+    public static final int SIZE_OF = 32;
+
     private String description; // char Description[32]
 
     public void readFrom(ByteBuffer in) {
         description = Packet.readCString(in, 32);
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

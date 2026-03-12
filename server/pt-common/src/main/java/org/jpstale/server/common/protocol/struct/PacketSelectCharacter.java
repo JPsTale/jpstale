@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketSelectCharacter extends Packet {
 
-    private int reserved1;  // int dwReserved1
-    private int reserved2;  // int dwReserved2
-    private int reserved3;  // int dwReserved3
-    private String charName;  // char szCharName[32]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 44;
+
+    private int reserved1;  // int dwReserved1  size: 4 bytes
+    private int reserved2;  // int dwReserved2  size: 4 bytes
+    private int reserved3;  // int dwReserved3  size: 4 bytes
+    private String charName;  // char szCharName[32]  size: 32 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

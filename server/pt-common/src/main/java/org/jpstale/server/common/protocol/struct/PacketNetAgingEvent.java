@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetAgingEvent extends Packet {
 
-    private boolean freeEnabled;  // BOOL FreeEnabled
-    private boolean noBreakEnabled;  // BOOL NoBreakEnabled
-    private boolean halfPrice;  // BOOL HalfPrice
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private boolean freeEnabled;  // BOOL FreeEnabled  size: 4 bytes
+    private boolean noBreakEnabled;  // BOOL NoBreakEnabled  size: 4 bytes
+    private boolean halfPrice;  // BOOL HalfPrice  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

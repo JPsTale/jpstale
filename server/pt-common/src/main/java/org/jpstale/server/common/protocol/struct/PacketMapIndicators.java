@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketMapIndicators extends Packet {
 
-    private int mapId;  // int iMapID
-    private int count;  // int iCount
-    private MapIndicator[] mapIndicators = new MapIndicator[30];  // MapIndicator mapIndicators[30]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 608;
+
+    private int mapId;  // int iMapID  size: 4 bytes
+    private int count;  // int iCount  size: 4 bytes
+    private MapIndicator[] mapIndicators = new MapIndicator[30];  // MapIndicator mapIndicators[30]  size: 600 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

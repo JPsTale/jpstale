@@ -14,8 +14,16 @@ import org.jpstale.server.common.enums.ItemTimerType;
 @Data
 public class PacketCancelItemTimer extends Packet {
 
-    private ItemTimerType type;  // EItemTimerType iType
-    private ItemId itemId;  // EItemID iItemID
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private ItemTimerType type;  // EItemTimerType iType  size: 4 bytes
+    private ItemId itemId;  // EItemID iItemID  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public class SkillInfoCommon {
+    public static final int SIZE_OF = 250;
+
     private int skillId;           // int iSkillId
     private String skillName;       // char szSkillName[32]
     private String skillFileName;  // char szSkillFileName[32]
@@ -21,6 +23,10 @@ public class SkillInfoCommon {
         skillFileName = Packet.readCString(in, 32);
         skillIconName = Packet.readCString(in, 32);
         skillDescription = Packet.readCString(in, 150);
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

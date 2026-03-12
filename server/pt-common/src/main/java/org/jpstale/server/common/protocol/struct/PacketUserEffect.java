@@ -11,11 +11,19 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketUserEffect extends Packet {
 
-    private int uniqueUserId;  // int iUniqueUserID
-    private String title;  // char szTitle[25]
-    private short titleRarity;  // short sTitleRarity
-    private short playerAuraId;  // short sPlayerAuraId
-    private short dialogSkinId;  // short sDialogSkinId
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 35;
+
+    private int uniqueUserId;  // int iUniqueUserID  size: 4 bytes
+    private String title;  // char szTitle[25]  size: 25 bytes
+    private short titleRarity;  // short sTitleRarity  size: 2 bytes
+    private short playerAuraId;  // short sPlayerAuraId  size: 2 bytes
+    private short dialogSkinId;  // short sDialogSkinId  size: 2 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,12 +11,20 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketWrapCamera extends Packet {
 
-    private int map;  // int iMap
-    private int x;  // int iX
-    private int z;  // int iZ
-    private int turn;  // int iTurn
-    private int angle;  // int iAngle
-    private int zoom;  // int iZoom
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 24;
+
+    private int map;  // int iMap  size: 4 bytes
+    private int x;  // int iX  size: 4 bytes
+    private int z;  // int iZ  size: 4 bytes
+    private int turn;  // int iTurn  size: 4 bytes
+    private int angle;  // int iAngle  size: 4 bytes
+    private int zoom;  // int iZoom  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

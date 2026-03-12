@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNPCRudolphChristmas extends Packet {
 
-    private int itemId;  // int iItemID
-    private int head;  // DWORD dwHead
-    private int checkSum;  // DWORD dwCheckSum
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int itemId;  // int iItemID  size: 4 bytes
+    private int head;  // DWORD dwHead  size: 4 bytes
+    private int checkSum;  // DWORD dwCheckSum  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

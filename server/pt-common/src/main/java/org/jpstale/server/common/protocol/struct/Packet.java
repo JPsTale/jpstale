@@ -18,16 +18,17 @@ public abstract class Packet {
     private short length;        // WORD iLength
     private byte encKeyIndex;     // BYTE iEncKeyIndex
     private byte encrypted;      // BYTE iEncrypted
-    private int header;          // int iHeader
+    private int pktHeader;       // int iHeader（包类型标识，与子类包体中的 Header 结构体区分）
 
-    public static final int HEADER_SIZE = 8;
+    /** 包头字节数。 */
+    public static final int SIZE_OF = 8;
 
     /** 读取包头（调用方需保证 ByteBuffer 为 little-endian）. */
     protected void readHeader(ByteBuffer in) {
         this.length = in.getShort();
         this.encKeyIndex = in.get();
         this.encrypted = in.get();
-        this.header = in.getInt();
+        this.pktHeader = in.getInt();
     }
 
     /** 写入包头（调用方需保证 ByteBuffer 为 little-endian）. */
@@ -35,7 +36,7 @@ public abstract class Packet {
         out.putShort(this.length);
         out.put(this.encKeyIndex);
         out.put(this.encrypted);
-        out.putInt(this.header);
+        out.putInt(this.pktHeader);
     }
 
     /** 由子类实现：读取包体字段。 */
@@ -43,6 +44,20 @@ public abstract class Packet {
 
     /** 由子类实现：写入包体字段。 */
     protected abstract void writeBody(ByteBuffer out);
+
+    /** 整个包字节数（头+体）。子类覆盖为 return super.sizeOf() + SIZE_OF。 */
+    public int sizeOf() {
+        return SIZE_OF;
+    }
+
+    /** 将当前包序列化为完整二进制（头+体），小端序。会先 setLength 再写入。 */
+    public final byte[] toWireBytes() {
+        int len = sizeOf();
+        setLength((short) len);
+        ByteBuffer buf = ByteBuffer.allocate(len).order(ByteOrder.LITTLE_ENDIAN);
+        writeTo(buf);
+        return buf.array();
+    }
 
     /** 从 ByteBuffer 读取整个包（头 + 体）。*/
     public final void readFrom(ByteBuffer in) {

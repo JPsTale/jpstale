@@ -11,12 +11,20 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketSettingsData extends Packet {
 
-    private boolean inital;  // BOOL bInital
-    private boolean noTradeChat;  // BOOL bNoTradeChat
-    private boolean noPartyRequest;  // BOOL bNoPartyRequest
-    private boolean noTradeRequest;  // BOOL bNoTradeRequest
-    private boolean noWhisper;  // BOOL bNoWhisper
-    private byte weaponEnchantPerference;  // BYTE bWeaponEnchantPerference
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 21;
+
+    private boolean inital;  // BOOL bInital  size: 4 bytes
+    private boolean noTradeChat;  // BOOL bNoTradeChat  size: 4 bytes
+    private boolean noPartyRequest;  // BOOL bNoPartyRequest  size: 4 bytes
+    private boolean noTradeRequest;  // BOOL bNoTradeRequest  size: 4 bytes
+    private boolean noWhisper;  // BOOL bNoWhisper  size: 4 bytes
+    private byte weaponEnchantPerference;  // BYTE bWeaponEnchantPerference  size: 1 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

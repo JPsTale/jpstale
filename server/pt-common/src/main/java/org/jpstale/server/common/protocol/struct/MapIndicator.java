@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class MapIndicator {
+    public static final int SIZE_OF = 20;
+
     private int value;        // int iValue
     private int type;         // Type eType (enum class -> int)
     private int compactPosX;  // int iCompactPosX
@@ -22,6 +24,10 @@ public final class MapIndicator {
         compactPosX = in.getInt();
         compactPosZ = in.getInt();
         angleY = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

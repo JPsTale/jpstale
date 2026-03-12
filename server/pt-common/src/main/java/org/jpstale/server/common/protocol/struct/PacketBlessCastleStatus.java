@@ -11,7 +11,15 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketBlessCastleStatus extends Packet {
 
-    private BlessCastleStatusShort blessCastleStatus;  // BlessCastleStatusShort sBlessCastleStatus
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 56;
+
+    private BlessCastleStatusShort blessCastleStatus;  // BlessCastleStatusShort sBlessCastleStatus  size: 56 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

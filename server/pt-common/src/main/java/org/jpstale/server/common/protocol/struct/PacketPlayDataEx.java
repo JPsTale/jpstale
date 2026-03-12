@@ -11,21 +11,29 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketPlayDataEx extends Packet {
 
-    private int[] levelSkill = new int[16];  // int iLevelSkill[16]
-    private CharacterDataPacket characterData;  // CharacterDataPacket sCharacterData
-    private int critical;  // int iCritical
-    private int levelCharacter;  // int iLevelCharacter
-    private boolean debugInfo;  // BOOL DebugInfo
-    private boolean gameMaster;  // BOOL bGameMaster
-    private String macAddr;  // char szMacAddr[20]
-    private int serverId;  // DWORD dwServerID
-    private int questLevelLog;  // DWORD dwQuestLevelLog
-    private int gold;  // DWORD dwGold
-    private int speed;  // DWORD dwSpeed
-    private int bellatraCrown;  // int iBellatraCrown
-    private int mapId;  // int iMapID
-    private int serialHd;  // UINT uSerialHD
-    private int userId;  // ID userID
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 172;
+
+    private int[] levelSkill = new int[16];  // int iLevelSkill[16]  size: 64 bytes
+    private CharacterDataPacket characterData;  // CharacterDataPacket sCharacterData  size: 40 bytes
+    private int critical;  // int iCritical  size: 4 bytes
+    private int levelCharacter;  // int iLevelCharacter  size: 4 bytes
+    private boolean debugInfo;  // BOOL DebugInfo  size: 4 bytes
+    private boolean gameMaster;  // BOOL bGameMaster  size: 4 bytes
+    private String macAddr;  // char szMacAddr[20]  size: 20 bytes
+    private int serverId;  // DWORD dwServerID  size: 4 bytes
+    private int questLevelLog;  // DWORD dwQuestLevelLog  size: 4 bytes
+    private int gold;  // DWORD dwGold  size: 4 bytes
+    private int speed;  // DWORD dwSpeed  size: 4 bytes
+    private int bellatraCrown;  // int iBellatraCrown  size: 4 bytes
+    private int mapId;  // int iMapID  size: 4 bytes
+    private int serialHd;  // UINT uSerialHD  size: 4 bytes
+    private int userId;  // ID userID  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

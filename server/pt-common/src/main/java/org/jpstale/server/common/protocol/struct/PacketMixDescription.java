@@ -11,7 +11,15 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketMixDescription extends Packet {
 
-    private String mixDescription;  // char szMixDescription[150]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 150;
+
+    private String mixDescription;  // char szMixDescription[150]  size: 150 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

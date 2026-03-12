@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetT5QuestData extends Packet {
 
-    private int id;  // int iID
-    private int questId;  // UINT uQuestID
-    private short[] questValue = new short[2];  // USHORT sQuestValue[2]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int id;  // int iID  size: 4 bytes
+    private int questId;  // UINT uQuestID  size: 4 bytes
+    private short[] questValue = new short[2];  // USHORT sQuestValue[2]  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketSyncTimeData extends Packet {
 
-    private int netCount;  // DWORD dwNetCount
-    private int time;  // DWORD dwTime
-    private int unk;  // int iUnk
-    private int unk1;  // int iUnk1
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 16;
+
+    private int netCount;  // DWORD dwNetCount  size: 4 bytes
+    private int time;  // DWORD dwTime  size: 4 bytes
+    private int unk;  // int iUnk  size: 4 bytes
+    private int unk1;  // int iUnk1  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

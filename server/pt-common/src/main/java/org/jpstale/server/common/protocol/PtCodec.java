@@ -1,15 +1,11 @@
 package org.jpstale.server.common.protocol;
 
-import org.jpstale.server.common.protocol.struct.Packet;
-import org.jpstale.server.common.protocol.struct.PacketAccountLoginCode;
-import org.jpstale.server.common.protocol.struct.PacketLoginUser;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * 低层协议工具：长度读写、XOR 编解码、少量写包辅助。
- * 具体 Packet 的序列化/反序列化逻辑由各个 Packet 子类实现。
+ * 低层协议工具：长度读写、XOR 编解码。
+ * 具体 Packet 的序列化/反序列化由各 Packet 子类的 readFrom/writeTo 或 toWireBytes 等实现。
  */
 public final class PtCodec {
 
@@ -44,19 +40,5 @@ public final class PtCodec {
 
     public static ByteBuffer buffer(int capacity) {
         return ByteBuffer.allocate(capacity).order(ByteOrder.LITTLE_ENDIAN);
-    }
-
-    /** 通过 PacketLoginUser 自身的 readFrom 实现解析。 */
-    public static PacketLoginUser readPacketLoginUser(byte[] packet) {
-        return PacketLoginUser.fromBytes(packet);
-    }
-
-    /** Write PacketAccountLoginCode to buffer and return byte array for wire (header + body). */
-    public static byte[] writePacketAccountLoginCode(PacketAccountLoginCode p) {
-        int len = Packet.HEADER_SIZE + 4 + 4 + 4 + 256;
-        p.setLength((short) len);
-        ByteBuffer buf = buffer(len);
-        p.writeTo(buf);
-        return buf.array();
     }
 }

@@ -11,11 +11,19 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketCreateCharacter extends Packet {
 
-    private int unknown;  // int iUnknown
-    private int code;  // int iCode
-    private int unk;  // int iUnk
-    private String userId;  // char szUserID[32]
-    private String charname;  // char szCharname[32]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 76;
+
+    private int unknown;  // int iUnknown  size: 4 bytes
+    private int code;  // int iCode  size: 4 bytes
+    private int unk;  // int iUnk  size: 4 bytes
+    private String userId;  // char szUserID[32]  size: 32 bytes
+    private String charname;  // char szCharname[32]  size: 32 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

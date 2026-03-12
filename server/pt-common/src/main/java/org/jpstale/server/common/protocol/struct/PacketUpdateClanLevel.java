@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketUpdateClanLevel extends Packet {
 
-    private int level;  // DWORD dwLevel
-    private int codeOp;  // DWORD dwCodeOP
-    private int clanCode;  // DWORD dwClanCode
-    private int updateInfo;  // DWORD dwUpdateInfo
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 16;
+
+    private int level;  // DWORD dwLevel  size: 4 bytes
+    private int codeOp;  // DWORD dwCodeOP  size: 4 bytes
+    private int clanCode;  // DWORD dwClanCode  size: 4 bytes
+    private int updateInfo;  // DWORD dwUpdateInfo  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -14,8 +14,16 @@ import org.jpstale.server.common.enums.AttackState;
 @Data
 public class PacketAttackDataEx extends PacketAttackData {
 
-    private AttackState attackState;  // EAttackState eAttackState
-    private AttackProperty attackProperty;  // EAttackProperty iAttackProperty
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 4;
+
+    private AttackState attackState;  // EAttackState eAttackState  size: 2 bytes
+    private AttackProperty attackProperty;  // EAttackProperty iAttackProperty  size: 2 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

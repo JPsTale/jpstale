@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketAttackRating extends Packet {
 
-    private int enemyId;  // int iEnemyID
-    private int attackRating;  // int iAttackRating
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private int enemyId;  // int iEnemyID  size: 4 bytes
+    private int attackRating;  // int iAttackRating  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

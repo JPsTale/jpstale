@@ -11,7 +11,15 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetExpEvent extends Packet {
 
-    private int percent;  // int iPercent
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 4;
+
+    private int percent;  // int iPercent  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

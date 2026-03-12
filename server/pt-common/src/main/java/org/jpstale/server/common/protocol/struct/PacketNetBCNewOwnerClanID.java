@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetBCNewOwnerClanID extends Packet {
 
-    private int clanId1;  // int iClanID1
-    private int clanId2;  // int iClanID2
-    private int clanId3;  // int iClanID3
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int clanId1;  // int iClanID1  size: 4 bytes
+    private int clanId2;  // int iClanID2  size: 4 bytes
+    private int clanId3;  // int iClanID3  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,32 +11,40 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketPlayData extends Packet {
 
-    private int objectId;  // DWORD dwObjectID
-    private int target;  // DWORD dwTarget
-    private int playBuffCount;  // int iPlayBuffCount
-    private int startPosition;  // int iStartPosition
-    private short[] hp = new short[2];  // short sHp[2]
-    private int autoCharCode;  // DWORD dwAutoCharCode
-    private short mapId;  // short sMapID
-    private short unk;  // short sUnk
-    private final byte[] updateInfo = new byte[4];  // BYTE bUpdateInfo[4]
-    private final byte[] eventInfo = new byte[4];  // BYTE bEventInfo[4]
-    private CurMax mp;  // CurMax sMP
-    private CurMax sp;  // CurMax sSP
-    private boolean partyLeader;  // bool bPartyLeader
-    private short secondMapId;  // short sSecondMapID
-    private short[] speed = new short[2];  // short saSpeed[2]
-    private IMinMax hplong;  // IMinMax sHPLong
-    private short angleY;  // short sAngleY
-    private short size;  // short sSize
-    private int level;  // int iLevel
-    private byte invisibleInMiniMap;  // BYTE bInvisibleInMiniMap
-    private byte spare1;  // BYTE bSpare1
-    private byte spare2;  // BYTE bSpare2
-    private byte lootFilterEnabled;  // BYTE bLootFilterEnabled
-    private int lootFilterFlag;  // int iLootFilterFlag
-    private short equipmentMinLevel;  // short sEquipmentMinLevel
-    private final byte[] padding = new byte[22];  // BYTE baPadding[22]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 99;
+
+    private int objectId;  // DWORD dwObjectID  size: 4 bytes
+    private int target;  // DWORD dwTarget  size: 4 bytes
+    private int playBuffCount;  // int iPlayBuffCount  size: 4 bytes
+    private int startPosition;  // int iStartPosition  size: 4 bytes
+    private short[] hp = new short[2];  // short sHp[2]  size: 4 bytes
+    private int autoCharCode;  // DWORD dwAutoCharCode  size: 4 bytes
+    private short mapId;  // short sMapID  size: 2 bytes
+    private short unk;  // short sUnk  size: 2 bytes
+    private final byte[] updateInfo = new byte[4];  // BYTE bUpdateInfo[4]  size: 4 bytes
+    private final byte[] eventInfo = new byte[4];  // BYTE bEventInfo[4]  size: 4 bytes
+    private CurMax mp;  // CurMax sMP  size: 4 bytes
+    private CurMax sp;  // CurMax sSP  size: 4 bytes
+    private boolean partyLeader;  // bool bPartyLeader  size: 1 bytes
+    private short secondMapId;  // short sSecondMapID  size: 2 bytes
+    private short[] speed = new short[2];  // short saSpeed[2]  size: 4 bytes
+    private IMinMax hplong;  // IMinMax sHPLong  size: 8 bytes
+    private short angleY;  // short sAngleY  size: 2 bytes
+    private short size;  // short sSize  size: 2 bytes
+    private int level;  // int iLevel  size: 4 bytes
+    private byte invisibleInMiniMap;  // BYTE bInvisibleInMiniMap  size: 1 bytes
+    private byte spare1;  // BYTE bSpare1  size: 1 bytes
+    private byte spare2;  // BYTE bSpare2  size: 1 bytes
+    private byte lootFilterEnabled;  // BYTE bLootFilterEnabled  size: 1 bytes
+    private int lootFilterFlag;  // int iLootFilterFlag  size: 4 bytes
+    private short equipmentMinLevel;  // short sEquipmentMinLevel  size: 2 bytes
+    private final byte[] padding = new byte[22];  // BYTE baPadding[22]  size: 22 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

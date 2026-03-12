@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketReconnectUser extends Packet {
 
-    private int unk;  // int iUnk
-    private int objectId;  // DWORD dwObjectID
-    private String userId;  // char szUserID[32]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 40;
+
+    private int unk;  // int iUnk  size: 4 bytes
+    private int objectId;  // DWORD dwObjectID  size: 4 bytes
+    private String userId;  // char szUserID[32]  size: 32 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

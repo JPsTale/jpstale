@@ -11,11 +11,19 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketFireMeteorite extends Packet {
 
-    private Point3D begin;  // Point3D sBegin
-    private Point3D end;  // Point3D sEnd
-    private int delay;  // int iDelay
-    private boolean smallMeteor;  // BOOL bSmallMeteor
-    private int count;  // int iCount
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 36;
+
+    private Point3D begin;  // Point3D sBegin  size: 12 bytes
+    private Point3D end;  // Point3D sEnd  size: 12 bytes
+    private int delay;  // int iDelay  size: 4 bytes
+    private boolean smallMeteor;  // BOOL bSmallMeteor  size: 4 bytes
+    private int count;  // int iCount  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

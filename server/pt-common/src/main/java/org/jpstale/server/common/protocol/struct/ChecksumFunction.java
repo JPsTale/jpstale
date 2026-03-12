@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public class ChecksumFunction {
+    public static final int SIZE_OF = 12;
+
     private int size;       // DWORD dwSize
     private int address;    // DWORD dwAddress
     private int checkSum;   // DWORD dwCheckSum
@@ -17,6 +19,10 @@ public class ChecksumFunction {
         size = in.getInt();
         address = in.getInt();
         checkSum = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

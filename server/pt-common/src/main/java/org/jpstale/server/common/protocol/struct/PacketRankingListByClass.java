@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketRankingListByClass extends Packet {
 
-    private int clazz;  // int iClass
-    private int count;  // int iCount
-    private String[] characterName = new String[50];  // char szCharacterName[50][32]
-    private int[] level = new int[50];  // int iLevel[50]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 1808;
+
+    private int clazz;  // int iClass  size: 4 bytes
+    private int count;  // int iCount  size: 4 bytes
+    private String[] characterName = new String[50];  // char szCharacterName[50][32]  size: 1600 bytes
+    private int[] level = new int[50];  // int iLevel[50]  size: 200 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

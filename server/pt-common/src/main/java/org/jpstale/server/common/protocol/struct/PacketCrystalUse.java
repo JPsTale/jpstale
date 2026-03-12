@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketCrystalUse extends Packet {
 
-    private int objectId;  // DWORD dwObjectID
-    private int itemId;  // DWORD dwItemID
-    private int time;  // DWORD dwTime
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int objectId;  // DWORD dwObjectID  size: 4 bytes
+    private int itemId;  // DWORD dwItemID  size: 4 bytes
+    private int time;  // DWORD dwTime  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

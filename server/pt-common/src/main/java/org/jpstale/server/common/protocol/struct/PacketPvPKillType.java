@@ -11,11 +11,19 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketPvPKillType extends Packet {
 
-    private String killerName;  // char szKillerName[32]
-    private String victimName;  // char szVictimName[32]
-    private int killerClass;  // int iKillerClass
-    private int victimClass;  // int iVictimClass
-    private int killType;  // int iKillType
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 76;
+
+    private String killerName;  // char szKillerName[32]  size: 32 bytes
+    private String victimName;  // char szVictimName[32]  size: 32 bytes
+    private int killerClass;  // int iKillerClass  size: 4 bytes
+    private int victimClass;  // int iVictimClass  size: 4 bytes
+    private int killType;  // int iKillType  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

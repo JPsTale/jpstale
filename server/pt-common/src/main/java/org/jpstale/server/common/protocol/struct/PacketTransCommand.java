@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketTransCommand extends Packet {
 
-    private int lparam;  // int LParam
-    private int wParam;  // int WParam
-    private int sParam;  // int SParam
-    private int eParam;  // int EParam
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 16;
+
+    private int lparam;  // int LParam  size: 4 bytes
+    private int wParam;  // int WParam  size: 4 bytes
+    private int sParam;  // int SParam  size: 4 bytes
+    private int eParam;  // int EParam  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,7 +11,15 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetVersion extends Packet {
 
-    private int version;  // int iVersion
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 4;
+
+    private int version;  // int iVersion  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

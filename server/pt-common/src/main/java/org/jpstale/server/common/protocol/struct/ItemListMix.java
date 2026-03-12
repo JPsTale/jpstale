@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class ItemListMix {
+    public static final int SIZE_OF = 56;
+
     private int typeMix;   // int iTypeMix
     private int lucidy;   // int iLucidy
     private int sereneo;  // int iSereneo
@@ -39,6 +41,10 @@ public final class ItemListMix {
         inferna = in.getInt();
         enigma = in.getInt();
         bellum = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

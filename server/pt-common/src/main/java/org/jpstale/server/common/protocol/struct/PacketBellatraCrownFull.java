@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketBellatraCrownFull extends Packet {
 
-    private int bellatraCrownGoldClanId;  // int iBellatraCrownGoldClanId
-    private int bellatraCrownSilverClanId;  // int iBellatraCrownSilverClanId
-    private int bellatraCrownBronzeClanId;  // int iBellatraCrownBronzeClanId
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int bellatraCrownGoldClanId;  // int iBellatraCrownGoldClanId  size: 4 bytes
+    private int bellatraCrownSilverClanId;  // int iBellatraCrownSilverClanId  size: 4 bytes
+    private int bellatraCrownBronzeClanId;  // int iBellatraCrownBronzeClanId  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

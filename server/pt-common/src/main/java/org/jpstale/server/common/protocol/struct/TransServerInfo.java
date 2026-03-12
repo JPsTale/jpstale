@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class TransServerInfo {
+    public static final int SIZE_OF = 108;
+
     private String serverName;   // char szServerName[0x20]
     private String serverIp1;    // char szServerIp1[0x14]
     private String serverIp2;    // char szServerIp2[0x14]
@@ -27,6 +29,10 @@ public final class TransServerInfo {
         serverPort2 = in.getInt();
         serverPort3 = in.getInt();
         unknown = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

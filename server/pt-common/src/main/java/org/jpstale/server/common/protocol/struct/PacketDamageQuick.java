@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketDamageQuick extends Packet {
 
-    private boolean percentile;  // BOOL bPercentile
-    private boolean baseCurrentHp;  // BOOL bBaseCurrentHP
-    private int damage;  // int iDamage
-    private boolean pvp;  // BOOL bPVP
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 16;
+
+    private boolean percentile;  // BOOL bPercentile  size: 4 bytes
+    private boolean baseCurrentHp;  // BOOL bBaseCurrentHP  size: 4 bytes
+    private int damage;  // int iDamage  size: 4 bytes
+    private boolean pvp;  // BOOL bPVP  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

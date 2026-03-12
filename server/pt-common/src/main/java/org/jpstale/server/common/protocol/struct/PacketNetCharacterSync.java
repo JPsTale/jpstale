@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetCharacterSync extends Packet {
 
-    private int objectId;  // DWORD dwObjectID
-    private String charName;  // char szCharName[32]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 36;
+
+    private int objectId;  // DWORD dwObjectID  size: 4 bytes
+    private String charName;  // char szCharName[32]  size: 32 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,13 +11,21 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketLoginChannel extends Packet {
 
-    private String serverName;  // char szServerName[10]
-    private int serverTime;  // DWORD dwServerTime
-    private int clanTicket;  // int iClanTicket
-    private int temp;  // DWORD dwTemp
-    private int clanServerCount;  // int iClanServerCount
-    private int serverCount;  // int iServerCount
-    private TransServerInfo[] serverInfo = new TransServerInfo[4];  // _sTRANS_SERVER_INFO ServerInfo[4]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 462;
+
+    private String serverName;  // char szServerName[10]  size: 10 bytes
+    private int serverTime;  // DWORD dwServerTime  size: 4 bytes
+    private int clanTicket;  // int iClanTicket  size: 4 bytes
+    private int temp;  // DWORD dwTemp  size: 4 bytes
+    private int clanServerCount;  // int iClanServerCount  size: 4 bytes
+    private int serverCount;  // int iServerCount  size: 4 bytes
+    private TransServerInfo[] serverInfo = new TransServerInfo[4];  // _sTRANS_SERVER_INFO ServerInfo[4]  size: 432 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

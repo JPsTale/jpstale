@@ -11,20 +11,28 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketCrash extends Packet {
 
-    private int exceptionCode;  // DWORD dwExceptionCode
-    private int exceptionFlags;  // DWORD dwExceptionFlags
-    private int pvExceptionAddress;  // PVOID pvExceptionAddress
-    private int ax;  // DWORD EAX
-    private int cx;  // DWORD ECX
-    private int dx;  // DWORD EDX
-    private int bx;  // DWORD EBX
-    private int sp;  // DWORD ESP
-    private int bp;  // DWORD EBP
-    private int si;  // DWORD ESI
-    private int di;  // DWORD EDI
-    private int ip;  // DWORD EIP
-    private int version;  // DWORD dwVersion
-    private String accountName;  // char szAccountName[32]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 84;
+
+    private int exceptionCode;  // DWORD dwExceptionCode  size: 4 bytes
+    private int exceptionFlags;  // DWORD dwExceptionFlags  size: 4 bytes
+    private int pvExceptionAddress;  // PVOID pvExceptionAddress  size: 4 bytes
+    private int ax;  // DWORD EAX  size: 4 bytes
+    private int cx;  // DWORD ECX  size: 4 bytes
+    private int dx;  // DWORD EDX  size: 4 bytes
+    private int bx;  // DWORD EBX  size: 4 bytes
+    private int sp;  // DWORD ESP  size: 4 bytes
+    private int bp;  // DWORD EBP  size: 4 bytes
+    private int si;  // DWORD ESI  size: 4 bytes
+    private int di;  // DWORD EDI  size: 4 bytes
+    private int ip;  // DWORD EIP  size: 4 bytes
+    private int version;  // DWORD dwVersion  size: 4 bytes
+    private String accountName;  // char szAccountName[32]  size: 32 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

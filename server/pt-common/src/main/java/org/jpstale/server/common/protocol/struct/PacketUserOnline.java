@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketUserOnline extends Packet {
 
-    private int type;  // int iType
-    private int id;  // int iID
-    private boolean online;  // BOOL bOnline
-    private String name;  // char szName[32]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 44;
+
+    private int type;  // int iType  size: 4 bytes
+    private int id;  // int iID  size: 4 bytes
+    private boolean online;  // BOOL bOnline  size: 4 bytes
+    private String name;  // char szName[32]  size: 32 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

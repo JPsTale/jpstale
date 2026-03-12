@@ -11,14 +11,22 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketCommandEx extends Packet {
 
-    private int p2;  // int p2
-    private int p1;  // int p1
-    private int p3;  // int p3
-    private int p4;  // int p4
-    private int p6;  // int p6
-    private int p5;  // int p5
-    private int p7;  // int p7
-    private int p8;  // int p8
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 32;
+
+    private int p2;  // int p2  size: 4 bytes
+    private int p1;  // int p1  size: 4 bytes
+    private int p3;  // int p3  size: 4 bytes
+    private int p4;  // int p4  size: 4 bytes
+    private int p6;  // int p6  size: 4 bytes
+    private int p5;  // int p5  size: 4 bytes
+    private int p7;  // int p7  size: 4 bytes
+    private int p8;  // int p8  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

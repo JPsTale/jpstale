@@ -11,7 +11,15 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketSetCharacterGold extends Packet {
 
-    private int gold;  // DWORD dwGold
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 4;
+
+    private int gold;  // DWORD dwGold  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

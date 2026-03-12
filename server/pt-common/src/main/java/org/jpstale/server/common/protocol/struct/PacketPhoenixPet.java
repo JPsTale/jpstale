@@ -13,10 +13,18 @@ import org.jpstale.server.common.enums.PhoenixType;
 @Data
 public class PacketPhoenixPet extends Packet {
 
-    private int elementType;  // int iElementType
-    private PhoenixType type;  // EPhoenixType eType
-    private int unk;  // int iUnk
-    private int mask;  // DWORD dwMask
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 16;
+
+    private int elementType;  // int iElementType  size: 4 bytes
+    private PhoenixType type;  // EPhoenixType eType  size: 4 bytes
+    private int unk;  // int iUnk  size: 4 bytes
+    private int mask;  // DWORD dwMask  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

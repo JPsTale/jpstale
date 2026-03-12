@@ -25,7 +25,7 @@ public class PtFrameDecoder extends ByteToMessageDecoder {
         PtCodec.xorDecode(lenBuf, 2, GameXor.XOR_KEY);
         short length = PtCodec.readLength(lenBuf);
 
-        if (length < Packet.HEADER_SIZE || length > PtCodec.MAX_PACKET_SIZE) {
+        if (length < Packet.SIZE_OF || length > PtCodec.MAX_PACKET_SIZE) {
             ctx.close();
             return;
         }

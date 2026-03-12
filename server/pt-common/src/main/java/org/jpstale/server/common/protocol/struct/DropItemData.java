@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class DropItemData {
+    public static final int SIZE_OF = 12;
+
     private int itemId;   // int iItemID
     private int chk1;     // int iChk1
     private int chk2;     // DWORD iChk2
@@ -17,6 +19,10 @@ public final class DropItemData {
         itemId = in.getInt();
         chk1 = in.getInt();
         chk2 = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

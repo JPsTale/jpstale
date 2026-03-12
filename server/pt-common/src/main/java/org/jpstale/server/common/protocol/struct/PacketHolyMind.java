@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketHolyMind extends Packet {
 
-    private int time;  // int iTime
-    private int absorbPercent;  // int iAbsorbPercent
-    private int objectId;  // DWORD dwObjectID
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int time;  // int iTime  size: 4 bytes
+    private int absorbPercent;  // int iAbsorbPercent  size: 4 bytes
+    private int objectId;  // DWORD dwObjectID  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

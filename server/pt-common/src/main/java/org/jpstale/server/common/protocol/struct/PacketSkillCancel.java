@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketSkillCancel extends Packet {
 
-    private int unk;  // int iUnk
-    private int playId;  // int iPlayID
-    private int unk2;  // int iUnk2
-    private int unk3;  // int iUnk3
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 16;
+
+    private int unk;  // int iUnk  size: 4 bytes
+    private int playId;  // int iPlayID  size: 4 bytes
+    private int unk2;  // int iUnk2  size: 4 bytes
+    private int unk3;  // int iUnk3  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

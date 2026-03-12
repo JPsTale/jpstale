@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketMixGuild extends Packet {
 
-    private int count;  // int iCount
-    private ItemListMix[] mixList = new ItemListMix[70];  // ItemListMix sMixList[70]
-    private ItemMixDesc[] mixDesc = new ItemMixDesc[70];  // ItemMixDesc sMixDesc[70]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 6164;
+
+    private int count;  // int iCount  size: 4 bytes
+    private ItemListMix[] mixList = new ItemListMix[70];  // ItemListMix sMixList[70]  size: 3920 bytes
+    private ItemMixDesc[] mixDesc = new ItemMixDesc[70];  // ItemMixDesc sMixDesc[70]  size: 2240 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

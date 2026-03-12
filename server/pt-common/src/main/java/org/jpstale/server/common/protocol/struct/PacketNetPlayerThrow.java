@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetPlayerThrow extends Packet {
 
-    private int objectId;  // int ObjectID
-    private DropItemData item;  // DropItemData Item
-    private int gold;  // int Gold
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 20;
+
+    private int objectId;  // int ObjectID  size: 4 bytes
+    private DropItemData item;  // DropItemData Item  size: 12 bytes
+    private int gold;  // int Gold  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketPartyPotion extends Packet {
 
-    private int mp;  // int iMP
-    private int hp;  // int iHP
-    private int stm;  // int iSTM
-    private int unk;  // int iUnk
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 16;
+
+    private int mp;  // int iMP  size: 4 bytes
+    private int hp;  // int iHP  size: 4 bytes
+    private int stm;  // int iSTM  size: 4 bytes
+    private int unk;  // int iUnk  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

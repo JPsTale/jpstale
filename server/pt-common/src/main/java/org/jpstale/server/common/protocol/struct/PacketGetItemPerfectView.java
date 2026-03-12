@@ -13,17 +13,25 @@ import org.jpstale.server.common.enums.ItemRarity;
 @Data
 public class PacketGetItemPerfectView extends Packet {
 
-    private int code;  // DWORD dwCode
-    private int itemSpec;  // int iItemSpec
-    private short ageLevel;  // short sAgeLevel
-    private int mixType;  // int iMixType
-    private short mixColor;  // USHORT sMixColor
-    private short uniqueMixId;  // short sUniqueMixId
-    private int mixEffect;  // int iMixEffect
-    private ItemRarity itemRarity;  // EItemRarity eItemRarity
-    private int prefixId;  // int iPrefixID
-    private int suffixId;  // int iSuffixID
-    private int defenseValue;  // int iDefenseValue
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 38;
+
+    private int code;  // DWORD dwCode  size: 4 bytes
+    private int itemSpec;  // int iItemSpec  size: 4 bytes
+    private short ageLevel;  // short sAgeLevel  size: 2 bytes
+    private int mixType;  // int iMixType  size: 4 bytes
+    private short mixColor;  // USHORT sMixColor  size: 2 bytes
+    private short uniqueMixId;  // short sUniqueMixId  size: 2 bytes
+    private int mixEffect;  // int iMixEffect  size: 4 bytes
+    private ItemRarity itemRarity;  // EItemRarity eItemRarity  size: 4 bytes
+    private int prefixId;  // int iPrefixID  size: 4 bytes
+    private int suffixId;  // int iSuffixID  size: 4 bytes
+    private int defenseValue;  // int iDefenseValue  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

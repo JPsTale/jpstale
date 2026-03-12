@@ -11,11 +11,19 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketPersonalShopMessageEffect extends Packet {
 
-    private int msgcode;  // DWORD dwMSGCode
-    private int colorBlink;  // int ColorBlink
-    private short[] colors = new short[4];  // short sColors[4]
-    private int dispEffect;  // DWORD DispEffect
-    private int blinkScale;  // DWORD BlinkScale
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 24;
+
+    private int msgcode;  // DWORD dwMSGCode  size: 4 bytes
+    private int colorBlink;  // int ColorBlink  size: 4 bytes
+    private short[] colors = new short[4];  // short sColors[4]  size: 8 bytes
+    private int dispEffect;  // DWORD DispEffect  size: 4 bytes
+    private int blinkScale;  // DWORD BlinkScale  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

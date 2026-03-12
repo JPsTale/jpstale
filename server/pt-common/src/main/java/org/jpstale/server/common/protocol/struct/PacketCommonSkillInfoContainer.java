@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketCommonSkillInfoContainer extends Packet {
 
-    private int count;  // int iCount
-    private SkillInfoCommon[] data = new SkillInfoCommon[25];  // SkillInfoCommon saData[25]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 6254;
+
+    private int count;  // int iCount  size: 4 bytes
+    private SkillInfoCommon[] data = new SkillInfoCommon[25];  // SkillInfoCommon saData[25]  size: 6250 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

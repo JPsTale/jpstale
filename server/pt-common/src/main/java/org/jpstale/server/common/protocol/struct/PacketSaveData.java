@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketSaveData extends Packet {
 
-    private int count;  // int iCount
-    private int total;  // int iTotal
-    private int dataSize;  // int iDataSize
-    private String data;  // char szData[8160]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8172;
+
+    private int count;  // int iCount  size: 4 bytes
+    private int total;  // int iTotal  size: 4 bytes
+    private int dataSize;  // int iDataSize  size: 4 bytes
+    private String data;  // char szData[8160]  size: 8160 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

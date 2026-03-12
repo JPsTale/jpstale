@@ -13,7 +13,7 @@ SERVER_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, ".."))
 DEFAULT_H = os.path.normpath(os.path.join(SERVER_DIR, "../PristonTale-EU-main/shared/packets.h"))
 DEFAULT_OUT = os.path.join(SERVER_DIR, "pt-common/src/main/java/org/jpstale/server/common/protocol/struct")
 
-SKIP_ALREADY = {"Packet", "PacketLoginUser", "PacketAccountLoginCode"}
+SKIP_ALREADY = {"Packet"}
 
 # C 枚举类型 -> (Java 枚举类名, 是否 C 端为 short)
 # 对应 org.jpstale.server.common.enums 包中的枚举
@@ -48,6 +48,154 @@ MACROS = {
     "MAX_DAMAGEDATA": "100",
     "MAX_BLESSCASTLE_CLANCROWN": "3",
 }
+
+# C 结构体类型（含别名）-> 字节数，用于计算 BODY_SIZE
+STRUCT_BODY_SIZES = {
+    "Point3D": 12,
+    "BlessCastleStatusShort": 56,
+    "ChecksumFunction": 12,
+    "SkillInfoCommon": 250,
+    "StructFuryArenaBoss": 8,
+    "ItemUsing": 20,
+    "_sTRANS_SERVER_INFO": 108,
+    "TransServerInfo": 108,
+    "StageItemData": 63,
+    "SkillInfo": 314,
+    "SkillArrayData": 48,
+    "ElementalAttackSetting": 8,
+    "Header": 36,
+    "Server": 108,
+    "SYSTEMTIME": 16,
+    "SystemTime": 16,
+    "PlayBufferData": 40,
+    "DropItemData": 12,
+    "MinMax": 4,
+    "CharacterDataPacket": 40,
+    "ItemPremium": 16,
+    "PartyUserData": 196,
+    "PartyUserInfo": 28,
+    "MapIndicator": 20,
+    "ItemListMix": 56,
+    "ItemMixDesc": 32,
+    "CurMax": 4,
+    "IMinMax": 8,
+    "_TRANS_CHAR_INFO": 240,
+    "TransCharInfo": 240,
+}
+
+
+def field_size_bytes(c_type: str, array_dims: list, is_string: bool, packet_body_sizes: dict = None) -> int:
+    """单字段在 wire 上的字节数。与 map_type 的类型布局一致。"""
+    packet_body_sizes = packet_body_sizes or {}
+    # 字符串
+    if is_string and c_type == "char" and array_dims:
+        if len(array_dims) == 1:
+            return array_dims[0]
+        return array_dims[0] * array_dims[1]
+    # 标量
+    if not array_dims:
+        if c_type in C_ENUM_TO_JAVA:
+            _, use_short = C_ENUM_TO_JAVA[c_type]
+            return 2 if use_short else 4
+        if c_type in ("Point3D", "Point"):
+            return STRUCT_BODY_SIZES["Point3D"]
+        if c_type in ("_TRANS_CHAR_INFO", "TransCharInfo"):
+            return STRUCT_BODY_SIZES["TransCharInfo"]
+        if c_type in STRUCT_BODY_SIZES:
+            return STRUCT_BODY_SIZES[c_type]
+        if c_type.startswith("Packet") and c_type != "Packet":
+            return packet_body_sizes.get(c_type, 0)
+        if c_type in ("INT64", "int64_t", "uint64_t", "long", "unsigned __int64"):
+            return 8
+        if c_type == "BOOL":
+            return 4
+        if c_type in ("DWORD", "UINT", "int", "ID", "PVOID") or "int" in c_type.lower():
+            return 4
+        if c_type in ("WORD", "USHORT", "short"):
+            return 2
+        if c_type in ("BYTE", "byte"):
+            return 1
+        if c_type == "float":
+            return 4
+        if c_type == "bool":
+            return 1
+        return 4
+    # 数组
+    if len(array_dims) == 1:
+        n = array_dims[0]
+        if c_type in ("DWORD", "UINT", "int", "BOOL", "ID"):
+            return 4 * n
+        if c_type in ("WORD", "USHORT", "short"):
+            return 2 * n
+        if c_type in ("BYTE", "byte", "char"):
+            return n
+        if c_type == "float":
+            return 4 * n
+        if c_type in ("uint64_t", "INT64", "int64_t", "unsigned __int64"):
+            return 8 * n
+        if "CurMax" in c_type:
+            return STRUCT_BODY_SIZES["CurMax"] * n
+        if c_type == "ChecksumFunction":
+            return STRUCT_BODY_SIZES["ChecksumFunction"] * n
+        if c_type == "SkillInfoCommon":
+            return STRUCT_BODY_SIZES["SkillInfoCommon"] * n
+        if c_type == "StructFuryArenaBoss":
+            return STRUCT_BODY_SIZES["StructFuryArenaBoss"] * n
+        if c_type in ("_sTRANS_SERVER_INFO", "TransServerInfo"):
+            return STRUCT_BODY_SIZES["TransServerInfo"] * n
+        if c_type == "StageItemData":
+            return STRUCT_BODY_SIZES["StageItemData"] * n
+        if c_type == "SkillInfo":
+            return STRUCT_BODY_SIZES["SkillInfo"] * n
+        if c_type == "SkillArrayData":
+            return STRUCT_BODY_SIZES["SkillArrayData"] * n
+        if c_type == "ElementalAttackSetting":
+            return STRUCT_BODY_SIZES["ElementalAttackSetting"] * n
+        if c_type == "Header":
+            return STRUCT_BODY_SIZES["Header"] * n
+        if c_type == "Server":
+            return STRUCT_BODY_SIZES["Server"] * n
+        if c_type == "SYSTEMTIME":
+            return STRUCT_BODY_SIZES["SystemTime"] * n
+        if c_type == "PlayBufferData":
+            return STRUCT_BODY_SIZES["PlayBufferData"] * n
+        if c_type == "DropItemData":
+            return STRUCT_BODY_SIZES["DropItemData"] * n
+        if c_type == "MinMax":
+            return STRUCT_BODY_SIZES["MinMax"] * n
+        if c_type == "CharacterDataPacket":
+            return STRUCT_BODY_SIZES["CharacterDataPacket"] * n
+        if c_type == "ItemPremium":
+            return STRUCT_BODY_SIZES["ItemPremium"] * n
+        if c_type == "PartyUserData":
+            return STRUCT_BODY_SIZES["PartyUserData"] * n
+        if c_type == "PartyUserInfo":
+            return STRUCT_BODY_SIZES["PartyUserInfo"] * n
+        if c_type == "MapIndicator":
+            return STRUCT_BODY_SIZES["MapIndicator"] * n
+        if c_type == "ItemListMix":
+            return STRUCT_BODY_SIZES["ItemListMix"] * n
+        if c_type == "ItemMixDesc":
+            return STRUCT_BODY_SIZES["ItemMixDesc"] * n
+        if c_type in ("_TRANS_CHAR_INFO", "TransCharInfo"):
+            return STRUCT_BODY_SIZES["TransCharInfo"] * n
+        return 4 * n
+    if len(array_dims) == 2:
+        n1, n2 = array_dims[0], array_dims[1]
+        if c_type == "int":
+            return 4 * n1 * n2
+        if c_type == "char":
+            return n1 * n2
+        return n1 * n2
+    return 0
+
+
+def compute_body_size(fields: list, packet_body_sizes: dict = None) -> int:
+    """对当前包体字段列表求和得到包体字节数。fields 元素为 (jtype, jname, read_code, write_code, array_dims, is_string, c_type, c_name, c_comment)。"""
+    return sum(
+        field_size_bytes(c_type, array_dims, is_string, packet_body_sizes)
+        for (_, _, _, _, array_dims, is_string, c_type, _, _) in fields
+    )
 
 
 def c_name_to_java(name: str) -> str:
@@ -231,7 +379,7 @@ def parse_fields(body: str):
         if java_name in seen_java_names and len(name) >= 1:
             java_name = name[0].lower() + (name[1:] if len(name) > 1 else "")
         jtype, read_code, write_code = map_type(c_type, java_name, array_dims, is_string)
-        # 注释：原 C 类型与字段名（含数组维度）
+        # 注释：原 C 类型与字段名（含数组维度）；size 在 java_class_with_fields 中按 packet_body_sizes 补全
         comment_suffix = " " + name
         if array_dims:
             comment_suffix += "[" + "][".join(str(d) for d in array_dims) + "]"
@@ -312,6 +460,8 @@ def map_type(c_type: str, name: str, array_dims: list, is_string: bool):
             return "CurMax", f"if ({name} == null) {name} = new CurMax(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
         if c_type == "IMinMax":
             return "IMinMax", f"if ({name} == null) {name} = new IMinMax(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
+        if c_type in ("_TRANS_CHAR_INFO", "TransCharInfo"):
+            return "TransCharInfo", f"if ({name} == null) {name} = new TransCharInfo(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
         if c_type.startswith("Packet") and c_type != "Packet":
             # 内嵌 Packet 子类，只读 body
             return c_type, f"if ({name} == null) {name} = new {c_type}(); {name}.readBody(in);", f"if ({name} != null) {name}.writeBody(out);"
@@ -391,6 +541,8 @@ def map_type(c_type: str, name: str, array_dims: list, is_string: bool):
             return f"ItemListMix[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new ItemListMix(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
         if c_type == "ItemMixDesc":
             return f"ItemMixDesc[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new ItemMixDesc(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
+        if c_type in ("_TRANS_CHAR_INFO", "TransCharInfo"):
+            return f"TransCharInfo[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new TransCharInfo(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
         if c_type in ("uint64_t", "INT64", "int64_t", "unsigned __int64"):
             return f"long[]", f"for (int i = 0; i < {name}.length; i++) {{ {name}[i] = in.getLong(); }}", f"for (int i = 0; i < {name}.length; i++) {{ out.putLong({name}[i]); }}"
         return f"int[]", f"for (int i = 0; i < {name}.length; i++) {{ {name}[i] = in.getInt(); }}", f"for (int i = 0; i < {name}.length; i++) {{ out.putInt({name}[i]); }}"
@@ -406,8 +558,9 @@ def map_type(c_type: str, name: str, array_dims: list, is_string: bool):
     return "byte[]", f"in.get({name});", f"out.put({name});"
 
 
-def java_class_with_fields(name: str, parent: str, body: str) -> str:
+def java_class_with_fields(name: str, parent: str, body: str, packet_body_sizes: dict = None) -> str:
     pkg = "org.jpstale.server.common.protocol.struct"
+    packet_body_sizes = packet_body_sizes or {}
     fields = parse_fields(body)
     used_union_body = False
     # 若顶层无字段且 body 仅为 union，则解析 union 中第一个 struct 的字段（如 PacketBuffData）
@@ -424,44 +577,47 @@ def java_class_with_fields(name: str, parent: str, body: str) -> str:
     write_lines = []
 
     for jtype, jname, read_code, write_code, array_dims, is_string, c_type, c_name, c_comment in fields:
-        # 字段声明：Java 命名 + 原 C 类型/字段名注释
+        # 字段声明：Java 命名 + 原 C 类型/字段名注释 + 字段 size
+        field_sz = field_size_bytes(c_type, array_dims, is_string, packet_body_sizes)
+        c_comment_with_size = c_comment + f"  size: {field_sz} bytes"
         if array_dims:
             if len(array_dims) == 1:
                 n = array_dims[0]
                 if jtype == "String":
-                    field_decls.append(f"    private String {jname};{c_comment}")
+                    field_decls.append(f"    private String {jname};{c_comment_with_size}")
                 elif jtype == "String[]":
-                    field_decls.append(f"    private String[] {jname} = new String[{n}];{c_comment}")
+                    field_decls.append(f"    private String[] {jname} = new String[{n}];{c_comment_with_size}")
                 elif jtype == "byte[]":
-                    field_decls.append(f"    private final byte[] {jname} = new byte[{n}];{c_comment}")
+                    field_decls.append(f"    private final byte[] {jname} = new byte[{n}];{c_comment_with_size}")
                 elif jtype.endswith("[]"):
                     elem = jtype[:-2]
-                    field_decls.append(f"    private {jtype} {jname} = new {elem}[{n}];{c_comment}")
+                    field_decls.append(f"    private {jtype} {jname} = new {elem}[{n}];{c_comment_with_size}")
                 else:
-                    field_decls.append(f"    private {jtype} {jname} = new {jtype}[{n}];{c_comment}")
+                    field_decls.append(f"    private {jtype} {jname} = new {jtype}[{n}];{c_comment_with_size}")
             elif len(array_dims) == 2:
                 n1, n2 = array_dims[0], array_dims[1]
                 if jtype == "String[]":
-                    field_decls.append(f"    private String[] {jname} = new String[{n1}];{c_comment}")
+                    field_decls.append(f"    private String[] {jname} = new String[{n1}];{c_comment_with_size}")
                 elif jtype == "String[][]":
-                    field_decls.append(f"    private String[][] {jname} = new String[{n1}][{n2}];{c_comment}")
+                    field_decls.append(f"    private String[][] {jname} = new String[{n1}][{n2}];{c_comment_with_size}")
                 elif jtype.endswith("[][]"):
                     elem = jtype[:-4]
-                    field_decls.append(f"    private {jtype} {jname} = new {elem}[{n1}][{n2}];{c_comment}")
+                    field_decls.append(f"    private {jtype} {jname} = new {elem}[{n1}][{n2}];{c_comment_with_size}")
                 else:
-                    field_decls.append(f"    private {jtype} {jname} = new {jtype}[{n1}][{n2}];{c_comment}")
+                    field_decls.append(f"    private {jtype} {jname} = new {jtype}[{n1}][{n2}];{c_comment_with_size}")
             else:
-                field_decls.append(f"    private byte[] {jname};{c_comment}")
+                field_decls.append(f"    private byte[] {jname};{c_comment_with_size}")
         else:
-            if jtype in ("Point3D", "CurMax", "IMinMax", "BlessCastleStatusShort", "ChecksumFunction", "SkillInfoCommon", "StructFuryArenaBoss", "ItemUsing", "TransServerInfo", "StageItemData", "SkillInfo", "SkillArrayData", "ElementalAttackSetting", "Header", "Server", "SystemTime", "PlayBufferData", "DropItemData", "MinMax", "CharacterDataPacket", "ItemPremium", "PartyUserData", "PartyUserInfo", "MapIndicator", "ItemListMix", "ItemMixDesc"):
-                field_decls.append(f"    private {jtype} {jname};{c_comment}")
+            if jtype in ("Point3D", "CurMax", "IMinMax", "BlessCastleStatusShort", "ChecksumFunction", "SkillInfoCommon", "StructFuryArenaBoss", "ItemUsing", "TransServerInfo", "StageItemData", "SkillInfo", "SkillArrayData", "ElementalAttackSetting", "Header", "Server", "SystemTime", "PlayBufferData", "DropItemData", "MinMax", "CharacterDataPacket", "ItemPremium", "PartyUserData", "PartyUserInfo", "MapIndicator", "ItemListMix", "ItemMixDesc", "TransCharInfo"):
+                field_decls.append(f"    private {jtype} {jname};{c_comment_with_size}")
             elif jtype.startswith("Packet") and jtype != "Packet":
-                field_decls.append(f"    private {jtype} {jname};{c_comment}")
+                field_decls.append(f"    private {jtype} {jname};{c_comment_with_size}")
             else:
-                field_decls.append(f"    private {jtype} {jname};{c_comment}")
+                field_decls.append(f"    private {jtype} {jname};{c_comment_with_size}")
         read_lines.append("        " + read_code)
         write_lines.append("        " + write_code)
 
+    size_of_body = compute_body_size(fields, packet_body_sizes)
     field_block = "\n".join(field_decls)
     # 子类需先调用父类 readBody/writeBody
     enum_class_names = {v[0] for v in C_ENUM_TO_JAVA.values()}
@@ -479,7 +635,7 @@ def java_class_with_fields(name: str, parent: str, body: str) -> str:
  */
 """
     if used_union_body:
-        link_ref = "{@link Packet#getHeader() iHeader}"
+        link_ref = "{@link Packet#getPktHeader() iHeader}"
         class_doc = f"""/**
  * 对应 packets.h 中 struct {name} : {parent}。
  * <p>
@@ -498,7 +654,15 @@ import java.nio.ByteBuffer;{imports_extra}
 @Data
 public class {name} extends {parent} {{
 
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = {size_of_body};
+
 {field_block}
+
+    @Override
+    public int sizeOf() {{
+        return super.sizeOf() + SIZE_OF;
+    }}
 
     @Override
     protected void readBody(ByteBuffer in) {{
@@ -531,6 +695,14 @@ import java.nio.ByteBuffer;
 @Data
 public class {name} extends {parent} {{
 
+    /** 本包体字节数（无包体）. */
+    public static final int SIZE_OF = 0;
+
+    @Override
+    public int sizeOf() {{
+        return super.sizeOf() + SIZE_OF;
+    }}
+
     @Override
     protected void readBody(ByteBuffer in) {{
         {super_read}// C 端无包体成员，仅包头
@@ -559,12 +731,31 @@ def main():
     structs = find_struct_bodies(content)
     print(f"Found {len(structs)} struct Packet* definitions.")
 
+    # 预计算各 Packet 子类的包体大小（含嵌套 Packet 时需多轮直到稳定）
+    packet_body_sizes = {}
+    for _ in range(15):
+        changed = False
+        for name, parent, body in structs:
+            if name in SKIP_ALREADY:
+                continue
+            fields = parse_fields(body)
+            if not fields:
+                union_body = extract_union_first_struct_body(body)
+                if union_body:
+                    fields = parse_fields(union_body)
+            sz = compute_body_size(fields, packet_body_sizes) if fields else 0
+            if packet_body_sizes.get(name) != sz:
+                changed = True
+                packet_body_sizes[name] = sz
+        if not changed:
+            break
+
     written = 0
     for idx, (name, parent, body) in enumerate(structs, 1):
         if name in SKIP_ALREADY:
             print(f"  Skip: {name}")
             continue
-        java = java_class_with_fields(name, parent, body)
+        java = java_class_with_fields(name, parent, body, packet_body_sizes)
         out_file = os.path.join(path_out, f"{name}.java")
         with open(out_file, "w", encoding="utf-8") as f:
             f.write(java)

@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketChecksumFunctionList extends Packet {
 
-    private byte key;  // BYTE bKey
-    private ChecksumFunction[] checkSum = new ChecksumFunction[400];  // ChecksumFunction sCheckSum[400]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 4801;
+
+    private byte key;  // BYTE bKey  size: 1 bytes
+    private ChecksumFunction[] checkSum = new ChecksumFunction[400];  // ChecksumFunction sCheckSum[400]  size: 4800 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

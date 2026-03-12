@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketHealing extends Packet {
 
-    private int notUsed;  // int iNotUsed
-    private int healAmount;  // int iHealAmount
-    private int targetId;  // int iTargetID
-    private int casterId;  // int iCasterID
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 16;
+
+    private int notUsed;  // int iNotUsed  size: 4 bytes
+    private int healAmount;  // int iHealAmount  size: 4 bytes
+    private int targetId;  // int iTargetID  size: 4 bytes
+    private int casterId;  // int iCasterID  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

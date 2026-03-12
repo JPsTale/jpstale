@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class SystemTime {
+    public static final int SIZE_OF = 16;
+
     private short year;         // WORD wYear
     private short month;        // WORD wMonth
     private short dayOfWeek;    // WORD wDayOfWeek
@@ -27,6 +29,10 @@ public final class SystemTime {
         minute = in.getShort();
         second = in.getShort();
         milliseconds = in.getShort();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

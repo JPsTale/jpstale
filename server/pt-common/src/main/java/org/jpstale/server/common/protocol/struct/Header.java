@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class Header {
+    public static final int SIZE_OF = 36;
+
     private String serverName;   // char szServerName[16]
     private int time;            // DWORD dwTime
     private int ticket;          // int iTicket
@@ -23,6 +25,10 @@ public final class Header {
         unknown = in.getInt();
         clanServerIndex = in.getInt();
         gameServers = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

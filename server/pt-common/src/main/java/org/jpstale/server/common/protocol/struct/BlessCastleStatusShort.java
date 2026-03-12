@@ -9,6 +9,9 @@ import java.nio.ByteBuffer;
  */
 @Data
 public class BlessCastleStatusShort {
+    /** 5*4 + 6*4 + 3*4 = 56 bytes */
+    public static final int SIZE_OF = 56;
+
     private int clanId1;    // int iClanID1
     private int clanId2;    // int iClanID2
     private int clanId3;    // int iClanID3
@@ -29,6 +32,10 @@ public class BlessCastleStatusShort {
         for (int i = 0; i < guardAmount.length; i++) {
             guardAmount[i] = in.getInt();
         }
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

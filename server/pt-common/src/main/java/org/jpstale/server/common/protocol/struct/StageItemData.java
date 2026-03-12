@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class StageItemData {
+    public static final int SIZE_OF = 63;
+
     private boolean active;   // BOOL bActive
     private int itemFlags;    // EItemFlag eItemFlags
     private byte rarity;      // BYTE eRarity
@@ -33,6 +35,10 @@ public final class StageItemData {
         z = in.getInt();
         name = Packet.readCString(in, 32);
         clazz = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

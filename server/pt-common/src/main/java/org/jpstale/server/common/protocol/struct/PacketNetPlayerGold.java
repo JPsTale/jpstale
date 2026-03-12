@@ -11,12 +11,20 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetPlayerGold extends Packet {
 
-    private int objectId;  // int ObjectID
-    private int goldIn;  // int iGoldIn
-    private int goldOut;  // int iGoldOut
-    private int inventoryGold;  // int iInventoryGold
-    private int saveGold;  // int iSaveGold
-    private int characterDataIGold;  // int sCharacterData_iGold
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 24;
+
+    private int objectId;  // int ObjectID  size: 4 bytes
+    private int goldIn;  // int iGoldIn  size: 4 bytes
+    private int goldOut;  // int iGoldOut  size: 4 bytes
+    private int inventoryGold;  // int iInventoryGold  size: 4 bytes
+    private int saveGold;  // int iSaveGold  size: 4 bytes
+    private int characterDataIGold;  // int sCharacterData_iGold  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketRankingListClanSodList extends Packet {
 
-    private String[] clanSodName = new String[10];  // char szClanSodName[10][32]
-    private int[] clanSodMemberCount = new int[10];  // int iClanSodMemberCount[10]
-    private int[] clanSodPoints = new int[10];  // int iClanSodPoints[10]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 400;
+
+    private String[] clanSodName = new String[10];  // char szClanSodName[10][32]  size: 320 bytes
+    private int[] clanSodMemberCount = new int[10];  // int iClanSodMemberCount[10]  size: 40 bytes
+    private int[] clanSodPoints = new int[10];  // int iClanSodPoints[10]  size: 40 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

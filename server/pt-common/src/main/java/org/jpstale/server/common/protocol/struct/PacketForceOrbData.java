@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketForceOrbData extends Packet {
 
-    private boolean isInCityStage;  // BOOL bIsInCityStage
-    private ItemPremium forceOrb;  // ItemPremium sForceOrb
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 20;
+
+    private boolean isInCityStage;  // BOOL bIsInCityStage  size: 4 bytes
+    private ItemPremium forceOrb;  // ItemPremium sForceOrb  size: 16 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

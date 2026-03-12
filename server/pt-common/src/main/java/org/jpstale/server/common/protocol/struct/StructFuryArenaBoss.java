@@ -9,12 +9,18 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class StructFuryArenaBoss {
+    public static final int SIZE_OF = 8;
+
     private int currentBossHp;  // int iCurrentBossHP
     private int maxBossHp;      // int iMaxBossHP
 
     public void readFrom(ByteBuffer in) {
         currentBossHp = in.getInt();
         maxBossHp = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

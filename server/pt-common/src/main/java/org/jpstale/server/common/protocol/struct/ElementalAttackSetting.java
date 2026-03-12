@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class ElementalAttackSetting {
+    public static final int SIZE_OF = 8;
+
     private byte spare;           // BYTE bSpare
     private byte durationSec;     // BYTE bDurationSec
     private byte chance;         // BYTE bChance
@@ -23,6 +25,10 @@ public final class ElementalAttackSetting {
         parameter = in.get();
         sParameter = in.getShort();
         percentOfAP = in.getShort();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

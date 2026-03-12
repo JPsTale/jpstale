@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketGenericContainer extends Packet {
 
-    private int count;  // int iCount
-    private int iParam;  // int iParam
-    private final byte[] buffer = new byte[0];  // BYTE baBuffer[0]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private int count;  // int iCount  size: 4 bytes
+    private int iParam;  // int iParam  size: 4 bytes
+    private final byte[] buffer = new byte[0];  // BYTE baBuffer[0]  size: 0 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

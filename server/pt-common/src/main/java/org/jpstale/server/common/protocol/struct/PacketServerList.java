@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketServerList extends Packet {
 
-    private Header header;  // Header sHeader
-    private Server[] servers = new Server[4];  // Server sServers[4]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 468;
+
+    private Header header;  // Header sHeader  size: 36 bytes
+    private Server[] servers = new Server[4];  // Server sServers[4]  size: 432 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

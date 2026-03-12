@@ -11,7 +11,15 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketBlessCastleTopClanSync extends Packet {
 
-    private int[] clanId = new int[3];  // int iaClanID[3]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int[] clanId = new int[3];  // int iaClanID[3]  size: 12 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

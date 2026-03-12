@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNPCEasterEgg extends Packet {
 
-    private int action;  // int iAction
-    private int[] itemId = new int[3];  // int iaItemID[3]
-    private int[] head = new int[3];  // DWORD dwaHead[3]
-    private int[] checkSum = new int[3];  // DWORD dwaCheckSum[3]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 40;
+
+    private int action;  // int iAction  size: 4 bytes
+    private int[] itemId = new int[3];  // int iaItemID[3]  size: 12 bytes
+    private int[] head = new int[3];  // DWORD dwaHead[3]  size: 12 bytes
+    private int[] checkSum = new int[3];  // DWORD dwaCheckSum[3]  size: 12 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

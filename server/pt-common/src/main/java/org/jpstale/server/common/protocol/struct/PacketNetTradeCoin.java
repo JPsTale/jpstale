@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetTradeCoin extends Packet {
 
-    private int id;  // int iID
-    private int receiverId;  // int iReceiverID
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private int id;  // int iID  size: 4 bytes
+    private int receiverId;  // int iReceiverID  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,17 +11,25 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketBlessCastleTopData extends Packet {
 
-    private int tCode;  // int tCode
-    private int objectSerial;  // DWORD dwObjectSerial
-    private int nameCode;  // DWORD dwNameCode
-    private Point3D position;  // Point3D sPosition
-    private int charCode;  // DWORD dwCharCode
-    private int updateTime;  // DWORD dwUpdateTime
-    private int totalDamage;  // DWORD dwTotalDamage
-    private final byte[] crystalTowerCount = new byte[4];  // BYTE baCrystalTowerCount[4]
-    private int[] free = new int[2];  // DWORD dwFree[2]
-    private int[] damage = new int[10];  // int iaDamage[10]
-    private int[] counter = new int[10];  // int iaCounter[10]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 128;
+
+    private int tCode;  // int tCode  size: 4 bytes
+    private int objectSerial;  // DWORD dwObjectSerial  size: 4 bytes
+    private int nameCode;  // DWORD dwNameCode  size: 4 bytes
+    private Point3D position;  // Point3D sPosition  size: 12 bytes
+    private int charCode;  // DWORD dwCharCode  size: 4 bytes
+    private int updateTime;  // DWORD dwUpdateTime  size: 4 bytes
+    private int totalDamage;  // DWORD dwTotalDamage  size: 4 bytes
+    private final byte[] crystalTowerCount = new byte[4];  // BYTE baCrystalTowerCount[4]  size: 4 bytes
+    private int[] free = new int[2];  // DWORD dwFree[2]  size: 8 bytes
+    private int[] damage = new int[10];  // int iaDamage[10]  size: 40 bytes
+    private int[] counter = new int[10];  // int iaCounter[10]  size: 40 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

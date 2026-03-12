@@ -11,14 +11,22 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketAttackData extends Packet {
 
-    private int destObjectSerial;  // DWORD dwDestObjectSerial
-    private int tarObjectSerial;  // DWORD dwTarObjectSerial
-    private Point3D position;  // Point3D sPosition
-    private int range;  // int iRange
-    private int damage;  // int iDamage
-    private int chkSum;  // DWORD dwChkSum
-    private short[] rating = new short[2];  // short sRating[2]
-    private int damageChkSum;  // DWORD dwDamageChkSum
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 40;
+
+    private int destObjectSerial;  // DWORD dwDestObjectSerial  size: 4 bytes
+    private int tarObjectSerial;  // DWORD dwTarObjectSerial  size: 4 bytes
+    private Point3D position;  // Point3D sPosition  size: 12 bytes
+    private int range;  // int iRange  size: 4 bytes
+    private int damage;  // int iDamage  size: 4 bytes
+    private int chkSum;  // DWORD dwChkSum  size: 4 bytes
+    private short[] rating = new short[2];  // short sRating[2]  size: 4 bytes
+    private int damageChkSum;  // DWORD dwDamageChkSum  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

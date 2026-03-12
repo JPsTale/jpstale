@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class PlayBufferData {
+    public static final int SIZE_OF = 40;
+
     private int count;          // int iCount
     private PlayBuffer playBuff; // PlayBuffer sPlayBuff
 
@@ -16,6 +18,10 @@ public final class PlayBufferData {
         count = in.getInt();
         if (playBuff == null) playBuff = new PlayBuffer();
         playBuff.readFrom(in);
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

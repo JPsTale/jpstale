@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class SkillInfo {
+    public static final int SIZE_OF = 314;
+
     private int skillNum;           // int iSkillNum (1-based)
     private String skillName;       // char szSkillName[32]
     private String skillFileName;  // char szSkillFileName[32]
@@ -47,6 +49,10 @@ public final class SkillInfo {
         skillMasteryPerLevel = in.getShort();
         for (int i = 0; i < itemAllowedType.length; i++) itemAllowedType[i] = in.getInt();
         pvpScaling = in.getFloat();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

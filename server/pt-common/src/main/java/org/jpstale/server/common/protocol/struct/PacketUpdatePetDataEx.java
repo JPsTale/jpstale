@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketUpdatePetDataEx extends Packet {
 
-    private int targetId;  // int iTargetID
-    private int lastTargetId;  // int iLastTargetID
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private int targetId;  // int iTargetID  size: 4 bytes
+    private int lastTargetId;  // int iLastTargetID  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketListUsingItem extends Packet {
 
-    private int itemListCount;  // int iItemListCount
-    private ItemUsing[] itemList = new ItemUsing[16];  // ItemUsing sItemList[16]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 68;
+
+    private int itemListCount;  // int iItemListCount  size: 4 bytes
+    private ItemUsing[] itemList = new ItemUsing[16];  // ItemUsing sItemList[16]  size: 64 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

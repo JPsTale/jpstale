@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketUserWarpEffect extends Packet {
 
-    private int x;  // int iX
-    private int id;  // int iID
-    private int y;  // int iY
-    private int z;  // int iZ
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 16;
+
+    private int x;  // int iX  size: 4 bytes
+    private int id;  // int iID  size: 4 bytes
+    private int y;  // int iY  size: 4 bytes
+    private int z;  // int iZ  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

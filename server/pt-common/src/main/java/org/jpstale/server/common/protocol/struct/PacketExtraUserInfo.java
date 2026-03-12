@@ -11,11 +11,19 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketExtraUserInfo extends Packet {
 
-    private int uniqueUserId;  // int iUniqueUserID
-    private short bellatraSoloCrown;  // short sBellatraSoloCrown
-    private short clanSodRanking;  // short iClanSodRanking
-    private short forceOrbId;  // short iForceOrbId
-    private boolean hideMeFromMiniMap;  // BOOL bHideMeFromMiniMap
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 14;
+
+    private int uniqueUserId;  // int iUniqueUserID  size: 4 bytes
+    private short bellatraSoloCrown;  // short sBellatraSoloCrown  size: 2 bytes
+    private short clanSodRanking;  // short iClanSodRanking  size: 2 bytes
+    private short forceOrbId;  // short iForceOrbId  size: 2 bytes
+    private boolean hideMeFromMiniMap;  // BOOL bHideMeFromMiniMap  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class ItemUsing {
+    public static final int SIZE_OF = 20;
+
     private int itemId;                    // int iItemID
     private final short[] performance = new short[8];  // short sPerformance[8]
 
@@ -17,6 +19,10 @@ public final class ItemUsing {
         for (int i = 0; i < performance.length; i++) {
             performance[i] = in.getShort();
         }
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

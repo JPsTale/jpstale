@@ -14,27 +14,35 @@ import org.jpstale.server.common.enums.AttackState;
 @Data
 public class PacketSingleTargetSkillData extends Packet {
 
-    private int chkSum;  // DWORD dwChkSum
-    private int destObjectSerial;  // DWORD dwDestObjectSerial
-    private int tarObjectSerial;  // DWORD dwTarObjectSerial
-    private Point3D position;  // Point3D sPosition
-    private AttackState attackState;  // EAttackState eAttackState
-    private AttackProperty attackProperty;  // EAttackProperty iAttackProperty
-    private int range;  // int iRange
-    private short attackPowerMin;  // short AttackPowerMin
-    private short attackPowerMax;  // short AttackPowerMax
-    private short criticalChance;  // short sCriticalChance
-    private short criticalDmgBoost;  // short sCriticalDmgBoost
-    private int skillCode;  // int iSkillCode
-    private int time;  // DWORD dwTime
-    private int attackCount;  // int AttackCount
-    private short motionEventNum;  // short MotionEventNum
-    private short primaryStats;  // short sPrimaryStats
-    private int weaponCode;  // DWORD dwWeaponCode
-    private short stageId;  // short StageId
-    private short spare2;  // short spare2
-    private int questData;  // int iQuestData
-    private int attackRating;  // int iAttackRating
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 72;
+
+    private int chkSum;  // DWORD dwChkSum  size: 4 bytes
+    private int destObjectSerial;  // DWORD dwDestObjectSerial  size: 4 bytes
+    private int tarObjectSerial;  // DWORD dwTarObjectSerial  size: 4 bytes
+    private Point3D position;  // Point3D sPosition  size: 12 bytes
+    private AttackState attackState;  // EAttackState eAttackState  size: 2 bytes
+    private AttackProperty attackProperty;  // EAttackProperty iAttackProperty  size: 2 bytes
+    private int range;  // int iRange  size: 4 bytes
+    private short attackPowerMin;  // short AttackPowerMin  size: 2 bytes
+    private short attackPowerMax;  // short AttackPowerMax  size: 2 bytes
+    private short criticalChance;  // short sCriticalChance  size: 2 bytes
+    private short criticalDmgBoost;  // short sCriticalDmgBoost  size: 2 bytes
+    private int skillCode;  // int iSkillCode  size: 4 bytes
+    private int time;  // DWORD dwTime  size: 4 bytes
+    private int attackCount;  // int AttackCount  size: 4 bytes
+    private short motionEventNum;  // short MotionEventNum  size: 2 bytes
+    private short primaryStats;  // short sPrimaryStats  size: 2 bytes
+    private int weaponCode;  // DWORD dwWeaponCode  size: 4 bytes
+    private short stageId;  // short StageId  size: 2 bytes
+    private short spare2;  // short spare2  size: 2 bytes
+    private int questData;  // int iQuestData  size: 4 bytes
+    private int attackRating;  // int iAttackRating  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

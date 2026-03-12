@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetMuteSync extends Packet {
 
-    private int objectId;  // DWORD dwObjectID
-    private boolean muted;  // BOOL bMuted
-    private int unMuteExpiryTime;  // DWORD dwUnMuteExpiryTime
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int objectId;  // DWORD dwObjectID  size: 4 bytes
+    private boolean muted;  // BOOL bMuted  size: 4 bytes
+    private int unMuteExpiryTime;  // DWORD dwUnMuteExpiryTime  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

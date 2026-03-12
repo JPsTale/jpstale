@@ -11,13 +11,21 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketSoloRankingList extends Packet {
 
-    private int rankingType;  // int iRankingType
-    private int count;  // int iCount
-    private String[] characterName = new String[30];  // char szCharacterName[30][32]
-    private int[] clazz = new int[30];  // int iClass[30]
-    private int[] level = new int[30];  // int iLevel[30]
-    private int[] kills = new int[30];  // int iKills[30]
-    private int[] score = new int[30];  // int iScore[30]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 1448;
+
+    private int rankingType;  // int iRankingType  size: 4 bytes
+    private int count;  // int iCount  size: 4 bytes
+    private String[] characterName = new String[30];  // char szCharacterName[30][32]  size: 960 bytes
+    private int[] clazz = new int[30];  // int iClass[30]  size: 120 bytes
+    private int[] level = new int[30];  // int iLevel[30]  size: 120 bytes
+    private int[] kills = new int[30];  // int iKills[30]  size: 120 bytes
+    private int[] score = new int[30];  // int iScore[30]  size: 120 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

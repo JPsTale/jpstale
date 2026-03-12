@@ -11,11 +11,19 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketPlayDataGroupBot extends Packet {
 
-    private int playDataCount;  // int iPlayDataCount
-    private int sendCode;  // DWORD dwSendCode
-    private PacketPlayData playData;  // PacketPlayData sPlayData
-    private PlayBufferData playBuffData;  // PlayBufferData sPlayBuffData
-    private PacketItemShopBot packet;  // PacketItemShopBot sPacket
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 171;
+
+    private int playDataCount;  // int iPlayDataCount  size: 4 bytes
+    private int sendCode;  // DWORD dwSendCode  size: 4 bytes
+    private PacketPlayData playData;  // PacketPlayData sPlayData  size: 99 bytes
+    private PlayBufferData playBuffData;  // PlayBufferData sPlayBuffData  size: 40 bytes
+    private PacketItemShopBot packet;  // PacketItemShopBot sPacket  size: 24 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetPlayerInventory extends Packet {
 
-    private int objectId;  // int ObjectID
-    private DropItemData[] intentoryItems = new DropItemData[316];  // DropItemData sIntentoryItems[316]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 3796;
+
+    private int objectId;  // int ObjectID  size: 4 bytes
+    private DropItemData[] intentoryItems = new DropItemData[316];  // DropItemData sIntentoryItems[316]  size: 3792 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetGameMaster extends Packet {
 
-    private int objectId;  // UINT uObjectID
-    private int gameMasterLevel;  // int iGameMasterLevel
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private int objectId;  // UINT uObjectID  size: 4 bytes
+    private int gameMasterLevel;  // int iGameMasterLevel  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

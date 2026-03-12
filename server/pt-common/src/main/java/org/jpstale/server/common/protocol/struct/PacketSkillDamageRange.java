@@ -14,15 +14,23 @@ import org.jpstale.server.common.enums.AttackState;
 @Data
 public class PacketSkillDamageRange extends Packet {
 
-    private int targetReceiveDamageId;  // int iTargetReceiveDamageID
-    private Point3D position;  // Point3D sPosition
-    private AttackState attackState;  // EAttackState eAttackState
-    private AttackProperty attackProperty;  // EAttackProperty iAttackProperty
-    private int range;  // int iRange
-    private int damage;  // int iDamage
-    private int chkSum;  // DWORD dwChkSum
-    private int count;  // int iCount
-    private int[] targetId = new int[128];  // int iaTargetID[128]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 548;
+
+    private int targetReceiveDamageId;  // int iTargetReceiveDamageID  size: 4 bytes
+    private Point3D position;  // Point3D sPosition  size: 12 bytes
+    private AttackState attackState;  // EAttackState eAttackState  size: 2 bytes
+    private AttackProperty attackProperty;  // EAttackProperty iAttackProperty  size: 2 bytes
+    private int range;  // int iRange  size: 4 bytes
+    private int damage;  // int iDamage  size: 4 bytes
+    private int chkSum;  // DWORD dwChkSum  size: 4 bytes
+    private int count;  // int iCount  size: 4 bytes
+    private int[] targetId = new int[128];  // int iaTargetID[128]  size: 512 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

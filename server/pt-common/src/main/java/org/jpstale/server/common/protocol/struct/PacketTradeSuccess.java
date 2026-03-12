@@ -11,11 +11,19 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketTradeSuccess extends Packet {
 
-    private int senderId;  // int iSenderID
-    private int receiverId;  // int iReceiverID
-    private int checkSum;  // DWORD dwCheckSum
-    private int[] tempData = new int[4];  // DWORD dwaTempData[4]
-    private final byte[] data = new byte[4000];  // BYTE baData[4000]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 4028;
+
+    private int senderId;  // int iSenderID  size: 4 bytes
+    private int receiverId;  // int iReceiverID  size: 4 bytes
+    private int checkSum;  // DWORD dwCheckSum  size: 4 bytes
+    private int[] tempData = new int[4];  // DWORD dwaTempData[4]  size: 16 bytes
+    private final byte[] data = new byte[4000];  // BYTE baData[4000]  size: 4000 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

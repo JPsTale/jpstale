@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetPlayerItemPut extends Packet {
 
-    private int objectId;  // int ObjectID
-    private int exceptedHash;  // int ExceptedHash
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private int objectId;  // int ObjectID  size: 4 bytes
+    private int exceptedHash;  // int ExceptedHash  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

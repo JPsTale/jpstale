@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketItemShopBot extends Packet {
 
-    private int checkSum;  // int iCheckSum
-    private int[] unk = new int[5];  // int iUnk[5]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 24;
+
+    private int checkSum;  // int iCheckSum  size: 4 bytes
+    private int[] unk = new int[5];  // int iUnk[5]  size: 20 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

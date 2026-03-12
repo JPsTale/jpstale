@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class ItemPremium {
+    public static final int SIZE_OF = 16;
+
     private int type;       // EItemTimerType eType (int)
     private int code;       // DWORD dwCode
     private int timeLeft;   // DWORD dwTimeLeft
@@ -20,6 +22,10 @@ public final class ItemPremium {
         code = in.getInt();
         timeLeft = in.getInt();
         timeTotal = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

@@ -11,7 +11,15 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketFuryArenaBossData extends Packet {
 
-    private StructFuryArenaBoss hp;  // StructFuryArenaBoss sHP
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private StructFuryArenaBoss hp;  // StructFuryArenaBoss sHP  size: 8 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

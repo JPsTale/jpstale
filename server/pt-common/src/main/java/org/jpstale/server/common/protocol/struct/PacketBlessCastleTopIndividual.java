@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketBlessCastleTopIndividual extends Packet {
 
-    private String[] characterName = new String[3];  // char szCharacterName[3][32]
-    private int[] clazz = new int[3];  // int iClass[3]
-    private int[] damage = new int[3];  // int iDamage[3]
-    private int mode;  // int iMode
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 124;
+
+    private String[] characterName = new String[3];  // char szCharacterName[3][32]  size: 96 bytes
+    private int[] clazz = new int[3];  // int iClass[3]  size: 12 bytes
+    private int[] damage = new int[3];  // int iDamage[3]  size: 12 bytes
+    private int mode;  // int iMode  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

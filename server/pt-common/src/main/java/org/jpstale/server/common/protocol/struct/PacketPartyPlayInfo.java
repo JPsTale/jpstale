@@ -11,10 +11,18 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketPartyPlayInfo extends Packet {
 
-    private int objectId;  // DWORD dwObjectID
-    private int temp;  // DWORD dwTemp
-    private int usersCount;  // int iUsersCount
-    private PartyUserInfo[] data = new PartyUserInfo[8];  // PartyUserInfo sData[8]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 236;
+
+    private int objectId;  // DWORD dwObjectID  size: 4 bytes
+    private int temp;  // DWORD dwTemp  size: 4 bytes
+    private int usersCount;  // int iUsersCount  size: 4 bytes
+    private PartyUserInfo[] data = new PartyUserInfo[8];  // PartyUserInfo sData[8]  size: 224 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -13,11 +13,19 @@ import org.jpstale.server.common.enums.DamageTextType;
 @Data
 public class PacketDebugDamageInfo extends Packet {
 
-    private int objectId;  // ID dwObjectID
-    private DamageTextType typeAction;  // EDamageTextType sTypeAction
-    private short parameter;  // short sParameter
-    private int value;  // int iValue
-    private int attackerId;  // ID dwAttackerID
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 18;
+
+    private int objectId;  // ID dwObjectID  size: 4 bytes
+    private DamageTextType typeAction;  // EDamageTextType sTypeAction  size: 4 bytes
+    private short parameter;  // short sParameter  size: 2 bytes
+    private int value;  // int iValue  size: 4 bytes
+    private int attackerId;  // ID dwAttackerID  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

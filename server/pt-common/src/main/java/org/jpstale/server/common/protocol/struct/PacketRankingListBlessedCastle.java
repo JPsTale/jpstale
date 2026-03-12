@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketRankingListBlessedCastle extends Packet {
 
-    private String nameClan;  // char szNameClan[32]
-    private String clanLeader;  // char szClanLeader[32]
-    private int clanBlessIconId;  // int iClanBlessIconID
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 68;
+
+    private String nameClan;  // char szNameClan[32]  size: 32 bytes
+    private String clanLeader;  // char szClanLeader[32]  size: 32 bytes
+    private int clanBlessIconId;  // int iClanBlessIconID  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

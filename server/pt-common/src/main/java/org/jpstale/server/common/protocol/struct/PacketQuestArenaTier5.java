@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketQuestArenaTier5 extends Packet {
 
-    private int type;  // int iType
-    private int round;  // int iRound
-    private int timeLeft;  // DWORD dwTimeLeft
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int type;  // int iType  size: 4 bytes
+    private int round;  // int iRound  size: 4 bytes
+    private int timeLeft;  // DWORD dwTimeLeft  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

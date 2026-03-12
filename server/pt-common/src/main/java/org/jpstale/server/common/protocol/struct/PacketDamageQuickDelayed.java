@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketDamageQuickDelayed extends PacketDamageQuick {
 
-    private int millisecondDelay;  // int iMillisecondDelay
-    private int clientTimeToExecute;  // int dwClientTimeToExecute
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 8;
+
+    private int millisecondDelay;  // int iMillisecondDelay  size: 4 bytes
+    private int clientTimeToExecute;  // int dwClientTimeToExecute  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class SkillArrayData {
+    public static final int SIZE_OF = 48;
+
     private int skillId;                    // int iSkillID
     private int skillArrayAddressOrIndex;   // DWORD dwSkillArrayAddressOrIndex
     private final int[] skillValues = new int[10]; // union: int iSkillValues[10] / float fSkillValues[10]
@@ -17,6 +19,10 @@ public final class SkillArrayData {
         skillId = in.getInt();
         skillArrayAddressOrIndex = in.getInt();
         for (int i = 0; i < skillValues.length; i++) skillValues[i] = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

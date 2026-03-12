@@ -11,6 +11,14 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketQuestNamesRequest extends Packet {
 
+    /** 本包体字节数（无包体）. */
+    public static final int SIZE_OF = 0;
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
+
     @Override
     protected void readBody(ByteBuffer in) {
         // C 端无包体成员，仅包头

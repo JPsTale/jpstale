@@ -11,8 +11,16 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetPlayerWorldToken extends Packet {
 
-    private String token;  // char Token[65]
-    private String tokenPass;  // char TokenPass[65]
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 130;
+
+    private String token;  // char Token[65]  size: 65 bytes
+    private String tokenPass;  // char TokenPass[65]  size: 65 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

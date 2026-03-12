@@ -11,9 +11,17 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketNetIdentifier extends Packet {
 
-    private int serverId;  // int iServerID
-    private int port;  // int iPort
-    private int passwordNum;  // UINT uPasswordNUM
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 12;
+
+    private int serverId;  // int iServerID  size: 4 bytes
+    private int port;  // int iPort  size: 4 bytes
+    private int passwordNum;  // UINT uPasswordNUM  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {

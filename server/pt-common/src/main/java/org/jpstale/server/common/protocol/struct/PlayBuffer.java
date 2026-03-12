@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @Data
 public final class PlayBuffer {
+    public static final int SIZE_OF = 36;
+
     private int x;              // int iX
     private int y;              // int iY
     private int z;              // int iZ
@@ -25,6 +27,10 @@ public final class PlayBuffer {
         for (int i = 0; i < angle.length; i++) angle[i] = in.getShort();
         for (int i = 0; i < stickItems.length; i++) stickItems[i] = in.getShort();
         targetSerial = in.getInt();
+    }
+
+    public int sizeOf() {
+        return SIZE_OF;
     }
 
     public void writeTo(ByteBuffer out) {

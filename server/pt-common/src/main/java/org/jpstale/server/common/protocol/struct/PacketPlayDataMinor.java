@@ -11,13 +11,21 @@ import java.nio.ByteBuffer;
 @Data
 public class PacketPlayDataMinor extends Packet {
 
-    private int objectId;  // DWORD dwObjectID
-    private int x;  // int iX
-    private int y;  // int iY
-    private int z;  // int iZ
-    private short[] angle = new short[4];  // short saAngle[4]
-    private int frame;  // DWORD dwFrame
-    private int autoCharCode;  // DWORD dwAutoCharCode
+    /** 本包体字节数（不含包头）. */
+    public static final int SIZE_OF = 32;
+
+    private int objectId;  // DWORD dwObjectID  size: 4 bytes
+    private int x;  // int iX  size: 4 bytes
+    private int y;  // int iY  size: 4 bytes
+    private int z;  // int iZ  size: 4 bytes
+    private short[] angle = new short[4];  // short saAngle[4]  size: 8 bytes
+    private int frame;  // DWORD dwFrame  size: 4 bytes
+    private int autoCharCode;  // DWORD dwAutoCharCode  size: 4 bytes
+
+    @Override
+    public int sizeOf() {
+        return super.sizeOf() + SIZE_OF;
+    }
 
     @Override
     protected void readBody(ByteBuffer in) {
