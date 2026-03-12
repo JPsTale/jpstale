@@ -6,26 +6,40 @@ import java.nio.ByteBuffer;
 
 /**
  * 对应 shared/party.h 中 struct PartyRaidMemberData，SIZE = 24 bytes.
- *
- * 目前作为定长字节块处理，保持与 C 端布局一致。
  */
 @Data
 public final class PartyRaidMemberData {
 
     public static final int SIZE_OF = 24;
 
-    private final byte[] data = new byte[SIZE_OF];
+    /** int iID; size: 4 bytes */
+    private int id;
+
+    /** CurMax sHP; size: 4 bytes */
+    private CurMax hp = new CurMax();
+
+    /** Point3D sPosition; size: 12 bytes */
+    private Point3D position = new Point3D();
+
+    /** padding to reach 24 bytes; size: 4 bytes */
+    private final byte[] padding = new byte[4];
 
     public int sizeOf() {
         return SIZE_OF;
     }
 
     public void readFrom(ByteBuffer in) {
-        in.get(data);
+        id = in.getInt();
+        hp.readFrom(in);
+        position.readFrom(in);
+        in.get(padding);
     }
 
     public void writeTo(ByteBuffer out) {
-        out.put(data);
+        out.putInt(id);
+        hp.writeTo(out);
+        position.writeTo(out);
+        out.put(padding);
     }
 }
 
