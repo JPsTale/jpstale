@@ -1,0 +1,9 @@
+# 无数据库模式：不连接 PostgreSQL，使用 stub 登录逻辑（所有登录返回 INCORRECT_PASSWORD）
+# 使用方式: --spring.profiles.active=no-db
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+  flyway:
+    enabled: false

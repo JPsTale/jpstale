@@ -1,7 +1,7 @@
-server:
-  port: 8484
-
+# No embedded web server; Netty listens on pt.login.port
 spring:
+  main:
+    web-application-type: none
   datasource:
     url: jdbc:postgresql://localhost:5432/userdb
     username: ${DB_USER:postgres}
@@ -10,3 +10,7 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+pt:
+  login:
+    port: 8484

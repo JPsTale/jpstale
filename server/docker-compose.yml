@@ -1,0 +1,24 @@
+# 本地 PostgreSQL，供 Login/Game Server 使用
+# 启动: cd server && docker compose up -d
+# 建库后执行: psql -h localhost -U postgres -d userdb -f /path/to/PristonTale-EU-main/docs/postgresql-scripts/01-UserDB.sql
+#          psql -h localhost -U postgres -d gamedb  -f /path/to/PristonTale-EU-main/docs/postgresql-scripts/02-GameDB.sql
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jpstale-pg
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
