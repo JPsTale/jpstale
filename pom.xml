@@ -269,7 +269,7 @@
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
-                <version>1.9.3</version>
+                <version>1.11.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-fileupload</groupId>
@@ -396,12 +396,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.6.0</version>
-                <configuration>
-                    <!-- macOS 上运行 jMonkeyEngine 需要第一个线程参数 -->
-                    <jvmArgs>
-                        <jvmArg>-XstartOnFirstThread</jvmArg>
-                    </jvmArgs>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
