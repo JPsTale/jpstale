@@ -12,13 +12,13 @@ import java.nio.ByteBuffer;
 public class PacketCoinTab extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 12;
+    public static final int SIZE_OF = 7572;
 
     private short packetNumber;  // short sPacketNumber  size: 2 bytes
     private short packetMax;  // short sPacketMax  size: 2 bytes
     private int id;  // int iID  size: 4 bytes
     private int items;  // int iItems  size: 4 bytes
-    private Item[] aItems = new Item[0];  // Item aItems[0]  size: 0 bytes
+    private CoinItem[] aItems = new CoinItem[30];  // Item aItems[0]  size: 252 * 30 bytes
 
     @Override
     public int sizeOf() {
@@ -31,7 +31,7 @@ public class PacketCoinTab extends Packet {
         packetMax = in.getShort();
         id = in.getInt();
         items = in.getInt();
-        for (int i = 0; i < aItems.length; i++) { if (aItems[i] == null) aItems[i] = new Item(); aItems[i].readFrom(in); }
+        for (int i = 0; i < aItems.length; i++) { if (aItems[i] == null) aItems[i] = new CoinItem(); aItems[i].readFrom(in); }
     }
 
     @Override
