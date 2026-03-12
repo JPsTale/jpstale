@@ -22,7 +22,7 @@ public class NettyLoginServer {
     private int port;
 
     @Bean
-    public ApplicationRunner nettyLoginServerRunner(AccountLoginServiceApi accountLoginService) {
+    public ApplicationRunner nettyLoginServerRunner(PtLoginHandler ptLoginHandler) {
         return args -> {
             NioEventLoopGroup boss = new NioEventLoopGroup(1);
             NioEventLoopGroup worker = new NioEventLoopGroup();
@@ -35,7 +35,7 @@ public class NettyLoginServer {
                         protected void initChannel(SocketChannel ch) {
                             ch.pipeline()
                                 .addLast(new PtFrameDecoder())
-                                .addLast(new PtLoginHandler(accountLoginService));
+                                .addLast(ptLoginHandler);
                         }
                     })
                     .bind(port)

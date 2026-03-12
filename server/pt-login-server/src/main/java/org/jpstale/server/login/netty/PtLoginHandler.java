@@ -3,6 +3,7 @@ package org.jpstale.server.login.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import jakarta.annotation.Resource;
 import org.jpstale.server.common.protocol.GameXor;
 import org.jpstale.server.common.protocol.PacketIds;
 import org.jpstale.server.common.protocol.PtCodec;
@@ -10,39 +11,31 @@ import org.jpstale.server.common.protocol.struct.Packet;
 import org.jpstale.server.common.protocol.account.PacketAccountLoginCode;
 import org.jpstale.server.common.protocol.struct.PacketLoginUser;
 import org.jpstale.server.common.protocol.struct.PacketVersion;
-import org.jpstale.server.common.protocol.struct.PacketPing;
-import org.jpstale.server.common.protocol.struct.PacketSelectCharacter;
-import org.jpstale.server.common.protocol.struct.PacketDeleteCharacter;
-import org.jpstale.server.common.protocol.account.AccountLoginResult;
 import org.jpstale.server.login.api.CharacterServiceApi;
 import org.jpstale.server.login.api.LoginSuccessServiceApi;
 import org.jpstale.server.login.service.AccountLoginServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Login 服入站包处理：Version、LoginUser、SelectCharacter、DeleteCharacter、Ping 等。
  * 登录成功时发送 UserInfo + ServerList；失败时发送 AccountLoginCode。
  */
+@Component
 public class PtLoginHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     private static final Logger log = LoggerFactory.getLogger(PtLoginHandler.class);
 
-    private final AccountLoginServiceApi accountLoginService;
-    private final LoginSuccessServiceApi loginSuccessService;
-    private final CharacterServiceApi characterService;
-
-    public PtLoginHandler(AccountLoginServiceApi accountLoginService,
-                          LoginSuccessServiceApi loginSuccessService,
-                          CharacterServiceApi characterService) {
-        this.accountLoginService = accountLoginService;
-        this.loginSuccessService = loginSuccessService;
-        this.characterService = characterService;
-    }
+    @Resource
+    private AccountLoginServiceApi accountLoginService;
+    @Resource
+    private LoginSuccessServiceApi loginSuccessService;
+    @Resource
+    private CharacterServiceApi characterService;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
