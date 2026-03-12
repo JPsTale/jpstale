@@ -279,19 +279,9 @@
 
             <!-- database stuff -->
             <dependency>
-                <groupId>org.xerial</groupId>
-                <artifactId>sqlite-jdbc</artifactId>
-                <version>3.28.0</version>
-            </dependency>
-            <dependency>
                 <groupId>com.zaxxer</groupId>
                 <artifactId>HikariCP</artifactId>
                 <version>3.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mybatis</groupId>
-                <artifactId>mybatis</artifactId>
-                <version>3.5.2</version>
             </dependency>
 
             <!-- logger (2.x / 1.4.x for JDK 21 + Spring Boot 3) -->
@@ -303,12 +293,12 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.4.14</version>
+                <version>1.5.25</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
-                <version>1.4.14</version>
+                <version>1.5.25</version>
             </dependency>
 
             <dependency>
