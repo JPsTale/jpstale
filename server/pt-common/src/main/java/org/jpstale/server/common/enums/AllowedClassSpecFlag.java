@@ -6,7 +6,7 @@ package org.jpstale.server.common.enums;
 public enum AllowedClassSpecFlag {
 
     None(0),
-    Fighter(1 << 0),
+    Fighter(1),
     Mechanician(1 << 1),
     Archer(1 << 2),
     Pikeman(1 << 3),

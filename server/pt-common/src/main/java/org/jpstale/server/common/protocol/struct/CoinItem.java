@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 @Data
 public class CoinItem {
 
-    public static final int SIZE_OF = 252;
+    public static final int SIZE_OF = 256;
 
     private int id;// int iID; size: 4 bytes
     private String name;// char szName[32]; size: 32 bytes
@@ -24,7 +24,7 @@ public class CoinItem {
     private int discount;// int iDiscount; size: 4 bytes
     private int bulk;// int iBulk; size: 4 bytes
     private int maxBulk;// int iMaxBulk; size: 4 bytes
-    private AllowedClassSpecFlag allowedSpec;// EAllowedClassSpecFlag eAllowedSpec; size: 1 bytes
+    private AllowedClassSpecFlag allowedSpec;// EAllowedClassSpecFlag eAllowedSpec; size: 4 bytes
 
     public int sizeOf() {
         return SIZE_OF;
@@ -40,7 +40,7 @@ public class CoinItem {
         discount = in.getInt();
         bulk = in.getInt();
         maxBulk = in.getInt();
-        allowedSpec = AllowedClassSpecFlag.fromValue(in.get() & 0xFF);
+        allowedSpec = AllowedClassSpecFlag.fromValue(in.get());
     }
 
     public void writeTo(ByteBuffer out) {
@@ -53,6 +53,6 @@ public class CoinItem {
         out.putInt(discount);
         out.putInt(bulk);
         out.putInt(maxBulk);
-        out.put((byte) allowedSpec.getValue());
+        out.putInt(allowedSpec.getValue());
     }
 }
