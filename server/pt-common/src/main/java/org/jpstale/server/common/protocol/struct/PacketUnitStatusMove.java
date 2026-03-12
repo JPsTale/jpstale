@@ -14,7 +14,7 @@ public class PacketUnitStatusMove extends Packet {
     /** 本包体字节数（不含包头）. */
     public static final int SIZE_OF = 32;
 
-    private int lId;  // ID lID  size: 4 bytes
+    private int id;  // ID lID  size: 4 bytes
     private Point3D position;  // Point3D sPosition  size: 12 bytes
     private short spare;  // short sSpare  size: 2 bytes
     private short angleY;  // short sAngleY  size: 2 bytes
@@ -30,7 +30,7 @@ public class PacketUnitStatusMove extends Packet {
 
     @Override
     protected void readBody(ByteBuffer in) {
-        lId = in.getInt();
+        id = in.getInt();
         if (position == null) position = new Point3D(); position.readFrom(in);
         spare = in.getShort();
         angleY = in.getShort();
@@ -42,7 +42,7 @@ public class PacketUnitStatusMove extends Packet {
 
     @Override
     protected void writeBody(ByteBuffer out) {
-        out.putInt(lId);
+        out.putInt(id);
         if (position != null) position.writeTo(out);
         out.putShort(spare);
         out.putShort(angleY);

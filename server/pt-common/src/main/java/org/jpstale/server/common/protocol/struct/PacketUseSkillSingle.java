@@ -14,7 +14,7 @@ public class PacketUseSkillSingle extends PacketUseSkillBase {
     /** 本包体字节数（不含包头）. */
     public static final int SIZE_OF = 4;
 
-    private int lTargetId;  // int lTargetID  size: 4 bytes
+    private int targetId;  // int lTargetID  size: 4 bytes
 
     @Override
     public int sizeOf() {
@@ -24,12 +24,12 @@ public class PacketUseSkillSingle extends PacketUseSkillBase {
     @Override
     protected void readBody(ByteBuffer in) {
         super.readBody(in);
-        lTargetId = in.getInt();
+        targetId = in.getInt();
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
         super.writeBody(out);
-        out.putInt(lTargetId);
+        out.putInt(targetId);
     }
 }

@@ -21,7 +21,7 @@ public class PacketUseSkillBase extends Packet {
     private byte skillLevelBased;  // BYTE iSkillLevel1Based  size: 1 bytes
     private short timeLeftSec;  // short sTimeLeftSec  size: 2 bytes
     private CharacterClass casterCharacterClass;  // ECharacterClass eCasterCharacterClass  size: 4 bytes
-    private int lCasterId;  // ID lCasterID  size: 4 bytes
+    private int casterId;  // ID lCasterID  size: 4 bytes
 
     @Override
     public int sizeOf() {
@@ -34,7 +34,7 @@ public class PacketUseSkillBase extends Packet {
         skillLevelBased = in.get();
         timeLeftSec = in.getShort();
         casterCharacterClass = CharacterClass.fromValue(in.getInt());
-        lCasterId = in.getInt();
+        casterId = in.getInt();
     }
 
     @Override
@@ -43,6 +43,6 @@ public class PacketUseSkillBase extends Packet {
         out.put(skillLevelBased);
         out.putShort(timeLeftSec);
         out.putInt(casterCharacterClass.getValue());
-        out.putInt(lCasterId);
+        out.putInt(casterId);
     }
 }

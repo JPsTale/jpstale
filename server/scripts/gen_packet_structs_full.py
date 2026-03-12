@@ -246,13 +246,13 @@ def c_name_to_java(name: str) -> str:
         return name + trailing_digits
     # 去掉类型前缀：ia/ba/dwa/sza 等数组前缀仅当后跟大写时 strip（如 iaClanID、dwaTempData、szaMonsterName），
     # 单字母前缀(i,s,b,c 等) 也仅在后跟大写时剥掉，避免 config 之类普通单词被误处理。
-    for prefix in ("ia", "ba", "wa", "sa", "dwa", "sza", "dw", "i", "sz", "u", "w", "b", "s", "e", "c"):
+    for prefix in ("ia", "ba", "wa", "sa", "dwa", "sza", "dw", "i", "l", "sz", "u", "w", "b", "s", "e", "c"):
         if name.lower().startswith(prefix) and len(name) > len(prefix):
             rest = name[len(prefix) :]
             if not rest:
                 continue
             # 数组前缀(ia,ba,wa,sa,dwa)仅在后跟大写时剥掉；单字母前缀(s,e 等)也仅在后跟大写时剥，避免 ServerInfo->erverInfo
-            if prefix in ("ia", "ba", "wa", "sa", "dwa") and not rest[0].isupper():
+            if prefix in ("ia", "ba", "wa", "sa", "sza", "dwa") and not rest[0].isupper():
                 continue
             if len(prefix) == 1 and not rest[0].isupper():
                 continue

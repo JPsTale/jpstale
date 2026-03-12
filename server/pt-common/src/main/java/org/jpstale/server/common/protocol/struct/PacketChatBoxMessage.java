@@ -17,7 +17,7 @@ public class PacketChatBoxMessage extends Packet {
     public static final int SIZE_OF = 264;
 
     private ChatColor chatColor;  // EChatColor iChatColor  size: 4 bytes
-    private int lId;  // ID lID  size: 4 bytes
+    private int id;  // ID lID  size: 4 bytes
     private String chatBoxMessage;  // char szChatBoxMessage[256]  size: 256 bytes
 
     @Override
@@ -28,14 +28,14 @@ public class PacketChatBoxMessage extends Packet {
     @Override
     protected void readBody(ByteBuffer in) {
         chatColor = ChatColor.fromValue(in.getInt());
-        lId = in.getInt();
+        id = in.getInt();
         chatBoxMessage = readCString(in, 256);
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
         out.putInt(chatColor.getValue());
-        out.putInt(lId);
+        out.putInt(id);
         writeCString(out, chatBoxMessage, 256);
     }
 }
