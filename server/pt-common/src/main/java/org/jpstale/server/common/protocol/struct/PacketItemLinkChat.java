@@ -12,12 +12,12 @@ import java.nio.ByteBuffer;
 public class PacketItemLinkChat extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 296;
+    public static final int SIZE_OF = 1496;
 
     private String characterName;  // char szCharacterName[32]  size: 32 bytes
     private String message;  // char szMessage[256]  size: 256 bytes
     private int chatColor;  // int eChatColor  size: 4 bytes
-    private int cItemData;  // ItemData cItemData  size: 4 bytes
+    private ItemData itemData;  // ItemData cItemData  size: 1204 bytes
 
     @Override
     public int sizeOf() {
@@ -29,7 +29,7 @@ public class PacketItemLinkChat extends Packet {
         characterName = readCString(in, 32);
         message = readCString(in, 256);
         chatColor = in.getInt();
-        cItemData = in.getInt();
+        if (itemData == null) itemData = new ItemData(); itemData.readFrom(in);
     }
 
     @Override
@@ -37,6 +37,6 @@ public class PacketItemLinkChat extends Packet {
         writeCString(out, characterName, 32);
         writeCString(out, message, 256);
         out.putInt(chatColor);
-        out.putInt(cItemData);
+        if (itemData != null) itemData.writeTo(out);
     }
 }

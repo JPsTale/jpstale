@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 public class PacketNPCItemBox extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 192;
+    public static final int SIZE_OF = 1408;
 
     private String itemName;  // char szItemName[32]  size: 32 bytes
     private String message;  // char szMessage[128]  size: 128 bytes
@@ -22,7 +22,7 @@ public class PacketNPCItemBox extends Packet {
     private short weight;  // short sWeight  size: 2 bytes
     private short unknown;  // short sUnknown  size: 2 bytes
     private boolean item;  // BOOL bItem  size: 4 bytes
-    private int sItem;  // Item sItem  size: 4 bytes
+    private Item sItem;  // Item sItem  size: 1220 bytes
 
     @Override
     public int sizeOf() {
@@ -39,7 +39,7 @@ public class PacketNPCItemBox extends Packet {
         weight = in.getShort();
         unknown = in.getShort();
         item = in.getInt() != 0;
-        sItem = in.getInt();
+        if (sItem == null) sItem = new Item(); sItem.readFrom(in);
     }
 
     @Override
@@ -52,6 +52,6 @@ public class PacketNPCItemBox extends Packet {
         out.putShort(weight);
         out.putShort(unknown);
         out.putInt(item ? 1 : 0);
-        out.putInt(sItem);
+        if (sItem != null) sItem.writeTo(out);
     }
 }

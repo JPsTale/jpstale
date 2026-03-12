@@ -14,13 +14,13 @@ import org.jpstale.server.common.enums.ItemId;
 public class PacketManufactureItem extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 80;
+    public static final int SIZE_OF = 1280;
 
     private int uunknown;  // int iUunknown  size: 4 bytes
     private int result;  // int iResult  size: 4 bytes
-    private int itemData;  // ItemData sItemData  size: 4 bytes
+    private ItemData itemData;  // ItemData sItemData  size: 1204 bytes
     private ItemId recipeId;  // EItemID iRecipeID  size: 4 bytes
-    private int[] runeId = new int[3];  // EItemID iaRuneID[3]  size: 12 bytes
+    private ItemId[] runeId = new ItemId[3];  // EItemID iaRuneID[3]  size: 12 bytes
     private int recipeChk1;  // int iRecipeChk1  size: 4 bytes
     private int[] chk1 = new int[3];  // int iaChk1[3]  size: 12 bytes
     private int recipeChk2;  // int iRecipeChk2  size: 4 bytes
@@ -40,9 +40,9 @@ public class PacketManufactureItem extends Packet {
     protected void readBody(ByteBuffer in) {
         uunknown = in.getInt();
         result = in.getInt();
-        itemData = in.getInt();
+        if (itemData == null) itemData = new ItemData(); itemData.readFrom(in);
         recipeId = ItemId.fromValue(in.getInt());
-        for (int i = 0; i < runeId.length; i++) { runeId[i] = in.getInt(); }
+        for (int i = 0; i < runeId.length; i++) { runeId[i] = ItemId.fromValue(in.getInt()); }
         recipeChk1 = in.getInt();
         for (int i = 0; i < chk1.length; i++) { chk1[i] = in.getInt(); }
         recipeChk2 = in.getInt();
@@ -58,9 +58,9 @@ public class PacketManufactureItem extends Packet {
     protected void writeBody(ByteBuffer out) {
         out.putInt(uunknown);
         out.putInt(result);
-        out.putInt(itemData);
+        if (itemData != null) itemData.writeTo(out);
         out.putInt(recipeId.getValue());
-        for (int i = 0; i < runeId.length; i++) { out.putInt(runeId[i]); }
+        for (int i = 0; i < runeId.length; i++) { out.putInt(runeId[i].getValue()); }
         out.putInt(recipeChk1);
         for (int i = 0; i < chk1.length; i++) { out.putInt(chk1[i]); }
         out.putInt(recipeChk2);

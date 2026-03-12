@@ -3,6 +3,11 @@ package org.jpstale.server.common.protocol.struct;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
+import org.jpstale.server.common.enums.AsmQuestBit;
+import org.jpstale.server.common.enums.QuestExtraRewardType;
+import org.jpstale.server.common.enums.QuestPartyType;
+import org.jpstale.server.common.enums.QuestType;
+
 
 /**
  * 对应 packets.h 中 struct PacketHandleFinishedQuest : Packet。
@@ -12,13 +17,13 @@ import java.nio.ByteBuffer;
 public class PacketHandleFinishedQuest extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 134;
+    public static final int SIZE_OF = 168;
 
     private int id;  // int iID  size: 4 bytes
     private String questName;  // char szQuestName[40]  size: 40 bytes
     private String questGroupName;  // char szQuestGroupName[32]  size: 32 bytes
-    private int questPartyType;  // EQuestPartyType eQuestPartyType  size: 4 bytes
-    private int type;  // EQuestType eType  size: 4 bytes
+    private QuestPartyType questPartyType;  // EQuestPartyType eQuestPartyType  size: 1 bytes
+    private QuestType type;  // EQuestType eType  size: 1 bytes
     private byte minLevel;  // BYTE iMinLevel  size: 1 bytes
     private byte maxLevel;  // BYTE iMaxLevel  size: 1 bytes
     private short giverNpcId;  // short sGiverNpcID  size: 2 bytes
@@ -27,9 +32,9 @@ public class PacketHandleFinishedQuest extends Packet {
     private short groupNum;  // short sGroupNum  size: 2 bytes
     private SystemTime startDate;  // SYSTEMTIME sStartDate  size: 16 bytes
     private SystemTime endDate;  // SYSTEMTIME sEndDate  size: 16 bytes
-    private int[] extraReward = new int[0];  // EQuestExtraRewardType iaExtraReward[0]  size: 0 bytes
-    private int[] extraRewardValue = new int[0];  // UINT iaExtraRewardValue[0]  size: 0 bytes
-    private int asmQuestBit;  // EAsmQuestBit eAsmQuestBit  size: 4 bytes
+    private QuestExtraRewardType[] extraReward = new QuestExtraRewardType[5];  // EQuestExtraRewardType iaExtraReward[5]  size: 20 bytes
+    private int[] extraRewardValue = new int[5];  // UINT iaExtraRewardValue[5]  size: 20 bytes
+    private AsmQuestBit asmQuestBit;  // EAsmQuestBit eAsmQuestBit  size: 4 bytes
     private boolean loginTime;  // BOOL bLoginTime  size: 4 bytes
 
     @Override
@@ -42,8 +47,8 @@ public class PacketHandleFinishedQuest extends Packet {
         id = in.getInt();
         questName = readCString(in, 40);
         questGroupName = readCString(in, 32);
-        questPartyType = in.getInt();
-        type = in.getInt();
+        questPartyType = QuestPartyType.fromValue(in.get() & 0xFF);
+        type = QuestType.fromValue(in.get() & 0xFF);
         minLevel = in.get();
         maxLevel = in.get();
         giverNpcId = in.getShort();
@@ -52,9 +57,9 @@ public class PacketHandleFinishedQuest extends Packet {
         groupNum = in.getShort();
         if (startDate == null) startDate = new SystemTime(); startDate.readFrom(in);
         if (endDate == null) endDate = new SystemTime(); endDate.readFrom(in);
-        for (int i = 0; i < extraReward.length; i++) { extraReward[i] = in.getInt(); }
+        for (int i = 0; i < extraReward.length; i++) { extraReward[i] = QuestExtraRewardType.fromValue(in.getInt()); }
         for (int i = 0; i < extraRewardValue.length; i++) { extraRewardValue[i] = in.getInt(); }
-        asmQuestBit = in.getInt();
+        asmQuestBit = AsmQuestBit.fromValue(in.getInt());
         loginTime = in.getInt() != 0;
     }
 
@@ -63,8 +68,8 @@ public class PacketHandleFinishedQuest extends Packet {
         out.putInt(id);
         writeCString(out, questName, 40);
         writeCString(out, questGroupName, 32);
-        out.putInt(questPartyType);
-        out.putInt(type);
+        out.put((byte) questPartyType.getValue());
+        out.put((byte) type.getValue());
         out.put(minLevel);
         out.put(maxLevel);
         out.putShort(giverNpcId);
@@ -73,9 +78,9 @@ public class PacketHandleFinishedQuest extends Packet {
         out.putShort(groupNum);
         if (startDate != null) startDate.writeTo(out);
         if (endDate != null) endDate.writeTo(out);
-        for (int i = 0; i < extraReward.length; i++) { out.putInt(extraReward[i]); }
+        for (int i = 0; i < extraReward.length; i++) { out.putInt(extraReward[i].getValue()); }
         for (int i = 0; i < extraRewardValue.length; i++) { out.putInt(extraRewardValue[i]); }
-        out.putInt(asmQuestBit);
+        out.putInt(asmQuestBit.getValue());
         out.putInt(loginTime ? 1 : 0);
     }
 }

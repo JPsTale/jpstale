@@ -12,11 +12,11 @@ import java.nio.ByteBuffer;
 public class PacketSocketSystem extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 32;
+    public static final int SIZE_OF = 8432;
 
-    private int itemData;  // ItemData sItemData  size: 4 bytes
-    private int[] rune = new int[5];  // ItemData sRune[5]  size: 20 bytes
-    private int itemStone;  // ItemData sItemStone  size: 4 bytes
+    private ItemData itemData;  // ItemData sItemData  size: 1204 bytes
+    private ItemData[] rune = new ItemData[5];  // ItemData sRune[5]  size: 6020 bytes
+    private ItemData itemStone;  // ItemData sItemStone  size: 1204 bytes
     private int socketWorkType;  // int iSocketWorkType  size: 4 bytes
 
     @Override
@@ -26,17 +26,17 @@ public class PacketSocketSystem extends Packet {
 
     @Override
     protected void readBody(ByteBuffer in) {
-        itemData = in.getInt();
-        for (int i = 0; i < rune.length; i++) { rune[i] = in.getInt(); }
-        itemStone = in.getInt();
+        if (itemData == null) itemData = new ItemData(); itemData.readFrom(in);
+        for (int i = 0; i < rune.length; i++) { if (rune[i] == null) rune[i] = new ItemData(); rune[i].readFrom(in); }
+        if (itemStone == null) itemStone = new ItemData(); itemStone.readFrom(in);
         socketWorkType = in.getInt();
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
-        out.putInt(itemData);
-        for (int i = 0; i < rune.length; i++) { out.putInt(rune[i]); }
-        out.putInt(itemStone);
+        if (itemData != null) itemData.writeTo(out);
+        for (int i = 0; i < rune.length; i++) { if (rune[i] != null) rune[i].writeTo(out); }
+        if (itemStone != null) itemStone.writeTo(out);
         out.putInt(socketWorkType);
     }
 }

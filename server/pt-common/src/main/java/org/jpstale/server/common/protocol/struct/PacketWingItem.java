@@ -12,11 +12,11 @@ import java.nio.ByteBuffer;
 public class PacketWingItem extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 176;
+    public static final int SIZE_OF = 1376;
 
     private int docIndex;  // int DocIndex  size: 4 bytes
     private int result;  // int Result  size: 4 bytes
-    private int desCraftItem;  // ItemData DesCraftItem  size: 4 bytes
+    private ItemData desCraftItem;  // ItemData DesCraftItem  size: 1204 bytes
     private int[] sheltomCode = new int[12];  // DWORD SheltomCode[12]  size: 48 bytes
     private int[] head = new int[12];  // DWORD Head[12]  size: 48 bytes
     private int[] checkSum = new int[12];  // DWORD CheckSum[12]  size: 48 bytes
@@ -35,7 +35,7 @@ public class PacketWingItem extends Packet {
     protected void readBody(ByteBuffer in) {
         docIndex = in.getInt();
         result = in.getInt();
-        desCraftItem = in.getInt();
+        if (desCraftItem == null) desCraftItem = new ItemData(); desCraftItem.readFrom(in);
         for (int i = 0; i < sheltomCode.length; i++) { sheltomCode[i] = in.getInt(); }
         for (int i = 0; i < head.length; i++) { head[i] = in.getInt(); }
         for (int i = 0; i < checkSum.length; i++) { checkSum[i] = in.getInt(); }
@@ -50,7 +50,7 @@ public class PacketWingItem extends Packet {
     protected void writeBody(ByteBuffer out) {
         out.putInt(docIndex);
         out.putInt(result);
-        out.putInt(desCraftItem);
+        if (desCraftItem != null) desCraftItem.writeTo(out);
         for (int i = 0; i < sheltomCode.length; i++) { out.putInt(sheltomCode[i]); }
         for (int i = 0; i < head.length; i++) { out.putInt(head[i]); }
         for (int i = 0; i < checkSum.length; i++) { out.putInt(checkSum[i]); }

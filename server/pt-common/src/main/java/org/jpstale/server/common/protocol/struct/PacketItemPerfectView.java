@@ -12,9 +12,9 @@ import java.nio.ByteBuffer;
 public class PacketItemPerfectView extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 8;
+    public static final int SIZE_OF = 1208;
 
-    private int cItemData;  // ItemData cItemData  size: 4 bytes
+    private ItemData itemData;  // ItemData cItemData  size: 1204 bytes
     private int defenseOverride;  // int iDefenseOverride  size: 4 bytes
 
     @Override
@@ -24,13 +24,13 @@ public class PacketItemPerfectView extends Packet {
 
     @Override
     protected void readBody(ByteBuffer in) {
-        cItemData = in.getInt();
+        if (itemData == null) itemData = new ItemData(); itemData.readFrom(in);
         defenseOverride = in.getInt();
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
-        out.putInt(cItemData);
+        if (itemData != null) itemData.writeTo(out);
         out.putInt(defenseOverride);
     }
 }

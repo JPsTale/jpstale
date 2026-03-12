@@ -12,9 +12,9 @@ import java.nio.ByteBuffer;
 public class PacketFuryArenaItemData extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 4;
+    public static final int SIZE_OF = 1204;
 
-    private int itemData;  // ItemData sItemData  size: 4 bytes
+    private ItemData itemData;  // ItemData sItemData  size: 1204 bytes
 
     @Override
     public int sizeOf() {
@@ -23,11 +23,11 @@ public class PacketFuryArenaItemData extends Packet {
 
     @Override
     protected void readBody(ByteBuffer in) {
-        itemData = in.getInt();
+        if (itemData == null) itemData = new ItemData(); itemData.readFrom(in);
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
-        out.putInt(itemData);
+        if (itemData != null) itemData.writeTo(out);
     }
 }

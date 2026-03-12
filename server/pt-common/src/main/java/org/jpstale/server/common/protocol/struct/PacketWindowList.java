@@ -15,7 +15,7 @@ public class PacketWindowList extends Packet {
     public static final int SIZE_OF = 3204;
 
     private int count;  // int iCount  size: 4 bytes
-    private String[] aWindowName = new String[50];  // char szaWindowName[50][64]  size: 3200 bytes
+    private String[] windowName = new String[50];  // char szaWindowName[50][64]  size: 3200 bytes
 
     @Override
     public int sizeOf() {
@@ -25,12 +25,12 @@ public class PacketWindowList extends Packet {
     @Override
     protected void readBody(ByteBuffer in) {
         count = in.getInt();
-        for (int i = 0; i < 50; i++) { aWindowName[i] = readCString(in, 64); }
+        for (int i = 0; i < 50; i++) { windowName[i] = readCString(in, 64); }
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
         out.putInt(count);
-        for (int i = 0; i < 50; i++) { writeCString(out, aWindowName[i], 64); }
+        for (int i = 0; i < 50; i++) { writeCString(out, windowName[i], 64); }
     }
 }

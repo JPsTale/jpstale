@@ -18,7 +18,7 @@ public class PacketCoinTab extends Packet {
     private short packetMax;  // short sPacketMax  size: 2 bytes
     private int id;  // int iID  size: 4 bytes
     private int items;  // int iItems  size: 4 bytes
-    private int[] aItems = new int[0];  // Item aItems[0]  size: 0 bytes
+    private Item[] aItems = new Item[0];  // Item aItems[0]  size: 0 bytes
 
     @Override
     public int sizeOf() {
@@ -31,7 +31,7 @@ public class PacketCoinTab extends Packet {
         packetMax = in.getShort();
         id = in.getInt();
         items = in.getInt();
-        for (int i = 0; i < aItems.length; i++) { aItems[i] = in.getInt(); }
+        for (int i = 0; i < aItems.length; i++) { if (aItems[i] == null) aItems[i] = new Item(); aItems[i].readFrom(in); }
     }
 
     @Override
@@ -40,6 +40,6 @@ public class PacketCoinTab extends Packet {
         out.putShort(packetMax);
         out.putInt(id);
         out.putInt(items);
-        for (int i = 0; i < aItems.length; i++) { out.putInt(aItems[i]); }
+        for (int i = 0; i < aItems.length; i++) { if (aItems[i] != null) aItems[i].writeTo(out); }
     }
 }

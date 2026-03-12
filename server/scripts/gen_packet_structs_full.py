@@ -145,7 +145,7 @@ STRUCT_JAVA_CLASSES = frozenset({
     "CurMax", "IMinMax", "TransCharInfo",
     "PacketSkillBuffStatus", "QuestInformation", "AgingRecoveryDataHandle",
     "PartyMemberData", "PartyRaidMemberData", "PartyMember", "PartyRaid", "CStablePetTab",
-    "ItemData", "Item",
+    "ItemData", "Item", "QuestData",
 })
 
 
@@ -181,6 +181,8 @@ def field_size_bytes(c_type: str, array_dims: list, is_string: bool, packet_body
             return 8
         if c_type == "BOOL":
             return 4
+        if c_type == "char":
+            return 1
         if c_type in ("DWORD", "UINT", "int", "ID", "PVOID") or "int" in c_type.lower():
             return 4
         if c_type in ("WORD", "USHORT", "short"):
@@ -242,14 +244,15 @@ def c_name_to_java(name: str) -> str:
         name = name[: m.start()]
     if not name:
         return name + trailing_digits
-    # 去掉类型前缀：ia/ba/dwa 等数组前缀仅当后跟大写时 strip（如 iaClanID、dwaTempData），避免 iAttackRating 被误剥成 ttackRating
-    for prefix in ("a", "ia", "ba", "wa", "sa", "sza", "dwa", "dw", "i", "sz", "u", "w", "b", "s", "e", "c"):
+    # 去掉类型前缀：ia/ba/dwa/sza 等数组前缀仅当后跟大写时 strip（如 iaClanID、dwaTempData、szaMonsterName），
+    # 单字母前缀(i,s,b,c 等) 也仅在后跟大写时剥掉，避免 config 之类普通单词被误处理。
+    for prefix in ("ia", "ba", "wa", "sa", "dwa", "sza", "dw", "i", "sz", "u", "w", "b", "s", "e", "c"):
         if name.lower().startswith(prefix) and len(name) > len(prefix):
             rest = name[len(prefix) :]
             if not rest:
                 continue
             # 数组前缀(ia,ba,wa,sa,dwa)仅在后跟大写时剥掉；单字母前缀(s,e 等)也仅在后跟大写时剥，避免 ServerInfo->erverInfo
-            if prefix in ("a", "ia", "ba", "wa", "sa", "dwa", "sza") and not rest[0].isupper():
+            if prefix in ("ia", "ba", "wa", "sa", "dwa") and not rest[0].isupper():
                 continue
             if len(prefix) == 1 and not rest[0].isupper():
                 continue
@@ -450,6 +453,8 @@ def map_type(c_type: str, name: str, array_dims: list, is_string: bool):
             return "TransCharInfo", f"if ({name} == null) {name} = new TransCharInfo(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
         if c_type in ("_sTRANS_SERVER_INFO", "TransServerInfo"):
             return "TransServerInfo", f"if ({name} == null) {name} = new TransServerInfo(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
+        if c_type in ("SYSTEMTIME", "SystemTime"):
+            return "SystemTime", f"if ({name} == null) {name} = new SystemTime(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
         if c_type in STRUCT_JAVA_CLASSES:
             return c_type, f"if ({name} == null) {name} = new {c_type}(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
         if c_type.startswith("Packet") and c_type != "Packet":
@@ -458,6 +463,9 @@ def map_type(c_type: str, name: str, array_dims: list, is_string: bool):
         # INT64 必须先于 "int" in c_type_lower，否则 INT64 会被误判为 int
         if c_type in ("INT64", "int64_t", "uint64_t", "long"):
             return "long", f"{name} = in.getLong();", f"out.putLong({name});"
+        # 单个 char 按 1 字节处理
+        if c_type == "char":
+            return "byte", f"{name} = in.get();", f"out.put({name});"
         # BOOL 映射为 boolean，线上传 4 字节 int
         if c_type == "BOOL":
             return "boolean", f"{name} = in.getInt() != 0;", f"out.putInt({name} ? 1 : 0);"
@@ -577,7 +585,12 @@ def java_class_with_fields(name: str, parent: str, body: str, packet_body_sizes:
     field_block = "\n".join(field_decls)
     # 子类需先调用父类 readBody/writeBody
     enum_class_names = {v[0] for v in C_ENUM_TO_JAVA.values()}
-    used_enums = sorted({jtype for jtype, *_ in fields if jtype in enum_class_names})
+    used_enum_set = set()
+    for jtype, *_ in fields:
+        base = jtype[:-2] if jtype.endswith("[]") else jtype
+        if base in enum_class_names:
+            used_enum_set.add(base)
+    used_enums = sorted(used_enum_set)
     import_enums = "\n".join(f"import org.jpstale.server.common.enums.{e};" for e in used_enums)
     super_read = "        super.readBody(in);\n" if parent != "Packet" else ""
     super_write = "        super.writeBody(out);\n" if parent != "Packet" else ""

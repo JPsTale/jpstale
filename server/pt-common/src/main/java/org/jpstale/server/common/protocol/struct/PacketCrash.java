@@ -27,7 +27,7 @@ public class PacketCrash extends Packet {
     private int di;  // DWORD EDI  size: 4 bytes
     private int ip;  // DWORD EIP  size: 4 bytes
     private int version;  // DWORD dwVersion  size: 4 bytes
-    private String accountName;  // char szAccountName[32]  size: 32 bytes
+    private String ccountName;  // char szAccountName[32]  size: 32 bytes
 
     @Override
     public int sizeOf() {
@@ -49,7 +49,7 @@ public class PacketCrash extends Packet {
         di = in.getInt();
         ip = in.getInt();
         version = in.getInt();
-        accountName = readCString(in, 32);
+        ccountName = readCString(in, 32);
     }
 
     @Override
@@ -67,6 +67,6 @@ public class PacketCrash extends Packet {
         out.putInt(di);
         out.putInt(ip);
         out.putInt(version);
-        writeCString(out, accountName, 32);
+        writeCString(out, ccountName, 32);
     }
 }

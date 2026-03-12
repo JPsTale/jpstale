@@ -12,16 +12,16 @@ import java.nio.ByteBuffer;
 public class PacketQuestUpdateData extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 16;
+    public static final int SIZE_OF = 56;
 
     private int id;  // int iID  size: 4 bytes
     private int timeLeft;  // DWORD dwTimeLeft  size: 4 bytes
     private short monsterCount;  // USHORT iMonsterCount  size: 2 bytes
-    private short[] monstersKilled = new short[0];  // USHORT saMonstersKilled[0]  size: 0 bytes
-    private short[] monstersReq = new short[0];  // USHORT saMonstersReq[0]  size: 0 bytes
+    private short[] monstersKilled = new short[5];  // USHORT saMonstersKilled[5]  size: 10 bytes
+    private short[] monstersReq = new short[5];  // USHORT saMonstersReq[5]  size: 10 bytes
     private short itemsCount;  // USHORT iItemsCount  size: 2 bytes
-    private short[] itemsCollected = new short[0];  // USHORT saItemsCollected[0]  size: 0 bytes
-    private short[] itemsReq = new short[0];  // USHORT saItemsReq[0]  size: 0 bytes
+    private short[] itemsCollected = new short[5];  // USHORT saItemsCollected[5]  size: 10 bytes
+    private short[] itemsReq = new short[5];  // USHORT saItemsReq[5]  size: 10 bytes
     private boolean finishedOtherRequirements;  // BOOL bFinishedOtherRequirements  size: 4 bytes
 
     @Override

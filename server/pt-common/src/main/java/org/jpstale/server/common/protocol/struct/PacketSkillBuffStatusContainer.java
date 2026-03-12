@@ -12,11 +12,11 @@ import java.nio.ByteBuffer;
 public class PacketSkillBuffStatusContainer extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 406;
+    public static final int SIZE_OF = 5606;
 
     private int targetId;  // ID iTargetID  size: 4 bytes
     private short count;  // USHORT sCount  size: 2 bytes
-    private int[] buff = new int[100];  // PacketSkillBuffStatus saBuff[100]  size: 400 bytes
+    private PacketSkillBuffStatus[] buff = new PacketSkillBuffStatus[100];  // PacketSkillBuffStatus saBuff[100]  size: 5600 bytes
 
     @Override
     public int sizeOf() {
@@ -27,13 +27,13 @@ public class PacketSkillBuffStatusContainer extends Packet {
     protected void readBody(ByteBuffer in) {
         targetId = in.getInt();
         count = in.getShort();
-        for (int i = 0; i < buff.length; i++) { buff[i] = in.getInt(); }
+        for (int i = 0; i < buff.length; i++) { if (buff[i] == null) buff[i] = new PacketSkillBuffStatus(); buff[i].readFrom(in); }
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
         out.putInt(targetId);
         out.putShort(count);
-        for (int i = 0; i < buff.length; i++) { out.putInt(buff[i]); }
+        for (int i = 0; i < buff.length; i++) { if (buff[i] != null) buff[i].writeTo(out); }
     }
 }

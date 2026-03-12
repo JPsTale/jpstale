@@ -3,6 +3,9 @@ package org.jpstale.server.common.protocol.struct;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
+import org.jpstale.server.common.enums.SlotTypeHandle;
+import org.jpstale.server.common.enums.SlotTypeHandleWhere;
+
 
 /**
  * 对应 packets.h 中 struct PacketSlotItemHandle : Packet。
@@ -14,8 +17,8 @@ public class PacketSlotItemHandle extends Packet {
     /** 本包体字节数（不含包头）. */
     public static final int SIZE_OF = 20;
 
-    private int typeHandle;  // ESlotTypeHandle iTypeHandle  size: 4 bytes
-    private int typeWhere;  // ESlotTypeHandleWhere iTypeWhere  size: 4 bytes
+    private SlotTypeHandle typeHandle;  // ESlotTypeHandle iTypeHandle  size: 4 bytes
+    private SlotTypeHandleWhere typeWhere;  // ESlotTypeHandleWhere iTypeWhere  size: 4 bytes
     private int itemId;  // int iItemID  size: 4 bytes
     private int chk1;  // int iChk1  size: 4 bytes
     private int chk2;  // int iChk2  size: 4 bytes
@@ -27,8 +30,8 @@ public class PacketSlotItemHandle extends Packet {
 
     @Override
     protected void readBody(ByteBuffer in) {
-        typeHandle = in.getInt();
-        typeWhere = in.getInt();
+        typeHandle = SlotTypeHandle.fromValue(in.getInt());
+        typeWhere = SlotTypeHandleWhere.fromValue(in.getInt());
         itemId = in.getInt();
         chk1 = in.getInt();
         chk2 = in.getInt();
@@ -36,8 +39,8 @@ public class PacketSlotItemHandle extends Packet {
 
     @Override
     protected void writeBody(ByteBuffer out) {
-        out.putInt(typeHandle);
-        out.putInt(typeWhere);
+        out.putInt(typeHandle.getValue());
+        out.putInt(typeWhere.getValue());
         out.putInt(itemId);
         out.putInt(chk1);
         out.putInt(chk2);

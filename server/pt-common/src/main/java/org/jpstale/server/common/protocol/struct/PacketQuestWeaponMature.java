@@ -12,9 +12,9 @@ import java.nio.ByteBuffer;
 public class PacketQuestWeaponMature extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 4;
+    public static final int SIZE_OF = 1220;
 
-    private int item;  // Item sItem  size: 4 bytes
+    private Item item;  // Item sItem  size: 1220 bytes
 
     @Override
     public int sizeOf() {
@@ -23,11 +23,11 @@ public class PacketQuestWeaponMature extends Packet {
 
     @Override
     protected void readBody(ByteBuffer in) {
-        item = in.getInt();
+        if (item == null) item = new Item(); item.readFrom(in);
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
-        out.putInt(item);
+        if (item != null) item.writeTo(out);
     }
 }

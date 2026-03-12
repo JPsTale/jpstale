@@ -12,9 +12,9 @@ import java.nio.ByteBuffer;
 public class PacketUseUnionCore extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 16;
+    public static final int SIZE_OF = 1232;
 
-    private int item;  // Item sItem  size: 4 bytes
+    private Item item;  // Item sItem  size: 1220 bytes
     private Point3D position;  // Point3D sPosition  size: 12 bytes
 
     @Override
@@ -24,13 +24,13 @@ public class PacketUseUnionCore extends Packet {
 
     @Override
     protected void readBody(ByteBuffer in) {
-        item = in.getInt();
+        if (item == null) item = new Item(); item.readFrom(in);
         if (position == null) position = new Point3D(); position.readFrom(in);
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
-        out.putInt(item);
+        if (item != null) item.writeTo(out);
         if (position != null) position.writeTo(out);
     }
 }

@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 public class PacketQuestStartData extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 432;
+    public static final int SIZE_OF = 672;
 
     private int id;  // int iID  size: 4 bytes
     private String name;  // char szName[64]  size: 64 bytes
@@ -39,13 +39,13 @@ public class PacketQuestStartData extends Packet {
     private int party;  // int iParty  size: 4 bytes
     private boolean pvP;  // BOOL bPvP  size: 4 bytes
     private boolean multiple;  // BOOL bMultiple  size: 4 bytes
-    private int[] monsterId = new int[0];  // int iaMonsterID[0]  size: 0 bytes
-    private short[] monstersReq = new short[0];  // USHORT saMonstersReq[0]  size: 0 bytes
-    private short[] monstersKilled = new short[0];  // USHORT saMonstersKilled[0]  size: 0 bytes
-    private String[] aMonsterName = new String[0];  // char szaMonsterName[0][32]  size: 0 bytes
-    private int[] itemId = new int[0];  // int iaItemID[0]  size: 0 bytes
-    private short[] itemsReq = new short[0];  // USHORT saItemsReq[0]  size: 0 bytes
-    private short[] itemsCollected = new short[0];  // USHORT saItemsCollected[0]  size: 0 bytes
+    private int[] monsterId = new int[5];  // int iaMonsterID[5]  size: 20 bytes
+    private short[] monstersReq = new short[5];  // USHORT saMonstersReq[5]  size: 10 bytes
+    private short[] monstersKilled = new short[5];  // USHORT saMonstersKilled[5]  size: 10 bytes
+    private String[] monsterName = new String[5];  // char szaMonsterName[5][32]  size: 160 bytes
+    private int[] itemId = new int[5];  // int iaItemID[5]  size: 20 bytes
+    private short[] itemsReq = new short[5];  // USHORT saItemsReq[5]  size: 10 bytes
+    private short[] itemsCollected = new short[5];  // USHORT saItemsCollected[5]  size: 10 bytes
 
     @Override
     public int sizeOf() {
@@ -82,7 +82,7 @@ public class PacketQuestStartData extends Packet {
         for (int i = 0; i < monsterId.length; i++) { monsterId[i] = in.getInt(); }
         for (int i = 0; i < monstersReq.length; i++) { monstersReq[i] = in.getShort(); }
         for (int i = 0; i < monstersKilled.length; i++) { monstersKilled[i] = in.getShort(); }
-        for (int i = 0; i < 0; i++) { aMonsterName[i] = readCString(in, 32); }
+        for (int i = 0; i < 5; i++) { monsterName[i] = readCString(in, 32); }
         for (int i = 0; i < itemId.length; i++) { itemId[i] = in.getInt(); }
         for (int i = 0; i < itemsReq.length; i++) { itemsReq[i] = in.getShort(); }
         for (int i = 0; i < itemsCollected.length; i++) { itemsCollected[i] = in.getShort(); }
@@ -118,7 +118,7 @@ public class PacketQuestStartData extends Packet {
         for (int i = 0; i < monsterId.length; i++) { out.putInt(monsterId[i]); }
         for (int i = 0; i < monstersReq.length; i++) { out.putShort(monstersReq[i]); }
         for (int i = 0; i < monstersKilled.length; i++) { out.putShort(monstersKilled[i]); }
-        for (int i = 0; i < 0; i++) { writeCString(out, aMonsterName[i], 32); }
+        for (int i = 0; i < 5; i++) { writeCString(out, monsterName[i], 32); }
         for (int i = 0; i < itemId.length; i++) { out.putInt(itemId[i]); }
         for (int i = 0; i < itemsReq.length; i++) { out.putShort(itemsReq[i]); }
         for (int i = 0; i < itemsCollected.length; i++) { out.putShort(itemsCollected[i]); }

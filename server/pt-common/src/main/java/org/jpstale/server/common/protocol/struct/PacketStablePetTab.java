@@ -12,9 +12,9 @@ import java.nio.ByteBuffer;
 public class PacketStablePetTab extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 8;
+    public static final int SIZE_OF = 226;
 
-    private int cstablePetTab;  // CStablePetTab sCStablePetTab  size: 4 bytes
+    private CStablePetTab cstablePetTab;  // CStablePetTab sCStablePetTab  size: 222 bytes
     private short packetNumber;  // short sPacketNumber  size: 2 bytes
     private short packetMax;  // short sPacketMax  size: 2 bytes
 
@@ -25,14 +25,14 @@ public class PacketStablePetTab extends Packet {
 
     @Override
     protected void readBody(ByteBuffer in) {
-        cstablePetTab = in.getInt();
+        if (cstablePetTab == null) cstablePetTab = new CStablePetTab(); cstablePetTab.readFrom(in);
         packetNumber = in.getShort();
         packetMax = in.getShort();
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
-        out.putInt(cstablePetTab);
+        if (cstablePetTab != null) cstablePetTab.writeTo(out);
         out.putShort(packetNumber);
         out.putShort(packetMax);
     }

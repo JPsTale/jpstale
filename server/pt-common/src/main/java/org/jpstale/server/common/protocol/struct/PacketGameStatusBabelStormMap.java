@@ -3,6 +3,8 @@ package org.jpstale.server.common.protocol.struct;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
+import org.jpstale.server.common.enums.MapId;
+
 
 /**
  * 对应 packets.h 中 struct PacketGameStatusBabelStormMap : PacketGameStatusBase。
@@ -14,7 +16,7 @@ public class PacketGameStatusBabelStormMap extends PacketGameStatusBase {
     /** 本包体字节数（不含包头）. */
     public static final int SIZE_OF = 4;
 
-    private int babelStormMapId;  // EMapID eBabelStormMapID  size: 4 bytes
+    private MapId babelStormMapId;  // EMapID eBabelStormMapID  size: 4 bytes
 
     @Override
     public int sizeOf() {
@@ -24,12 +26,12 @@ public class PacketGameStatusBabelStormMap extends PacketGameStatusBase {
     @Override
     protected void readBody(ByteBuffer in) {
         super.readBody(in);
-        babelStormMapId = in.getInt();
+        babelStormMapId = MapId.fromValue(in.getInt());
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
         super.writeBody(out);
-        out.putInt(babelStormMapId);
+        out.putInt(babelStormMapId.getValue());
     }
 }

@@ -3,6 +3,8 @@ package org.jpstale.server.common.protocol.struct;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
+import org.jpstale.server.common.enums.PartyState;
+
 
 /**
  * 对应 packets.h 中 struct PacketRequestParty : Packet。
@@ -16,7 +18,7 @@ public class PacketRequestParty extends Packet {
 
     private int id;  // int iID  size: 4 bytes
     private int targetId;  // int iTargetID  size: 4 bytes
-    private int state;  // EPartyState eState  size: 4 bytes
+    private PartyState state;  // EPartyState eState  size: 4 bytes
     private String characterName;  // char szCharacterName[32]  size: 32 bytes
 
     @Override
@@ -28,7 +30,7 @@ public class PacketRequestParty extends Packet {
     protected void readBody(ByteBuffer in) {
         id = in.getInt();
         targetId = in.getInt();
-        state = in.getInt();
+        state = PartyState.fromValue(in.getInt());
         characterName = readCString(in, 32);
     }
 
@@ -36,7 +38,7 @@ public class PacketRequestParty extends Packet {
     protected void writeBody(ByteBuffer out) {
         out.putInt(id);
         out.putInt(targetId);
-        out.putInt(state);
+        out.putInt(state.getValue());
         writeCString(out, characterName, 32);
     }
 }

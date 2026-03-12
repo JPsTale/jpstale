@@ -12,12 +12,12 @@ import java.nio.ByteBuffer;
 public class PacketUpdatePartyData extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 8;
+    public static final int SIZE_OF = 158;
 
-    private int cMembersCount;  // char cMembersCount  size: 4 bytes
-    private int cRaidMembersCount;  // char cRaidMembersCount  size: 4 bytes
-    private int[] members = new int[0];  // PartyMemberData saMembers[0]  size: 0 bytes
-    private byte[][] raidMember = new byte[0][0];  // PartyRaidMemberData saRaidMember[0][0]  size: 0 bytes
+    private byte membersCount;  // char cMembersCount  size: 1 bytes
+    private byte raidMembersCount;  // char cRaidMembersCount  size: 1 bytes
+    private PartyMemberData[] members = new PartyMemberData[6];  // PartyMemberData saMembers[6]  size: 156 bytes
+    private byte[][] raidMember = new byte[0][6];  // PartyRaidMemberData saRaidMember[0][6]  size: 0 bytes
 
     @Override
     public int sizeOf() {
@@ -26,17 +26,17 @@ public class PacketUpdatePartyData extends Packet {
 
     @Override
     protected void readBody(ByteBuffer in) {
-        cMembersCount = in.getInt();
-        cRaidMembersCount = in.getInt();
-        for (int i = 0; i < members.length; i++) { members[i] = in.getInt(); }
+        membersCount = in.get();
+        raidMembersCount = in.get();
+        for (int i = 0; i < members.length; i++) { if (members[i] == null) members[i] = new PartyMemberData(); members[i].readFrom(in); }
         for (int i = 0; i < raidMember.length; i++) in.get(raidMember[i]);
     }
 
     @Override
     protected void writeBody(ByteBuffer out) {
-        out.putInt(cMembersCount);
-        out.putInt(cRaidMembersCount);
-        for (int i = 0; i < members.length; i++) { out.putInt(members[i]); }
+        out.put(membersCount);
+        out.put(raidMembersCount);
+        for (int i = 0; i < members.length; i++) { if (members[i] != null) members[i].writeTo(out); }
         for (int i = 0; i < raidMember.length; i++) out.put(raidMember[i]);
     }
 }
