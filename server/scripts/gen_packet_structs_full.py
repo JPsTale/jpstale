@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-从 packets.h 解析 struct Packet* 的字段，生成带完整字段、readBody、writeBody 的 Java 类。
+从 packets.h（及 shared 下其他头文件）解析 struct Packet* 的字段，生成带完整字段、readBody、writeBody 的 Java 类。
 字符串型 char[] 映射为 String；其他类型按 C 布局映射。
 用法: python3 gen_packet_structs_full.py [path/to/packets.h] [output/dir]
+      若仅传一个参数则为 output 目录；不传则用默认 packets.h 与 output。
 """
 import re
 import os
@@ -13,22 +14,50 @@ SERVER_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, ".."))
 DEFAULT_H = os.path.normpath(os.path.join(SERVER_DIR, "../PristonTale-EU-main/shared/packets.h"))
 DEFAULT_OUT = os.path.join(SERVER_DIR, "pt-common/src/main/java/org/jpstale/server/common/protocol/struct")
 
+# 除 packets.h 外要合并解析的头文件（相对 shared 目录），用于发现 Packet* 定义
+ADDITIONAL_HEADERS = [
+    "unit.h", "skill.h", "quest.h", "item.h", "chat.h", "character.h",
+    "Coin.h", "CStable.h", "map.h", "roll.h", "party.h",
+]
+
 SKIP_ALREADY = {"Packet"}
 
-# C 枚举类型 -> (Java 枚举类名, 是否 C 端为 short)
+# C 字段名 -> Java 字段名覆盖（用于匈牙利命名导致的错误，如 NPC 被合并成 Npcquest）
+JAVA_FIELD_NAME_OVERRIDES = {
+    "bUpdateNPCQuestIcon": "updateNpcQuestIcon",
+    "ePvPMapID": "pvpMapId",
+}
+
+# C 枚举类型 -> (Java 枚举类名, 字节数 1=byte/2=short/4=int)
 # 对应 org.jpstale.server.common.enums 包中的枚举
 C_ENUM_TO_JAVA = {
-    "EAttackState": ("AttackState", True),
-    "EAttackProperty": ("AttackProperty", True),
-    "EFuryArenaState": ("FuryArenaState", False),
-    "EItemRarity": ("ItemRarity", False),
-    "EPhoenixType": ("PhoenixType", False),
-    "EItemFlag": ("ItemFlag", False),
-    "EDamageTextType": ("DamageTextType", False),
-    "EItemTimerType": ("ItemTimerType", False),
-    "EItemID": ("ItemId", False),
-    "EPvPKillType": ("PvPKillType", False),
-    "ELogCheat": ("LogCheat", False),
+    "EAttackState": ("AttackState", 2),
+    "EAttackProperty": ("AttackProperty", 2),
+    "EFuryArenaState": ("FuryArenaState", 4),
+    "EItemRarity": ("ItemRarity", 4),
+    "EPhoenixType": ("PhoenixType", 4),
+    "EItemFlag": ("ItemFlag", 4),
+    "EDamageTextType": ("DamageTextType", 2),
+    "EItemTimerType": ("ItemTimerType", 4),
+    "EItemID": ("ItemId", 4),
+    "EPvPKillType": ("PvPKillType", 4),
+    "ELogCheat": ("LogCheat", 4),
+    # 补充：packet 中常见枚举
+    "EChatColor": ("ChatColor", 4),
+    "EMapID": ("MapId", 4),
+    "EQuestPartyType": ("QuestPartyType", 1),
+    "EQuestType": ("QuestType", 1),
+    "EQuestExtraRewardType": ("QuestExtraRewardType", 4),
+    "EAsmQuestBit": ("AsmQuestBit", 4),
+    "EItemSource": ("ItemSource", 1),
+    "EQuestStatus": ("QuestStatus", 4),
+    "ESlotTypeHandle": ("SlotTypeHandle", 4),
+    "ESlotTypeHandleWhere": ("SlotTypeHandleWhere", 4),
+    "EIntegrityUpdate": ("IntegrityUpdate", 1),
+    "EPartyState": ("PartyState", 4),
+    "ERaidState": ("RaidState", 4),
+    "ECharacterClass": ("CharacterClass", 4),
+    "ESkillID": ("SkillId", 4),
 }
 
 # 宏常量替换（用于数组长度）
@@ -47,6 +76,17 @@ MACROS = {
     "MAX_TOP_DAMAGEDATA": "10",
     "MAX_DAMAGEDATA": "100",
     "MAX_BLESSCASTLE_CLANCROWN": "3",
+    "MAX_AGINGRECOVERY_PER_PACKET": "10",
+    "MAX_QUEST_INFO": "88",
+    "MAX_QUESTDYNAMICMENU": "50",
+    "MAX_SPAWN_MARKERS": "200",
+    "MAX_PARTY_MEMBERS": "6",
+    "MAX_RAID": "2",
+    "QUEST_MONSTERITEM_MAX": "5",
+    "MAX_QUESTEXTRAREWARD_COUNT": "3",
+    "MAX_QUESTREWARD_ITEM": "10",
+    "MAX_PET_STABLE": "5",
+    "MAX_QUESTPACKETDATA": "15",
 }
 
 # C 结构体类型（含别名）-> 字节数，用于计算 BODY_SIZE
@@ -81,7 +121,36 @@ STRUCT_BODY_SIZES = {
     "IMinMax": 8,
     "_TRANS_CHAR_INFO": 240,
     "TransCharInfo": 240,
+    # 补充：packet 中嵌套/数组用到的结构体
+    "PacketSkillBuffStatus": 12,
+    "QuestInformation": 92,
+    "AgingRecoveryDataHandle": 56,
+    "PartyMemberData": 26,
+    "PartyRaidMemberData": 24,
+    "PartyMember": 63,
+    "PartyRaid": 337,
+    "CStablePetTab": 222,
+    "QuestData": 80,
 }
+
+# 有对应 Java 类且需 readFrom/writeTo 的结构体（标量+数组均在 map_type/field_size 中统一处理）
+STRUCT_JAVA_CLASSES = frozenset({
+    "Point3D", "BlessCastleStatusShort", "ChecksumFunction", "SkillInfoCommon", "StructFuryArenaBoss",
+    "ItemUsing", "TransServerInfo", "StageItemData", "SkillInfo", "SkillArrayData", "ElementalAttackSetting",
+    "Header", "Server", "SystemTime", "PlayBufferData", "DropItemData", "MinMax", "CharacterDataPacket",
+    "ItemPremium", "PartyUserData", "PartyUserInfo", "MapIndicator", "ItemListMix", "ItemMixDesc",
+    "CurMax", "IMinMax", "TransCharInfo",
+    "PacketSkillBuffStatus", "QuestInformation", "AgingRecoveryDataHandle",
+    "PartyMemberData", "PartyRaidMemberData", "PartyMember", "PartyRaid", "CStablePetTab",
+})
+
+
+def _enum_size(c_type: str) -> int:
+    """C 枚举在 wire 上的字节数。"""
+    if c_type not in C_ENUM_TO_JAVA:
+        return 4
+    _, size = C_ENUM_TO_JAVA[c_type]
+    return size
 
 
 def field_size_bytes(c_type: str, array_dims: list, is_string: bool, packet_body_sizes: dict = None) -> int:
@@ -95,8 +164,7 @@ def field_size_bytes(c_type: str, array_dims: list, is_string: bool, packet_body
     # 标量
     if not array_dims:
         if c_type in C_ENUM_TO_JAVA:
-            _, use_short = C_ENUM_TO_JAVA[c_type]
-            return 2 if use_short else 4
+            return _enum_size(c_type)
         if c_type in ("Point3D", "Point"):
             return STRUCT_BODY_SIZES["Point3D"]
         if c_type in ("_TRANS_CHAR_INFO", "TransCharInfo"):
@@ -133,52 +201,10 @@ def field_size_bytes(c_type: str, array_dims: list, is_string: bool, packet_body
             return 4 * n
         if c_type in ("uint64_t", "INT64", "int64_t", "unsigned __int64"):
             return 8 * n
-        if "CurMax" in c_type:
-            return STRUCT_BODY_SIZES["CurMax"] * n
-        if c_type == "ChecksumFunction":
-            return STRUCT_BODY_SIZES["ChecksumFunction"] * n
-        if c_type == "SkillInfoCommon":
-            return STRUCT_BODY_SIZES["SkillInfoCommon"] * n
-        if c_type == "StructFuryArenaBoss":
-            return STRUCT_BODY_SIZES["StructFuryArenaBoss"] * n
-        if c_type in ("_sTRANS_SERVER_INFO", "TransServerInfo"):
-            return STRUCT_BODY_SIZES["TransServerInfo"] * n
-        if c_type == "StageItemData":
-            return STRUCT_BODY_SIZES["StageItemData"] * n
-        if c_type == "SkillInfo":
-            return STRUCT_BODY_SIZES["SkillInfo"] * n
-        if c_type == "SkillArrayData":
-            return STRUCT_BODY_SIZES["SkillArrayData"] * n
-        if c_type == "ElementalAttackSetting":
-            return STRUCT_BODY_SIZES["ElementalAttackSetting"] * n
-        if c_type == "Header":
-            return STRUCT_BODY_SIZES["Header"] * n
-        if c_type == "Server":
-            return STRUCT_BODY_SIZES["Server"] * n
-        if c_type == "SYSTEMTIME":
-            return STRUCT_BODY_SIZES["SystemTime"] * n
-        if c_type == "PlayBufferData":
-            return STRUCT_BODY_SIZES["PlayBufferData"] * n
-        if c_type == "DropItemData":
-            return STRUCT_BODY_SIZES["DropItemData"] * n
-        if c_type == "MinMax":
-            return STRUCT_BODY_SIZES["MinMax"] * n
-        if c_type == "CharacterDataPacket":
-            return STRUCT_BODY_SIZES["CharacterDataPacket"] * n
-        if c_type == "ItemPremium":
-            return STRUCT_BODY_SIZES["ItemPremium"] * n
-        if c_type == "PartyUserData":
-            return STRUCT_BODY_SIZES["PartyUserData"] * n
-        if c_type == "PartyUserInfo":
-            return STRUCT_BODY_SIZES["PartyUserInfo"] * n
-        if c_type == "MapIndicator":
-            return STRUCT_BODY_SIZES["MapIndicator"] * n
-        if c_type == "ItemListMix":
-            return STRUCT_BODY_SIZES["ItemListMix"] * n
-        if c_type == "ItemMixDesc":
-            return STRUCT_BODY_SIZES["ItemMixDesc"] * n
-        if c_type in ("_TRANS_CHAR_INFO", "TransCharInfo"):
-            return STRUCT_BODY_SIZES["TransCharInfo"] * n
+        if c_type in C_ENUM_TO_JAVA:
+            return _enum_size(c_type) * n
+        if c_type in STRUCT_BODY_SIZES:
+            return STRUCT_BODY_SIZES[c_type] * n
         return 4 * n
     if len(array_dims) == 2:
         n1, n2 = array_dims[0], array_dims[1]
@@ -186,6 +212,8 @@ def field_size_bytes(c_type: str, array_dims: list, is_string: bool, packet_body
             return 4 * n1 * n2
         if c_type == "char":
             return n1 * n2
+        if c_type in STRUCT_BODY_SIZES:
+            return STRUCT_BODY_SIZES[c_type] * n1 * n2
         return n1 * n2
     return 0
 
@@ -368,6 +396,8 @@ def parse_fields(body: str):
                 is_string = True  # char[M][N] -> String[M]
 
         java_name = c_name_to_java(name)
+        if name in JAVA_FIELD_NAME_OVERRIDES:
+            java_name = JAVA_FIELD_NAME_OVERRIDES[name]
         # Java 关键字避让：class 等不能作为标识符
         if java_name == "class":
             java_name = "clazz"
@@ -403,65 +433,21 @@ def map_type(c_type: str, name: str, array_dims: list, is_string: bool):
     if not array_dims:
         # C 枚举 -> Java 枚举（org.jpstale.server.common.enums）
         if c_type in C_ENUM_TO_JAVA:
-            java_enum, use_short = C_ENUM_TO_JAVA[c_type]
-            if use_short:
+            java_enum, size_bytes = C_ENUM_TO_JAVA[c_type]
+            if size_bytes == 1:
+                return java_enum, f"{name} = {java_enum}.fromValue(in.get() & 0xFF);", f"out.put((byte) {name}.getValue());"
+            if size_bytes == 2:
                 return java_enum, f"{name} = {java_enum}.fromValue((int) in.getShort());", f"out.putShort((short) {name}.getValue());"
             return java_enum, f"{name} = {java_enum}.fromValue(in.getInt());", f"out.putInt({name}.getValue());"
         # 结构体类型必须先于 "int" in c_type_lower 判断（否则 Point3D 等会被误判为 int）
         if c_type == "Point3D" or (c_type == "Point" and name in ("3d", "3D")):
             return "Point3D", f"if ({name} == null) {name} = new Point3D(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "BlessCastleStatusShort":
-            return "BlessCastleStatusShort", f"if ({name} == null) {name} = new BlessCastleStatusShort(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "ChecksumFunction":
-            return "ChecksumFunction", f"if ({name} == null) {name} = new ChecksumFunction(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "SkillInfoCommon":
-            return "SkillInfoCommon", f"if ({name} == null) {name} = new SkillInfoCommon(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "StructFuryArenaBoss":
-            return "StructFuryArenaBoss", f"if ({name} == null) {name} = new StructFuryArenaBoss(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "ItemUsing":
-            return "ItemUsing", f"if ({name} == null) {name} = new ItemUsing(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type in ("_sTRANS_SERVER_INFO", "TransServerInfo"):
-            return "TransServerInfo", f"if ({name} == null) {name} = new TransServerInfo(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "StageItemData":
-            return "StageItemData", f"if ({name} == null) {name} = new StageItemData(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "SkillInfo":
-            return "SkillInfo", f"if ({name} == null) {name} = new SkillInfo(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "SkillArrayData":
-            return "SkillArrayData", f"if ({name} == null) {name} = new SkillArrayData(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "ElementalAttackSetting":
-            return "ElementalAttackSetting", f"if ({name} == null) {name} = new ElementalAttackSetting(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "Header":
-            return "Header", f"if ({name} == null) {name} = new Header(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "Server":
-            return "Server", f"if ({name} == null) {name} = new Server(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "SYSTEMTIME":
-            return "SystemTime", f"if ({name} == null) {name} = new SystemTime(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "PlayBufferData":
-            return "PlayBufferData", f"if ({name} == null) {name} = new PlayBufferData(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "DropItemData":
-            return "DropItemData", f"if ({name} == null) {name} = new DropItemData(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "MinMax":
-            return "MinMax", f"if ({name} == null) {name} = new MinMax(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "CharacterDataPacket":
-            return "CharacterDataPacket", f"if ({name} == null) {name} = new CharacterDataPacket(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "ItemPremium":
-            return "ItemPremium", f"if ({name} == null) {name} = new ItemPremium(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "PartyUserData":
-            return "PartyUserData", f"if ({name} == null) {name} = new PartyUserData(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "PartyUserInfo":
-            return "PartyUserInfo", f"if ({name} == null) {name} = new PartyUserInfo(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "MapIndicator":
-            return "MapIndicator", f"if ({name} == null) {name} = new MapIndicator(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "ItemListMix":
-            return "ItemListMix", f"if ({name} == null) {name} = new ItemListMix(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "ItemMixDesc":
-            return "ItemMixDesc", f"if ({name} == null) {name} = new ItemMixDesc(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "CurMax":
-            return "CurMax", f"if ({name} == null) {name} = new CurMax(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
-        if c_type == "IMinMax":
-            return "IMinMax", f"if ({name} == null) {name} = new IMinMax(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
         if c_type in ("_TRANS_CHAR_INFO", "TransCharInfo"):
             return "TransCharInfo", f"if ({name} == null) {name} = new TransCharInfo(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
+        if c_type in ("_sTRANS_SERVER_INFO", "TransServerInfo"):
+            return "TransServerInfo", f"if ({name} == null) {name} = new TransServerInfo(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
+        if c_type in STRUCT_JAVA_CLASSES:
+            return c_type, f"if ({name} == null) {name} = new {c_type}(); {name}.readFrom(in);", f"if ({name} != null) {name}.writeTo(out);"
         if c_type.startswith("Packet") and c_type != "Packet":
             # 内嵌 Packet 子类，只读 body
             return c_type, f"if ({name} == null) {name} = new {c_type}(); {name}.readBody(in);", f"if ({name} != null) {name}.writeBody(out);"
@@ -495,56 +481,22 @@ def map_type(c_type: str, name: str, array_dims: list, is_string: bool):
             return f"byte[]", f"in.get({name});", f"out.put({name});"
         if c_type == "float":
             return f"float[]", f"for (int i = 0; i < {name}.length; i++) {{ {name}[i] = in.getFloat(); }}", f"for (int i = 0; i < {name}.length; i++) {{ out.putFloat({name}[i]); }}"
-        if "CurMax" in c_type:
-            return f"CurMax[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new CurMax(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "ChecksumFunction":
-            return f"ChecksumFunction[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new ChecksumFunction(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "SkillInfoCommon":
-            return f"SkillInfoCommon[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new SkillInfoCommon(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "StructFuryArenaBoss":
-            return f"StructFuryArenaBoss[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new StructFuryArenaBoss(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "ItemUsing":
-            return f"ItemUsing[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new ItemUsing(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type in ("_sTRANS_SERVER_INFO", "TransServerInfo"):
-            return f"TransServerInfo[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new TransServerInfo(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "StageItemData":
-            return f"StageItemData[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new StageItemData(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "SkillInfo":
-            return f"SkillInfo[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new SkillInfo(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "SkillArrayData":
-            return f"SkillArrayData[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new SkillArrayData(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "ElementalAttackSetting":
-            return f"ElementalAttackSetting[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new ElementalAttackSetting(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "Header":
-            return f"Header[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new Header(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "Server":
-            return f"Server[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new Server(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "SYSTEMTIME":
-            return f"SystemTime[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new SystemTime(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "PlayBufferData":
-            return f"PlayBufferData[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new PlayBufferData(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "DropItemData":
-            return f"DropItemData[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new DropItemData(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "MinMax":
-            return f"MinMax[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new MinMax(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "CharacterDataPacket":
-            return f"CharacterDataPacket[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new CharacterDataPacket(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "ItemPremium":
-            return f"ItemPremium[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new ItemPremium(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "PartyUserData":
-            return f"PartyUserData[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new PartyUserData(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "PartyUserInfo":
-            return f"PartyUserInfo[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new PartyUserInfo(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "MapIndicator":
-            return f"MapIndicator[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new MapIndicator(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "ItemListMix":
-            return f"ItemListMix[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new ItemListMix(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type == "ItemMixDesc":
-            return f"ItemMixDesc[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new ItemMixDesc(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
-        if c_type in ("_TRANS_CHAR_INFO", "TransCharInfo"):
-            return f"TransCharInfo[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new TransCharInfo(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
         if c_type in ("uint64_t", "INT64", "int64_t", "unsigned __int64"):
             return f"long[]", f"for (int i = 0; i < {name}.length; i++) {{ {name}[i] = in.getLong(); }}", f"for (int i = 0; i < {name}.length; i++) {{ out.putLong({name}[i]); }}"
+        if c_type in C_ENUM_TO_JAVA:
+            _, size_bytes = C_ENUM_TO_JAVA[c_type]
+            if size_bytes == 1:
+                return f"{C_ENUM_TO_JAVA[c_type][0]}[]", f"for (int i = 0; i < {name}.length; i++) {{ {name}[i] = {C_ENUM_TO_JAVA[c_type][0]}.fromValue(in.get() & 0xFF); }}", f"for (int i = 0; i < {name}.length; i++) {{ out.put((byte) {name}[i].getValue()); }}"
+            if size_bytes == 2:
+                return f"{C_ENUM_TO_JAVA[c_type][0]}[]", f"for (int i = 0; i < {name}.length; i++) {{ {name}[i] = {C_ENUM_TO_JAVA[c_type][0]}.fromValue((int) in.getShort()); }}", f"for (int i = 0; i < {name}.length; i++) {{ out.putShort((short) {name}[i].getValue()); }}"
+            jenum = C_ENUM_TO_JAVA[c_type][0]
+            return f"{jenum}[]", f"for (int i = 0; i < {name}.length; i++) {{ {name}[i] = {jenum}.fromValue(in.getInt()); }}", f"for (int i = 0; i < {name}.length; i++) {{ out.putInt({name}[i].getValue()); }}"
+        if c_type in ("_TRANS_CHAR_INFO", "TransCharInfo"):
+            return "TransCharInfo[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new TransCharInfo(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
+        if c_type in ("_sTRANS_SERVER_INFO", "TransServerInfo"):
+            return "TransServerInfo[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new TransServerInfo(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
+        if c_type in STRUCT_JAVA_CLASSES:
+            return f"{c_type}[]", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] == null) {name}[i] = new {c_type}(); {name}[i].readFrom(in); }}", f"for (int i = 0; i < {name}.length; i++) {{ if ({name}[i] != null) {name}[i].writeTo(out); }}"
         return f"int[]", f"for (int i = 0; i < {name}.length; i++) {{ {name}[i] = in.getInt(); }}", f"for (int i = 0; i < {name}.length; i++) {{ out.putInt({name}[i]); }}"
 
     if len(array_dims) == 2:
@@ -608,7 +560,7 @@ def java_class_with_fields(name: str, parent: str, body: str, packet_body_sizes:
             else:
                 field_decls.append(f"    private byte[] {jname};{c_comment_with_size}")
         else:
-            if jtype in ("Point3D", "CurMax", "IMinMax", "BlessCastleStatusShort", "ChecksumFunction", "SkillInfoCommon", "StructFuryArenaBoss", "ItemUsing", "TransServerInfo", "StageItemData", "SkillInfo", "SkillArrayData", "ElementalAttackSetting", "Header", "Server", "SystemTime", "PlayBufferData", "DropItemData", "MinMax", "CharacterDataPacket", "ItemPremium", "PartyUserData", "PartyUserInfo", "MapIndicator", "ItemListMix", "ItemMixDesc", "TransCharInfo"):
+            if jtype in STRUCT_JAVA_CLASSES:
                 field_decls.append(f"    private {jtype} {jname};{c_comment_with_size}")
             elif jtype.startswith("Packet") and jtype != "Packet":
                 field_decls.append(f"    private {jtype} {jname};{c_comment_with_size}")
@@ -716,6 +668,23 @@ public class {name} extends {parent} {{
 """
 
 
+def load_all_headers(path_packets_h: str) -> str:
+    """加载 packets.h 及 ADDITIONAL_HEADERS 中列出的头文件，合并为一份内容供解析。"""
+    shared_dir = os.path.dirname(os.path.abspath(path_packets_h))
+    parts = []
+    with open(path_packets_h, "r", encoding="utf-8", errors="replace") as f:
+        parts.append(f.read())
+    for rel in ADDITIONAL_HEADERS:
+        path = os.path.join(shared_dir, rel)
+        if os.path.isfile(path):
+            with open(path, "r", encoding="utf-8", errors="replace") as f:
+                parts.append("\n")
+                parts.append(f.read())
+        else:
+            print(f"  Warning: optional header not found: {path}", file=sys.stderr)
+    return "".join(parts)
+
+
 def main():
     path_h = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_H
     path_out = sys.argv[2] if len(sys.argv) > 2 else DEFAULT_OUT
@@ -725,11 +694,16 @@ def main():
         sys.exit(1)
     os.makedirs(path_out, exist_ok=True)
 
-    with open(path_h, "r", encoding="utf-8", errors="replace") as f:
-        content = f.read()
-
-    structs = find_struct_bodies(content)
-    print(f"Found {len(structs)} struct Packet* definitions.")
+    content = load_all_headers(path_h)
+    raw_structs = find_struct_bodies(content)
+    # 同名只保留第一次出现（packets.h 优先）
+    seen = set()
+    structs = []
+    for name, parent, body in raw_structs:
+        if name not in seen:
+            seen.add(name)
+            structs.append((name, parent, body))
+    print(f"Found {len(structs)} struct Packet* definitions (from packets.h + {len(ADDITIONAL_HEADERS)} extra headers).")
 
     # 预计算各 Packet 子类的包体大小（含嵌套 Packet 时需多轮直到稳定）
     packet_body_sizes = {}
