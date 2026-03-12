@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 /**
- * 无数据库时的登录校验：仅做版本检查，其余一律返回 INCORRECT_PASSWORD（用于本地联调协议）。
+ * 无数据库时的登录校验：不查库，仅做格式/版本检查，通过则返回 Success，保证网络通。
  */
 @Service
 @Profile("no-db")
@@ -22,9 +22,10 @@ public class StubAccountLoginService implements AccountLoginServiceApi {
             return AccountLoginResult.IncorrectName;
         }
         if (clientVersion != GameXor.GAME_VERSION) {
+            log.debug("Stub login version mismatch: client={}, server={}", clientVersion, GameXor.GAME_VERSION);
             return AccountLoginResult.WrongVersion;
         }
-        log.debug("Stub login (no DB): account={}, version={}", accountName, clientVersion);
-        return AccountLoginResult.IncorrectPassword;
+        log.debug("Stub login (no DB) OK: account={}", accountName);
+        return AccountLoginResult.Success;
     }
 }
