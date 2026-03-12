@@ -122,7 +122,7 @@ STRUCT_BODY_SIZES = {
     "_TRANS_CHAR_INFO": 240,
     "TransCharInfo": 240,
     # 补充：packet 中嵌套/数组用到的结构体
-    "PacketSkillBuffStatus": 12,
+    "PacketSkillBuffStatus": 56,
     "QuestInformation": 92,
     "AgingRecoveryDataHandle": 56,
     "PartyMemberData": 26,
@@ -131,6 +131,9 @@ STRUCT_BODY_SIZES = {
     "PartyRaid": 337,
     "CStablePetTab": 222,
     "QuestData": 80,
+    # 大型物品结构，按 Java 端包装类的 SIZE_OF 设置，供 Packet 中嵌套使用
+    "ItemData": 0x4B4,
+    "Item": 0x4C4,
 }
 
 # 有对应 Java 类且需 readFrom/writeTo 的结构体（标量+数组均在 map_type/field_size 中统一处理）
@@ -142,6 +145,7 @@ STRUCT_JAVA_CLASSES = frozenset({
     "CurMax", "IMinMax", "TransCharInfo",
     "PacketSkillBuffStatus", "QuestInformation", "AgingRecoveryDataHandle",
     "PartyMemberData", "PartyRaidMemberData", "PartyMember", "PartyRaid", "CStablePetTab",
+    "ItemData", "Item",
 })
 
 
@@ -239,13 +243,13 @@ def c_name_to_java(name: str) -> str:
     if not name:
         return name + trailing_digits
     # 去掉类型前缀：ia/ba/dwa 等数组前缀仅当后跟大写时 strip（如 iaClanID、dwaTempData），避免 iAttackRating 被误剥成 ttackRating
-    for prefix in ("ia", "ba", "wa", "sa", "dwa", "dw", "i", "sz", "u", "w", "b", "s", "e"):
+    for prefix in ("a", "ia", "ba", "wa", "sa", "sza", "dwa", "dw", "i", "sz", "u", "w", "b", "s", "e", "c"):
         if name.lower().startswith(prefix) and len(name) > len(prefix):
             rest = name[len(prefix) :]
             if not rest:
                 continue
             # 数组前缀(ia,ba,wa,sa,dwa)仅在后跟大写时剥掉；单字母前缀(s,e 等)也仅在后跟大写时剥，避免 ServerInfo->erverInfo
-            if prefix in ("ia", "ba", "wa", "sa", "dwa") and not rest[0].isupper():
+            if prefix in ("a", "ia", "ba", "wa", "sa", "dwa", "sza") and not rest[0].isupper():
                 continue
             if len(prefix) == 1 and not rest[0].isupper():
                 continue
