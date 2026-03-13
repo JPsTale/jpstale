@@ -24,7 +24,7 @@ public abstract class Packet {
     public static final int SIZE_OF = 8;
 
     /** 读取包头（调用方需保证 ByteBuffer 为 little-endian）. */
-    protected void readHeader(ByteBuffer in) {
+    private void readHeader(ByteBuffer in) {
         this.length = in.getShort();
         this.encKeyIndex = in.get();
         this.encrypted = in.get();
@@ -32,7 +32,7 @@ public abstract class Packet {
     }
 
     /** 写入包头（调用方需保证 ByteBuffer 为 little-endian）. */
-    protected void writeHeader(ByteBuffer out) {
+    private void writeHeader(ByteBuffer out) {
         out.putShort(this.length);
         out.put(this.encKeyIndex);
         out.put(this.encrypted);

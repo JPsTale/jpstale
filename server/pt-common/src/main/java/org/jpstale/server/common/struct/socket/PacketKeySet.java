@@ -15,7 +15,7 @@ public class PacketKeySet extends Packet {
     /** 本包体字节数（不含包头）. */
     public static final int SIZE_OF = 256;
 
-    private final byte[] keySet = new byte[256];  // BYTE baKeySet[0]  size: 0 bytes
+    private byte[] keySet = new byte[256];  // BYTE baKeySet[0]  size: 0 bytes
 
     @Override
     public int sizeOf() {

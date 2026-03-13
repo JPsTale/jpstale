@@ -4,7 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
+import org.jpstale.server.common.struct.packets.PacketVersion;
+import org.jpstale.server.common.struct.socket.PacketKeySet;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -36,35 +39,50 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
         PtCryptoState state = new PtCryptoState();
         ctx.channel().attr(STATE_KEY).set(state);
 
+        //Send the Byte Encryption Set
+        sendKeySet(ctx, state);
+
+        // Send Version
+        PacketVersion packetVersion = new PacketVersion();
+        packetVersion.setEncKeyIndex((byte) 0);
+        packetVersion.setEncrypted((byte) 0);
+        packetVersion.setPktHeader(PacketIds.PKTHDR_Version);
+        packetVersion.setServerFull(false);
+        packetVersion.setUnk2(0);
+        packetVersion.setVersion(GameXor.GAME_VERSION);
+
+        byte[] data = packetVersion.toWireBytes();
+        ByteBuf out = ctx.alloc().buffer(data.length).writeBytes(data);
+        ctx.writeAndFlush(out);
+
+        ctx.fireChannelActive();
+    }
+
+    private void sendKeySet(ChannelHandlerContext ctx, PtCryptoState state) {
+
         // 1) 生成本端 keySet
         byte[] rawKeySet = state.generateKeySet();
-
-        // 2) 组一个 KeySet 包（未 XOR，未 EncryptPacket）
-        final int HEADER_SIZE = 8;
-        final int BODY_SIZE   = 256;
-        short length = (short) (HEADER_SIZE + BODY_SIZE);
 
         // C++: RandomI(0, 256) / RandomI(2, 256)
         byte encKeyIndex = (byte) (Math.random() * 256);
         byte encrypted   = (byte) (2 + (int)(Math.random() * 254));
 
-        byte[] pkt = new byte[length];
-        ByteBuffer buf = ByteBuffer.wrap(pkt).order(ByteOrder.LITTLE_ENDIAN);
-        buf.putShort(0, length);
-        pkt[2] = encKeyIndex;
-        pkt[3] = encrypted;
-        buf.putInt(4, PacketIds.PKTHDR_KeySet);
+        // 2) 组一个 KeySet 包（未 XOR，未 EncryptPacket）
+        PacketKeySet packetKeySet = new PacketKeySet();
+        packetKeySet.setEncKeyIndex(encKeyIndex);
+        packetKeySet.setEncrypted(encrypted);
+        packetKeySet.setPktHeader(PacketIds.PKTHDR_KeySet);
+        packetKeySet.setKeySet(rawKeySet);
 
-        System.arraycopy(rawKeySet, 0, pkt, HEADER_SIZE, BODY_SIZE);
-        state.encodeKeySetForWire(pkt, obfuscatorByte);
+        byte[] data = packetKeySet.toWireBytes();
 
-        ByteBuf out = ctx.alloc().buffer(length).writeBytes(pkt);
+        state.encodeKeySetForWire(data, obfuscatorByte);
+
+        ByteBuf out = ctx.alloc().buffer(data.length).writeBytes(data);
         ctx.writeAndFlush(out);
 
         log.debug("Sent PacketKeySet to {}, keySetReady={}",
-                  ctx.channel().remoteAddress(), state.isKeySetReady());
-
-        ctx.fireChannelActive();
+                ctx.channel().remoteAddress(), state.isKeySetReady());
     }
 
     @Override
@@ -102,7 +120,15 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
 
         // 若对端也向本端发送 KeySet，则在此支持 ReceiveKeySet
         if (header == PacketIds.PKTHDR_KeySet) {
-            state.receiveKeySet(data, obfuscatorByte);
+            byte obfForReceive;// 获取远端地址
+            try {
+                InetSocketAddress remote = (java.net.InetSocketAddress) ctx.channel().remoteAddress();
+                int remotePort = remote.getPort();
+                obfForReceive = (byte) remotePort; // 对应 C++ 客户端里的 (BYTE)iPort
+            } catch (ClassCastException e) {
+                obfForReceive = obfuscatorByte;
+            }
+            state.receiveKeySet(data, obfForReceive);
             log.debug("Received PacketKeySet from {}, keySetReady={}",
                       ctx.channel().remoteAddress(), state.isKeySetReady());
             buf.release();
@@ -156,7 +182,7 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
         }
 
         int header = headerBuf.getInt(4);
-        if (header == PacketIds.PKTHDR_KeySet) {
+        if (header == PacketIds.PKTHDR_KeySet || header == PacketIds.PKTHDR_Version) {
             // KeySet 包本身不再额外 EncryptPacket
             super.write(ctx, msg, promise);
             return;
