@@ -8,6 +8,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.jpstale.server.common.codec.PtCryptoHandler;
 import org.jpstale.server.common.codec.PtFrameDecoder;
 import org.jpstale.server.common.codec.PtFrameEncoder;
+import org.jpstale.server.login.core.PacketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +25,7 @@ public class NettyLoginServer {
     private int port;
 
     @Bean
-    public ApplicationRunner nettyLoginServerRunner(PtLoginHandler ptLoginHandler) {
+    public ApplicationRunner nettyLoginServerRunner(PacketServer packetServer) {
         return args -> {
             NioEventLoopGroup boss = new NioEventLoopGroup(1);
             NioEventLoopGroup worker = new NioEventLoopGroup();
@@ -39,7 +40,7 @@ public class NettyLoginServer {
                                 .addLast(new PtFrameDecoder())
                                 .addLast(new PtFrameEncoder())
                                 .addLast(new PtCryptoHandler(port))
-                                .addLast(ptLoginHandler);
+                                .addLast(packetServer);
                         }
                     })
                     .bind(port)
