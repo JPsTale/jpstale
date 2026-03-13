@@ -7,10 +7,11 @@ import jakarta.annotation.Resource;
 import org.jpstale.server.common.codec.GameXor;
 import org.jpstale.server.common.codec.PacketIds;
 import org.jpstale.server.common.codec.PtCodec;
-import org.jpstale.server.common.struct.Packet;
+import org.jpstale.server.common.enums.account.AccountLogin;
 import org.jpstale.server.common.struct.account.PacketAccountLoginCode;
-import org.jpstale.server.common.struct.PacketLoginUser;
-import org.jpstale.server.common.struct.PacketVersion;
+import org.jpstale.server.common.struct.packets.Packet;
+import org.jpstale.server.common.struct.packets.PacketLoginUser;
+import org.jpstale.server.common.struct.packets.PacketVersion;
 import org.jpstale.server.login.api.CharacterServiceApi;
 import org.jpstale.server.login.api.LoginSuccessServiceApi;
 import org.jpstale.server.login.service.AccountLoginServiceApi;
@@ -88,7 +89,7 @@ public class PtLoginHandler extends SimpleChannelInboundHandler<ByteBuf> {
         PacketLoginUser login = new PacketLoginUser();
         login.readFrom(buf);
 
-        int code = accountLoginService.authenticate(
+        AccountLogin code = accountLoginService.authenticate(
             login.getUserId(),
             login.getPassword(),
             login.getVersion()
@@ -97,9 +98,9 @@ public class PtLoginHandler extends SimpleChannelInboundHandler<ByteBuf> {
         PacketAccountLoginCode p = new PacketAccountLoginCode();
         p.setPktHeader(PacketIds.PKTHDR_AccountLoginCode);
         p.setCode(code);
-        p.setFailCode(code < 0 ? 1 : 0);
+        p.setFailCode(code.getValue() < 0 ? 1 : 0);
         p.setReserved(0);
-        p.setMessage(code == 1 ? "OK" : (code == -17 ? "Wrong version" : "Login failed"));
+        p.setMessage(code == AccountLogin.SUCCESS ? "OK" : (code == AccountLogin.WRONG_VERSION ? "Wrong version" : "Login failed"));
         sendPacket(ctx, p);
     }
 
@@ -108,7 +109,7 @@ public class PtLoginHandler extends SimpleChannelInboundHandler<ByteBuf> {
      */
     private void sendPacket(ChannelHandlerContext ctx, Packet p) {
         byte[] encoded = p.toWireBytes();
-        PtCodec.xorEncode(encoded, encoded.length, GameXor.XOR_KEY);
+        PtCodec.xor(encoded, encoded.length, GameXor.XOR_KEY);
         ByteBuf out = ctx.alloc().buffer(encoded.length).writeBytes(encoded);
         ctx.writeAndFlush(out);
     }

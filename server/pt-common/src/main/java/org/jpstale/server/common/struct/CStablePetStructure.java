@@ -1,6 +1,7 @@
 package org.jpstale.server.common.struct;
 
 import lombok.Data;
+import org.jpstale.server.common.struct.packets.Packet;
 
 import java.nio.ByteBuffer;
 

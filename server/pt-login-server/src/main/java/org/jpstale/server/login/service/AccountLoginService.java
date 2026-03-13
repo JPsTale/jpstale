@@ -1,6 +1,6 @@
 package org.jpstale.server.login.service;
 
-import org.jpstale.server.common.struct.account.AccountLoginResult;
+import org.jpstale.server.common.enums.account.AccountLogin;
 import org.jpstale.server.common.codec.GameXor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +28,12 @@ public class AccountLoginService implements AccountLoginServiceApi {
     }
 
     @Override
-    public int authenticate(String accountName, String passwordHash, int clientVersion) {
+    public AccountLogin authenticate(String accountName, String passwordHash, int clientVersion) {
         if (accountName == null || accountName.isBlank()) {
-            return AccountLoginResult.IncorrectName;
+            return AccountLogin.INCORRECT_NAME;
         }
         if (clientVersion != GameXor.GAME_VERSION) {
-            return AccountLoginResult.WrongVersion;
+            return AccountLogin.WRONG_VERSION;
         }
 
         try {
@@ -42,7 +42,7 @@ public class AccountLoginService implements AccountLoginServiceApi {
                 accountName.trim()
             );
             if (rows.isEmpty()) {
-                return AccountLoginResult.IncorrectName;
+                return AccountLogin.INCORRECT_NAME;
             }
             Map<String, Object> row = rows.get(0);
             String dbPassword = row.get("password") != null ? row.get("password").toString().trim() : "";
@@ -50,19 +50,19 @@ public class AccountLoginService implements AccountLoginServiceApi {
             Integer active = row.get("active") != null ? ((Number) row.get("active")).intValue() : 0;
 
             if (banStatus != null && banStatus != 0) {
-                return AccountLoginResult.Banned;
+                return AccountLogin.BANNED;
             }
             if (active != null && active == 0) {
-                return AccountLoginResult.AccountNotActive;
+                return AccountLogin.ACCOUNT_NOT_ACTIVE;
             }
             if (!passwordHash.equals(dbPassword)) {
-                return AccountLoginResult.IncorrectPassword;
+                return AccountLogin.INCORRECT_PASSWORD;
             }
             log.info("Login success: {}", accountName);
-            return AccountLoginResult.Success;
+            return AccountLogin.SUCCESS;
         } catch (Exception e) {
             log.warn("Login DB error for {}", accountName, e);
-            return AccountLoginResult.LoginPending;
+            return AccountLogin.LOGIN_PENDING;
         }
     }
 }

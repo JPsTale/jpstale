@@ -1,6 +1,6 @@
 package org.jpstale.server.login.service;
 
-import org.jpstale.server.common.struct.account.AccountLoginResult;
+import org.jpstale.server.common.enums.account.AccountLogin;
 import org.jpstale.server.common.codec.GameXor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +17,15 @@ public class StubAccountLoginService implements AccountLoginServiceApi {
     private static final Logger log = LoggerFactory.getLogger(StubAccountLoginService.class);
 
     @Override
-    public int authenticate(String accountName, String passwordHash, int clientVersion) {
+    public AccountLogin authenticate(String accountName, String passwordHash, int clientVersion) {
         if (accountName == null || accountName.isBlank()) {
-            return AccountLoginResult.IncorrectName;
+            return AccountLogin.INCORRECT_NAME;
         }
         if (clientVersion != GameXor.GAME_VERSION) {
             log.debug("Stub login version mismatch: client={}, server={}", clientVersion, GameXor.GAME_VERSION);
-            return AccountLoginResult.WrongVersion;
+            return AccountLogin.WRONG_VERSION;
         }
         log.debug("Stub login (no DB) OK: account={}", accountName);
-        return AccountLoginResult.Success;
+        return AccountLogin.SUCCESS;
     }
 }

@@ -1,18 +1,19 @@
 package org.jpstale.server.common.struct.account;
 
 import lombok.Data;
-import org.jpstale.server.common.struct.Packet;
+import org.jpstale.server.common.enums.account.AccountLogin;
+import org.jpstale.server.common.struct.packets.Packet;
 
 import java.nio.ByteBuffer;
 
 /**
  * 对应 account.h 中 struct PacketAccountLoginCode : Packet。
- * iCode 为 EAccountLogin，见 {@link AccountLoginResult}。
+ * iCode 为 EAccountLogin，见 {@link AccountLogin}。
  */
 @Data
 public class PacketAccountLoginCode extends Packet {
     private int reserved;   // DWORD dwReserved
-    private int code;      // EAccountLogin iCode
+    private AccountLogin code;      // EAccountLogin iCode
     private int failCode;  // int iFailCode
     private String message; // char szMessage[256]
 
@@ -27,7 +28,7 @@ public class PacketAccountLoginCode extends Packet {
     @Override
     protected void readBody(ByteBuffer in) {
         reserved = in.getInt();
-        code = in.getInt();
+        code = AccountLogin.fromValue(in.getInt());
         failCode = in.getInt();
         message = readCString(in, 256);
     }
@@ -35,7 +36,7 @@ public class PacketAccountLoginCode extends Packet {
     @Override
     protected void writeBody(ByteBuffer out) {
         out.putInt(reserved);
-        out.putInt(code);
+        out.putInt(code.getValue());
         out.putInt(failCode);
         writeCString(out, message, 256);
     }
