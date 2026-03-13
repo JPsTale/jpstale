@@ -1,11 +1,11 @@
 package org.jpstale.server.login.service;
 
 import org.jpstale.server.common.codec.PacketIds;
-import org.jpstale.server.common.struct.Header;
-import org.jpstale.server.common.struct.PacketServerList;
-import org.jpstale.server.common.struct.PacketUserInfo;
 import org.jpstale.server.common.struct.Server;
 import org.jpstale.server.common.struct.TransCharInfo;
+import org.jpstale.server.common.struct.packets.Header;
+import org.jpstale.server.common.struct.packets.PacketServerList;
+import org.jpstale.server.common.struct.packets.PacketUserInfo;
 import org.jpstale.server.login.api.LoginSuccessServiceApi;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,7 @@
-package org.jpstale.server.common.struct.packets;
+package org.jpstale.server.common.struct.socket;
 
 import lombok.Data;
+import org.jpstale.server.common.struct.packets.Packet;
 
 import java.nio.ByteBuffer;
 
@@ -12,9 +13,9 @@ import java.nio.ByteBuffer;
 public class PacketKeySet extends Packet {
 
     /** 本包体字节数（不含包头）. */
-    public static final int SIZE_OF = 0;
+    public static final int SIZE_OF = 256;
 
-    private final byte[] keySet = new byte[0];  // BYTE baKeySet[0]  size: 0 bytes
+    private final byte[] keySet = new byte[256];  // BYTE baKeySet[0]  size: 0 bytes
 
     @Override
     public int sizeOf() {
