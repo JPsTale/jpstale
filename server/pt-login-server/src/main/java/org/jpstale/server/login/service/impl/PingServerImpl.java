@@ -1,30 +1,24 @@
-package org.jpstale.server.login.core;
+package org.jpstale.server.login.service.impl;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.jpstale.server.common.codec.PacketSender;
 import org.jpstale.server.common.struct.socket.PacketPing;
+import org.jpstale.server.login.service.PingServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
- * Java 版 PingServer。
+ * PingServer 默认实现。
  *
- * 主要逻辑来源：
- * - Server/server/packetserver.cpp 中 case PKTHDR_Ping 分支。
+ * 对齐 C++ packetserver.cpp 中 PKTHDR_Ping 分支。
  */
-@Component
-public class PingServer {
+@Service
+public class PingServerImpl implements PingServer {
 
-    private static final Logger log = LoggerFactory.getLogger(PingServer.class);
+    private static final Logger log = LoggerFactory.getLogger(PingServerImpl.class);
 
-    /**
-     * 对应 C++:
-     * case PKTHDR_Ping:
-     *   ((PacketPing*)psPacket)->dwTick = GetTickCount();
-     *   SENDPACKET(pcUser, psPacket, TRUE);
-     *   // 以及后续部分的 CheatEngine 检测与日志逻辑。
-     */
+    @Override
     public void handlePing(ChannelHandlerContext ctx, PacketPing packet) {
         // TODO: dwTime/dwTick 字段应与 C++ 一致，此处先简单更新 tick 并回包。
         packet.setTick((int) System.currentTimeMillis());

@@ -8,7 +8,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.jpstale.server.common.codec.PtCryptoHandler;
 import org.jpstale.server.common.codec.PtFrameDecoder;
 import org.jpstale.server.common.codec.PtFrameEncoder;
-import org.jpstale.server.login.core.PacketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
