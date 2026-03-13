@@ -3,10 +3,11 @@ package org.jpstale.server.login.netty;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.jpstale.server.login.service.AccountLoginServiceApi;
+import org.jpstale.server.common.codec.PtCryptoHandler;
+import org.jpstale.server.common.codec.PtFrameDecoder;
+import org.jpstale.server.common.codec.PtFrameEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,8 @@ public class NettyLoginServer {
                         protected void initChannel(SocketChannel ch) {
                             ch.pipeline()
                                 .addLast(new PtFrameDecoder())
+                                .addLast(new PtFrameEncoder())
+                                .addLast(new PtCryptoHandler(port))
                                 .addLast(ptLoginHandler);
                         }
                     })
