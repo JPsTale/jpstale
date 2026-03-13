@@ -4,13 +4,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import jakarta.annotation.Resource;
-import org.jpstale.server.common.codec.GameXor;
 import org.jpstale.server.common.codec.PacketIds;
 import org.jpstale.server.common.enums.account.AccountLogin;
 import org.jpstale.server.common.struct.account.PacketAccountLoginCode;
 import org.jpstale.server.common.struct.packets.Packet;
 import org.jpstale.server.common.struct.packets.PacketLoginUser;
-import org.jpstale.server.common.struct.packets.PacketVersion;
 import org.jpstale.server.login.api.CharacterServiceApi;
 import org.jpstale.server.login.api.LoginSuccessServiceApi;
 import org.jpstale.server.login.service.AccountLoginServiceApi;
@@ -60,28 +58,11 @@ public class PtLoginHandler extends SimpleChannelInboundHandler<ByteBuf> {
         ByteBuffer buf = ByteBuffer.wrap(arr).order(ByteOrder.LITTLE_ENDIAN);
         int pktHeader = buf.getInt(4); // skip length(2)+encKeyIndex(1)+encrypted(1)
 
-        if (pktHeader == PacketIds.PKTHDR_Version) {
-            handleVersion(ctx, buf);
-            return;
-        }
         if (pktHeader == PacketIds.PKTHDR_LoginUser) {
             handleLoginUser(ctx, buf);
             return;
         }
         log.debug("Unhandled packet header: 0x{}", Integer.toHexString(pktHeader));
-    }
-
-    private void handleVersion(ChannelHandlerContext ctx, ByteBuffer buf) {
-        PacketVersion req = new PacketVersion();
-        req.readFrom(buf);
-        log.debug("Version from client: {}", req.getVersion());
-
-        PacketVersion resp = new PacketVersion();
-        resp.setPktHeader(PacketIds.PKTHDR_Version);
-        resp.setServerFull(false);
-        resp.setVersion(GameXor.GAME_VERSION);
-        resp.setUnk2(0);
-        sendPacket(ctx, resp);
     }
 
     private void handleLoginUser(ChannelHandlerContext ctx, ByteBuffer buf) {
