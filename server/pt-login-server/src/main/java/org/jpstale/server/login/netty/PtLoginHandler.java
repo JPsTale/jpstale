@@ -6,7 +6,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import jakarta.annotation.Resource;
 import org.jpstale.server.common.codec.GameXor;
 import org.jpstale.server.common.codec.PacketIds;
-import org.jpstale.server.common.codec.PtCodec;
 import org.jpstale.server.common.enums.account.AccountLogin;
 import org.jpstale.server.common.struct.account.PacketAccountLoginCode;
 import org.jpstale.server.common.struct.packets.Packet;
@@ -104,13 +103,9 @@ public class PtLoginHandler extends SimpleChannelInboundHandler<ByteBuf> {
         sendPacket(ctx, p);
     }
 
-    /**
-     * 序列化包并 XOR 编码后写出（与 PtFrameDecoder 解码对称）.
-     */
     private void sendPacket(ChannelHandlerContext ctx, Packet p) {
-        byte[] encoded = p.toWireBytes();
-        PtCodec.xor(encoded, encoded.length, GameXor.XOR_KEY);
-        ByteBuf out = ctx.alloc().buffer(encoded.length).writeBytes(encoded);
+        byte[] plainData = p.toWireBytes();
+        ByteBuf out = ctx.alloc().buffer(plainData.length).writeBytes(plainData);
         ctx.writeAndFlush(out);
     }
 

@@ -114,7 +114,7 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
 
         // 普通入站包：如被标记为加密且已握手，则按 C++ 逻辑解密正文
         if (encrypted != 0 && state.isKeySetReady()) {
-            state.decryptIfNeeded(data);
+            state.decryptPacket(data);
             buf.setBytes(readerIndex, data);
         }
 

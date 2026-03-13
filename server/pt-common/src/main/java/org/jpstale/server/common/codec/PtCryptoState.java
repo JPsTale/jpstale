@@ -1,20 +1,23 @@
 package org.jpstale.server.common.codec;
 
+import org.jpstale.server.common.struct.packets.Packet;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 每连接的加解密状态，对应 C++ SocketData 中的：
- * - baKeySet / bKeySet
- * - EncryptPacket / DecryptPacket
- *
- * 所有操作基于字节数组，不依赖具体 Packet 子类。
+ * <ul>
+ *     <li>baKeySet / bKeySet</li>
+ *     <li>EncryptPacket / DecryptPacket</li>
+ * </ul>
+ * <p>所有操作基于字节数组，不依赖具体 Packet 子类。</p>
  */
-final class PtCryptoState {
+public final class PtCryptoState {
 
     /** Packet 头大小：iLength(2) + iEncKeyIndex(1) + iEncrypted(1) + iHeader(4). */
-    private static final int HEADER_SIZE = 8;
+    private static final int HEADER_SIZE = Packet.SIZE_OF;
 
     /** 与 C++ NUM_ENCKEYS 一致。 */
     private static final int NUM_ENC_KEYS = 256;
@@ -60,15 +63,13 @@ final class PtCryptoState {
         // C++: bObfuscator += (s.iEncKeyIndex + s.iEncrypted);
         byte bObf = (byte) (obfuscatorByte + encKeyIndex + encrypted);
 
-        int bodyOffset = HEADER_SIZE;
         for (int i = 0; i < NUM_ENC_KEYS; i++) {
-            packetBytes[bodyOffset + i] = (byte) (keySet[i] ^ bObf);
+            packetBytes[HEADER_SIZE + i] = (byte) (keySet[i] ^ bObf);
         }
     }
 
     /**
      * 收到对端的 PacketKeySet 时还原 keySet，对应 C++ ReceiveKeySet。
-     *
      * 注意：C++ 服务端是向客户端发 KeySet，客户端调用 ReceiveKeySet；
      * 如果在某些场景下让 Java 端扮演“客户端”，可以使用此方法。
      *
@@ -91,9 +92,8 @@ final class PtCryptoState {
 
         byte bObf = (byte) (obfuscatorByte + encKeyIndex + encrypted);
 
-        int bodyOffset = HEADER_SIZE;
         for (int i = 0; i < NUM_ENC_KEYS; i++) {
-            keySet[i] = (byte) (packetBytes[bodyOffset + i] ^ bObf);
+            keySet[i] = (byte) (packetBytes[HEADER_SIZE + i] ^ bObf);
         }
         keySetReady = true;
         nextKey = 0;
@@ -126,9 +126,8 @@ final class PtCryptoState {
         bObf += 1; // iEncrypted
 
         for (int i = HEADER_SIZE; i < length; i++) {
-            int idx = i;
-            byte ib0 = (byte) (idx & 0xFF);
-            byte ib1 = (byte) ((idx >>> 8) & 0xFF);
+            byte ib0 = (byte) (i & 0xFF);
+            byte ib1 = (byte) ((i >>> 8) & 0xFF);
             bObf += ib0;
             bObf += ib1;
 
@@ -147,7 +146,7 @@ final class PtCryptoState {
      * C++ DecryptPacket 的 Java 版：若 iEncrypted != 0，则解密正文并清零标记位。
      * （用于 inbound 解密；outbound 加密时不需要调用）
      */
-    void decryptIfNeeded(byte[] packetBytes) {
+    void decryptPacket(byte[] packetBytes) {
         if (!keySetReady || packetBytes.length < HEADER_SIZE) {
             return;
         }
@@ -169,15 +168,14 @@ final class PtCryptoState {
         bObf += encrypted;
 
         for (int i = HEADER_SIZE; i < length; i++) {
-            int idx = i;
-            byte ib0 = (byte) (idx & 0xFF);
-            byte ib1 = (byte) ((idx >>> 8) & 0xFF);
+            byte ib0 = (byte) (i & 0xFF);
+            byte ib1 = (byte) ((i >>> 8) & 0xFF);
             bObf += ib0;
             bObf += ib1;
 
             byte v = packetBytes[i];
-            v ^= (byte) (encKeyIndex + 0x2);
             v ^= bObf;
+            v ^= (byte) (encKeyIndex + 0x2);
             packetBytes[i] = v;
         }
 
