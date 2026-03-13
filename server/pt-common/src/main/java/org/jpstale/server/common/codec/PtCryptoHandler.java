@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
+import org.jpstale.server.common.struct.packets.Packet;
 import org.jpstale.server.common.struct.packets.PacketVersion;
 import org.jpstale.server.common.struct.socket.PacketKeySet;
 
@@ -154,19 +155,22 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+        log.info("crypto handler");
         if (!(msg instanceof ByteBuf buf)) {
             super.write(ctx, msg, promise);
             return;
         }
 
         int readable = buf.readableBytes();
-        if (readable < 8) {
+        if (readable < Packet.SIZE_OF) {
+            log.info("packet size too small");
             super.write(ctx, msg, promise);
             return;
         }
 
         PtCryptoState state = ctx.channel().attr(STATE_KEY).get();
         if (state == null || !state.isKeySetReady()) {
+            log.info("key set is not ready");
             super.write(ctx, msg, promise);
             return;
         }
@@ -178,6 +182,7 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
         ByteBuffer headerBuf = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
         short length = headerBuf.getShort(0);
         if (length < 8 || length > readable) {
+            log.warn("illegal length: {}", length);
             super.write(ctx, msg, promise);
             return;
         }
@@ -185,11 +190,13 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
         int header = headerBuf.getInt(4);
         if (header == PacketIds.PKTHDR_KeySet || header == PacketIds.PKTHDR_Version) {
             // KeySet 包本身不再额外 EncryptPacket
+            log.info("ignore encrypt packet: {}", header);
             super.write(ctx, msg, promise);
             return;
         }
 
         // 对非 KeySet 包做 C++ EncryptPacket 原地加密
+        log.info("encrypt packet: {}", header);
         state.encryptPacket(data);
         buf.setBytes(readerIndex, data);
 

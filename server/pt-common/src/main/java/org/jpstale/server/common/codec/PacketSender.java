@@ -24,9 +24,7 @@ public final class PacketSender {
      * 发送封装好的 Packet 到当前连接。
      */
     public static void sendPacket(ChannelHandlerContext ctx, Packet packet) {
-        if (log.isTraceEnabled()) {
-            log.trace("send {} to {}", packet, ctx.channel().remoteAddress());
-        }
+        log.info("send {} to {}", packet, ctx.channel().remoteAddress());
 
         byte[] plain = packet.toWireBytes();
         ByteBuf out = ctx.alloc().buffer(plain.length).writeBytes(plain);

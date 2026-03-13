@@ -34,7 +34,8 @@ public class AccountServerImpl implements AccountServer {
         // TODO: 版本校验应与 GameXor.GAME_VERSION 对齐，目前先简单通过。
 
         AccountLogin code;
-        if ("admin".equalsIgnoreCase(userId) && "123456".equals(password)) {
+        // 6CCDEEF78D42BCA3BBACA378E9AB180801DF781434AE4709BA696905CB67F218 = SHA256("ADMIN:123456")
+        if ("admin".equalsIgnoreCase(userId) && "6CCDEEF78D42BCA3BBACA378E9AB180801DF781434AE4709BA696905CB67F218".equals(password)) {
             code = AccountLogin.SUCCESS;
         } else {
             code = AccountLogin.INCORRECT_PASSWORD;
