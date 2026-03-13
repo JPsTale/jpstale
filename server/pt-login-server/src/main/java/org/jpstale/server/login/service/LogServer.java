@@ -1,5 +1,8 @@
 package org.jpstale.server.login.service;
 
+import io.netty.channel.ChannelHandlerContext;
+import org.jpstale.server.common.struct.packets.PacketVersion;
+
 /**
  * 登录服日志接口（只涵盖当前需要的部分）。
  *
@@ -9,6 +12,7 @@ package org.jpstale.server.login.service;
  */
 public interface LogServer {
 
+    void onLogEx(ChannelHandlerContext ctx, Object user, PacketVersion packet);
     void onLogCheat(Object userSession, Object packet);
 }
 

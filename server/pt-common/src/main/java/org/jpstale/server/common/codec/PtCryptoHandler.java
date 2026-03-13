@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
+import org.jpstale.server.common.enums.packets.PacketHeader;
 import org.jpstale.server.common.struct.packets.Packet;
 import org.jpstale.server.common.struct.packets.PacketVersion;
 import org.jpstale.server.common.struct.socket.PacketKeySet;
@@ -47,7 +48,7 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
         PacketVersion packetVersion = new PacketVersion();
         packetVersion.setEncKeyIndex((byte) 0);
         packetVersion.setEncrypted((byte) 0);
-        packetVersion.setPktHeader(PacketIds.PKTHDR_Version);
+        packetVersion.setPktHeader(PacketHeader.PKTHDR_Version);
         packetVersion.setServerFull(false);
         packetVersion.setUnk2(0);
         packetVersion.setVersion(GameXor.GAME_VERSION);
@@ -72,7 +73,7 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
         PacketKeySet packetKeySet = new PacketKeySet();
         packetKeySet.setEncKeyIndex(encKeyIndex);
         packetKeySet.setEncrypted(encrypted);
-        packetKeySet.setPktHeader(PacketIds.PKTHDR_KeySet);
+        packetKeySet.setPktHeader(PacketHeader.PKTHDR_KeySet);
         packetKeySet.setKeySet(rawKeySet);
 
         byte[] data = packetKeySet.toWireBytes();
@@ -121,7 +122,7 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
         int  header    = headerBuf.getInt(4);
 
         // 若对端也向本端发送 KeySet，则在此支持 ReceiveKeySet
-        if (header == PacketIds.PKTHDR_KeySet) {
+        if (header == PacketHeader.PKTHDR_KeySet.getValue()) {
             byte obfForReceive;// 获取远端地址
             try {
                 InetSocketAddress remote = (java.net.InetSocketAddress) ctx.channel().remoteAddress();
@@ -155,7 +156,6 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        log.info("crypto handler");
         if (!(msg instanceof ByteBuf buf)) {
             super.write(ctx, msg, promise);
             return;
@@ -188,15 +188,20 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
         }
 
         int header = headerBuf.getInt(4);
-        if (header == PacketIds.PKTHDR_KeySet || header == PacketIds.PKTHDR_Version) {
-            // KeySet 包本身不再额外 EncryptPacket
-            log.info("ignore encrypt packet: {}", header);
-            super.write(ctx, msg, promise);
-            return;
+        PacketHeader packetHeader = PacketHeader.fromValue(header);
+        switch (packetHeader) {
+            case PKTHDR_KeySet:
+            case PKTHDR_Version:
+            case PKTHDR_UserInfo:
+            case PKTHDR_ServerList:
+            case PKTHDR_AccountLoginCode:
+                // 登录阶段响应包不加密，便于客户端直接解析并显示（含密码错误等提示）
+                log.info("ignore encrypt packet: {}", header);
+                super.write(ctx, msg, promise);
+                return;
         }
 
-        // 对非 KeySet 包做 C++ EncryptPacket 原地加密
-        log.info("encrypt packet: {}", header);
+        // 对非上述包做 C++ EncryptPacket 原地加密
         state.encryptPacket(data);
         buf.setBytes(readerIndex, data);
 

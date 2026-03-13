@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.jpstale.server.common.codec.PacketIds;
+import org.jpstale.server.common.enums.packets.PacketHeader;
 import org.jpstale.server.common.codec.PacketSender;
 import org.jpstale.server.common.struct.packets.*;
 import org.jpstale.server.common.struct.socket.PacketPing;
@@ -48,7 +48,7 @@ public class PacketServer extends SimpleChannelInboundHandler<ByteBuf> {
     /**
      * 包头 -> 处理函数 的分发表。
      */
-    private final Map<Integer, BiConsumer<ChannelHandlerContext, ByteBuffer>> handlers = new HashMap<>();
+    private final Map<PacketHeader, BiConsumer<ChannelHandlerContext, ByteBuffer>> handlers = new HashMap<>();
 
     public PacketServer(AccountServer accountServer,
                         PingServer pingServer,
@@ -68,40 +68,41 @@ public class PacketServer extends SimpleChannelInboundHandler<ByteBuf> {
 
     private void registerHandlers() {
         // 认证 / 心跳
-        register(PacketIds.PKTHDR_Ping, PacketPing::new, pingServer::handlePing);
-        register(PacketIds.PKTHDR_LoginUser, PacketLoginUser::new, accountServer::processAccountLogin);
-        register(PacketIds.PKTHDR_Client_Error, PacketTransCommand::new, cheatServer::handleClientError);
+        register(PacketHeader.PKTHDR_Ping, PacketPing::new, pingServer::handlePing);
+        register(PacketHeader.PKTHDR_Version, PacketVersion::new, (ctx, p) -> logServer.onLogEx(ctx,null, p));
+        register(PacketHeader.PKTHDR_LoginUser, PacketLoginUser::new, accountServer::processAccountLogin);
+        register(PacketHeader.PKTHDR_Client_Error, PacketTransCommand::new, cheatServer::handleClientError);
 
         // 角色 / 存档
-        register(PacketIds.PKTHDR_CharacterDataEx, PacketCharacterDataEx::new, characterServer::handleCharacterDataEx);
-        register(PacketIds.PKTHDR_CreateCharacter, PacketCreateCharacter::new, characterServer::createCharacter);
+        register(PacketHeader.PKTHDR_CharacterDataEx, PacketCharacterDataEx::new, characterServer::handleCharacterDataEx);
+        register(PacketHeader.PKTHDR_CreateCharacter, PacketCreateCharacter::new, characterServer::createCharacter);
         // TODO: SaveData 等登录服相关包可在后续补充
 
         // 崩溃 / 作弊日志
-        register(PacketIds.PKTHDR_Crash, PacketCrash::new, cheatServer::handleCrash);
-        register(PacketIds.PKTHDR_CrashData, PacketCrashData::new, cheatServer::handleCrashData);
-        register(PacketIds.PKTHDR_LogCheat, PacketLogCheat::new, (ctx, p) -> logServer.onLogCheat(null, p));
+        register(PacketHeader.PKTHDR_Crash, PacketCrash::new, cheatServer::handleCrash);
+        register(PacketHeader.PKTHDR_CrashData, PacketCrashData::new, cheatServer::handleCrashData);
+        register(PacketHeader.PKTHDR_LogCheat, PacketLogCheat::new, (ctx, p) -> logServer.onLogCheat(null, p));
 
         // Inter-Server Net* 包（LoginServer 侧关心的子集）
-        register(PacketIds.PKTHDR_NetIdentifier, PacketNetIdentifier::new, (ctx, p) -> netServer.onNetIdentifier(p));
-        register(PacketIds.PKTHDR_NetUsersOnline, PacketNetUsersOnline::new,
+        register(PacketHeader.PKTHDR_NetIdentifier, PacketNetIdentifier::new, (ctx, p) -> netServer.onNetIdentifier(p));
+        register(PacketHeader.PKTHDR_NetUsersOnline, PacketNetUsersOnline::new,
                 (ctx, p) -> netServer.onNetUsersOnline(p));
-        register(PacketIds.PKTHDR_NetClan, PacketNetClan::new, (ctx, p) -> netServer.onNetClan(p));
-        register(PacketIds.PKTHDR_NetQuestUpdateDataPart, PacketNetQuestUpdateDataPart::new,
+        register(PacketHeader.PKTHDR_NetClan, PacketNetClan::new, (ctx, p) -> netServer.onNetClan(p));
+        register(PacketHeader.PKTHDR_NetQuestUpdateDataPart, PacketNetQuestUpdateDataPart::new,
                 (ctx, p) -> netServer.onNetQuestUpdateDataPart(p));
-        register(PacketIds.PKTHDR_NetPlayerGoldDiff, PacketNetPlayerGoldDiff::new,
+        register(PacketHeader.PKTHDR_NetPlayerGoldDiff, PacketNetPlayerGoldDiff::new,
                 (ctx, p) -> netServer.onNetPlayerGoldDiff(p));
-        register(PacketIds.PKTHDR_NetPlayerItemPut, PacketNetPlayerItemPut::new,
+        register(PacketHeader.PKTHDR_NetPlayerItemPut, PacketNetPlayerItemPut::new,
                 (ctx, p) -> netServer.onNetPlayerItemPut(p));
-        register(PacketIds.PKTHDR_NetPlayerThrow, PacketNetPlayerThrow::new,
+        register(PacketHeader.PKTHDR_NetPlayerThrow, PacketNetPlayerThrow::new,
                 (ctx, p) -> netServer.onNetPlayerThrow(p));
 
         // 尚未在 pt-common 定义结构体的 Net 包，先直接调用 handler 占位
-        handlers.put(PacketIds.PKTHDR_NetPlayDataEx, (ctx, buf) -> netServer.onNetPlayDataEx(null));
-        handlers.put(PacketIds.PKTHDR_NetGiveExp, (ctx, buf) -> netServer.onNetGiveExp(null));
+        handlers.put(PacketHeader.PKTHDR_NetPlayDataEx, (ctx, buf) -> netServer.onNetPlayDataEx(null));
+        handlers.put(PacketHeader.PKTHDR_NetGiveExp, (ctx, buf) -> netServer.onNetGiveExp(null));
     }
 
-    private <P extends Packet> void register(int header,
+    private <P extends Packet> void register(PacketHeader header,
                                              Supplier<P> factory,
                                              BiConsumer<ChannelHandlerContext, P> handler) {
         handlers.put(header, (ctx, buf) -> readAndDispatch(ctx, buf, factory, handler));
@@ -113,11 +114,10 @@ public class PacketServer extends SimpleChannelInboundHandler<ByteBuf> {
                                                     BiConsumer<ChannelHandlerContext, P> handler) {
         P packet = factory.get();
         packet.readFrom(buf);
-        log.info("recv {}", packet);
         try {
             handler.accept(ctx, packet);
         } catch (Exception e) {
-            log.error("process packet failed", e);
+            log.error("process packet: {} failed", packet, e);
         }
     }
 
@@ -137,12 +137,12 @@ public class PacketServer extends SimpleChannelInboundHandler<ByteBuf> {
 
         // 跳过 length(2) + encKeyIndex(1) + encrypted(1)
         int pktHeader = buf.getInt(4);
+        PacketHeader packetHeader = PacketHeader.fromValue(pktHeader);
 
-        log.info("recv header=0x{} len={} from {}",
-                Integer.toHexString(pktHeader),
-                readable,
-                ctx.channel().remoteAddress());
-        analyzePacket(ctx, pktHeader, buf);
+        if (packetHeader != PacketHeader.PKTHDR_Version) {
+            log.info("recv {}(0x{}), size:{}, from: {}", packetHeader, Integer.toHexString(pktHeader), readable, ctx.channel().remoteAddress());
+        }
+        analyzePacket(ctx, packetHeader, buf);
     }
 
     /**
@@ -152,14 +152,12 @@ public class PacketServer extends SimpleChannelInboundHandler<ByteBuf> {
      * 这里只实现与 LoginServer 直接相关的分发逻辑（PKTHDR_Ping / PKTHDR_LoginUser 等），
      * 其余包体在后续逐步按 C++ 对照补齐。
      */
-    public void analyzePacket(ChannelHandlerContext ctx, int pktHeader, ByteBuffer buf) {
+    public void analyzePacket(ChannelHandlerContext ctx, PacketHeader pktHeader, ByteBuffer buf) {
         BiConsumer<ChannelHandlerContext, ByteBuffer> handler = handlers.get(pktHeader);
         if (handler != null) {
             handler.accept(ctx, buf);
-        } else if (log.isTraceEnabled()) {
-            log.trace("unhandled packet header=0x{} from {}",
-                    Integer.toHexString(pktHeader),
-                    ctx.channel().remoteAddress());
+        } else {
+            log.info("unsupported packet header:{} from:{}", pktHeader, ctx.channel().remoteAddress());
         }
     }
 

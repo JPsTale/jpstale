@@ -1,6 +1,7 @@
 package org.jpstale.server.common.struct.packets;
 
 import lombok.Data;
+import org.jpstale.server.common.enums.packets.PacketHeader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -18,7 +19,7 @@ public abstract class Packet {
     private short length;        // WORD iLength
     private byte encKeyIndex;     // BYTE iEncKeyIndex
     private byte encrypted;      // BYTE iEncrypted
-    private int pktHeader;       // int iHeader（包类型标识，与子类包体中的 Header 结构体区分）
+    private PacketHeader pktHeader;       // int iHeader（包类型标识，与子类包体中的 Header 结构体区分）
 
     /** 包头字节数。 */
     public static final int SIZE_OF = 8;
@@ -28,7 +29,7 @@ public abstract class Packet {
         this.length = in.getShort();
         this.encKeyIndex = in.get();
         this.encrypted = in.get();
-        this.pktHeader = in.getInt();
+        this.pktHeader = PacketHeader.fromValue(in.getInt());
     }
 
     /** 写入包头（调用方需保证 ByteBuffer 为 little-endian）. */
@@ -36,7 +37,7 @@ public abstract class Packet {
         out.putShort(this.length);
         out.put(this.encKeyIndex);
         out.put(this.encrypted);
-        out.putInt(this.pktHeader);
+        out.putInt(this.pktHeader.getValue());
     }
 
     /** 由子类实现：读取包体字段。 */
