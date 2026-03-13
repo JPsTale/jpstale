@@ -3,6 +3,7 @@ package org.jpstale.server.common.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import lombok.extern.slf4j.Slf4j;
 import org.jpstale.server.common.struct.packets.Packet;
 
 import java.util.List;
@@ -11,11 +12,14 @@ import java.util.List;
  * 解码 PT 线协议：前 2 字节（经 XOR）为长度，之后读取 (length-2) 字节并整体做 XOR。
  * 输出的 ByteBuf 已完成 XOR 解码，内容为完整 Packet（length 字节）。
  */
+@Slf4j
 public class PtFrameDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-        if (in.readableBytes() < 2) return;
+        if (in.readableBytes() < 2) {
+            return;
+        }
 
         int start = in.readerIndex();
         byte[] lenBuf = new byte[2];
@@ -23,11 +27,15 @@ public class PtFrameDecoder extends ByteToMessageDecoder {
         PtCodec.xorDecode(lenBuf, 2, GameXor.XOR_KEY);
         short length = PtCodec.readLength(lenBuf);
 
+        log.info("ctx: {}, length: {}", ctx.channel().remoteAddress(), length);
+
         if (length < Packet.SIZE_OF || length > PtCodec.MAX_PACKET_SIZE) {
             ctx.close();
             return;
         }
-        if (in.readableBytes() < length) return;
+        if (in.readableBytes() < length) {
+            return;
+        }
 
         byte[] packet = new byte[length];
         in.readBytes(packet);

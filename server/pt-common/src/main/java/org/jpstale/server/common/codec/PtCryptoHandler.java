@@ -100,6 +100,7 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
 
         PtCryptoState state = ctx.channel().attr(STATE_KEY).get();
         if (state == null) {
+            log.info("No KeySet found");
             ctx.fireChannelRead(msg);
             return;
         }

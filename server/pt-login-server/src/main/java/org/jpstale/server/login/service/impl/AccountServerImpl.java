@@ -29,6 +29,7 @@ public class AccountServerImpl implements AccountServer {
     public int processAccountLogin(ChannelHandlerContext ctx, PacketLoginUser login) {
         String userId = login.getUserId();
         String password = login.getPassword();
+        log.info("userId:{}. password:{}", userId, password);
 
         // TODO: 版本校验应与 GameXor.GAME_VERSION 对齐，目前先简单通过。
 

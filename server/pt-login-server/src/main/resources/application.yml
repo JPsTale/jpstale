@@ -13,4 +13,4 @@ spring:
 
 pt:
   login:
-    port: 8484
+    port: 10009

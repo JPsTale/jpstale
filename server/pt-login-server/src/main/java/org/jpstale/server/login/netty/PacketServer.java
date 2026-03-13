@@ -1,9 +1,9 @@
 package org.jpstale.server.login.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import jakarta.annotation.PostConstruct;
 import org.jpstale.server.common.codec.PacketIds;
 import org.jpstale.server.common.codec.PacketSender;
 import org.jpstale.server.common.struct.packets.*;
@@ -33,6 +33,7 @@ import java.util.function.Supplier;
  * - 统一的收发日志输出
  */
 @Component
+@ChannelHandler.Sharable
 public class PacketServer extends SimpleChannelInboundHandler<ByteBuf> {
 
     private static final Logger log = LoggerFactory.getLogger(PacketServer.class);
@@ -61,10 +62,11 @@ public class PacketServer extends SimpleChannelInboundHandler<ByteBuf> {
         this.cheatServer = cheatServer;
         this.logServer = logServer;
         this.netServer = netServer;
+
+        registerHandlers();
     }
 
-    @PostConstruct
-    private void initHandlers() {
+    private void registerHandlers() {
         // 认证 / 心跳
         register(PacketIds.PKTHDR_Ping, PacketPing::new, pingServer::handlePing);
         register(PacketIds.PKTHDR_LoginUser, PacketLoginUser::new, accountServer::processAccountLogin);
@@ -111,10 +113,12 @@ public class PacketServer extends SimpleChannelInboundHandler<ByteBuf> {
                                                     BiConsumer<ChannelHandlerContext, P> handler) {
         P packet = factory.get();
         packet.readFrom(buf);
-        if (log.isTraceEnabled()) {
-            log.trace("recv {}", packet);
+        log.info("recv {}", packet);
+        try {
+            handler.accept(ctx, packet);
+        } catch (Exception e) {
+            log.error("process packet failed", e);
         }
-        handler.accept(ctx, packet);
     }
 
     @Override
@@ -134,13 +138,10 @@ public class PacketServer extends SimpleChannelInboundHandler<ByteBuf> {
         // 跳过 length(2) + encKeyIndex(1) + encrypted(1)
         int pktHeader = buf.getInt(4);
 
-        if (log.isTraceEnabled()) {
-            log.trace("recv header=0x{} len={} from {}",
-                    Integer.toHexString(pktHeader),
-                    readable,
-                    ctx.channel().remoteAddress());
-        }
-
+        log.info("recv header=0x{} len={} from {}",
+                Integer.toHexString(pktHeader),
+                readable,
+                ctx.channel().remoteAddress());
         analyzePacket(ctx, pktHeader, buf);
     }
 

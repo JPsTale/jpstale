@@ -20,7 +20,7 @@ public class NettyLoginServer {
 
     private static final Logger log = LoggerFactory.getLogger(NettyLoginServer.class);
 
-    @Value("${pt.login.port:8484}")
+    @Value("${pt.login.port:10009}")
     private int port;
 
     @Bean
