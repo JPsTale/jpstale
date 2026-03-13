@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.jpstale.server.common.codec.GameXor;
 import org.jpstale.server.common.codec.PtCodec;
-import org.jpstale.server.common.packet.Packet;
+import org.jpstale.server.common.struct.Packet;
 
 import java.util.List;
 
