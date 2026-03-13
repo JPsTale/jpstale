@@ -3,15 +3,13 @@ package org.jpstale.server.common.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.util.AttributeKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
  * 通用加解密 Handler：
- *
  * - 每个 Channel 一份 {@link PtCryptoState}，通过 Attribute 挂载；
  * - 入站（已过 PtFrameDecoder XOR 解码）：
  *   - 截获 KeySet 包（PKTHDR_KeySet），调用 PtCryptoState.receiveKeySet 并吞掉；
@@ -19,10 +17,9 @@ import java.nio.ByteOrder;
  * - 出站（在 PtFrameEncoder 之前）：
  *   - 对除 KeySet 之外的包调用 C++ EncryptPacket 进行原地加密。
  */
+@Slf4j
 @ChannelHandler.Sharable
 public class PtCryptoHandler extends ChannelDuplexHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(PtCryptoHandler.class);
 
     public static final AttributeKey<PtCryptoState> STATE_KEY =
             AttributeKey.valueOf("ptCryptoState");
@@ -113,9 +110,16 @@ public class PtCryptoHandler extends ChannelDuplexHandler {
         }
 
         // 普通入站包：如被标记为加密且已握手，则按 C++ 逻辑解密正文
-        if (encrypted != 0 && state.isKeySetReady()) {
-            state.decryptPacket(data);
-            buf.setBytes(readerIndex, data);
+        if (encrypted != 0) {
+            if (state.isKeySetReady()) {
+                state.decryptPacket(data);
+                buf.setBytes(readerIndex, data);
+            } else {
+                log.warn("Received encrypted packet but keySet not ready, closing channel");
+                buf.release();
+                ctx.close();
+                return;
+            }
         }
 
         ctx.fireChannelRead(msg);

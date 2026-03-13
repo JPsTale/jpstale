@@ -35,9 +35,4 @@ public final class PtCodec {
     public static short readLength(byte[] buf) {
         return ByteBuffer.wrap(buf, 0, 2).order(ByteOrder.LITTLE_ENDIAN).getShort();
     }
-
-    /** Write packet length into first 2 bytes, little-endian. */
-    public static void writeLength(byte[] buf, short length) {
-        ByteBuffer.wrap(buf, 0, 2).order(ByteOrder.LITTLE_ENDIAN).putShort(length);
-    }
 }
