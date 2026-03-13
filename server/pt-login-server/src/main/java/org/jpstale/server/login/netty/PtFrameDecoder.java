@@ -3,9 +3,9 @@ package org.jpstale.server.login.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.jpstale.server.common.protocol.GameXor;
-import org.jpstale.server.common.protocol.PtCodec;
-import org.jpstale.server.common.protocol.struct.Packet;
+import org.jpstale.server.common.codec.GameXor;
+import org.jpstale.server.common.codec.PtCodec;
+import org.jpstale.server.common.packet.Packet;
 
 import java.util.List;
 

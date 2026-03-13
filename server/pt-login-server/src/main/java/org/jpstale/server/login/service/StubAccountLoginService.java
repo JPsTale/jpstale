@@ -1,7 +1,7 @@
 package org.jpstale.server.login.service;
 
-import org.jpstale.server.common.protocol.account.AccountLoginResult;
-import org.jpstale.server.common.protocol.GameXor;
+import org.jpstale.server.common.packet.account.AccountLoginResult;
+import org.jpstale.server.common.codec.GameXor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;

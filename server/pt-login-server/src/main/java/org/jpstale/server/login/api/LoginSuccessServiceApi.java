@@ -1,7 +1,7 @@
 package org.jpstale.server.login.api;
 
-import org.jpstale.server.common.protocol.struct.PacketServerList;
-import org.jpstale.server.common.protocol.struct.PacketUserInfo;
+import org.jpstale.server.common.packet.PacketServerList;
+import org.jpstale.server.common.packet.PacketUserInfo;
 
 /**
  * 登录成功后的流程：组 PacketUserInfo（角色列表）、PacketServerList（服务器列表+Ticket）。
