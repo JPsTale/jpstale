@@ -214,13 +214,6 @@
                 <version>${lombok.version}</version>
             </dependency>
 
-            <!-- jsoup -->
-            <dependency>
-                <groupId>org.jsoup</groupId>
-                <artifactId>jsoup</artifactId>
-                <version>1.11.3</version>
-            </dependency>
-
             <!-- Google -->
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -242,6 +235,11 @@
                 <artifactId>core</artifactId>
                 <version>${zxing.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>20231013</version>
+            </dependency>
 
             <!-- Apache -->
             <!-- Apache Commons -->
@@ -253,7 +251,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.8.1</version>
+                <version>3.18.</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
