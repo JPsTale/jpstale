@@ -1,6 +1,10 @@
 package org.jpstale.server.common.protocol.struct;
 
 import lombok.Data;
+import org.jpstale.server.common.enums.item.ItemCraftType;
+import org.jpstale.server.common.enums.item.ItemRarity;
+import org.jpstale.server.common.enums.item.ItemSource;
+import org.jpstale.server.common.enums.item.MixTypeName;
 
 import java.nio.ByteBuffer;
 
@@ -70,7 +74,7 @@ public final class Item {
     private SpecItemData specData;    // SpecItemData sSpecData  size: 92 bytes
     private ItemFixData prefixData;   // ItemFixData sPrefixData  size: 58 bytes
     private ItemFixData suffixData;   // ItemFixData sSuffixData  size: 58 bytes
-    private int craftType;            // EItemCraftType eCraftType  size: 4 bytes
+    private ItemCraftType craftType;  // EItemCraftType eCraftType  size: 4 bytes
     private int mixEffect;            // int eMixEffect  size: 4 bytes
     private short ageLevelOrMixColorId;   // union sAgeLevel/sMixColorId  size: 2 bytes
     private short maturingOrQuestMonId;    // union bMaturing/uQuestMonId  size: 2 bytes
@@ -80,13 +84,13 @@ public final class Item {
     private int createTime;          // DWORD tTime  size: 4 bytes
     private SocketItem[] socketData;  // SocketItem sSocketData[2]  size: 6 bytes
     private byte itemFlags;            // EItemFlag eItemFlags  size: 1 byte (8 bits)
-    private byte itemLastSource;      // EItemSource eItemLastSource  size: 1 byte
-    private byte itemOriginalSource;  // EItemSource eItemOriginalSource  size: 1 byte
+    private ItemSource itemLastSource;// EItemSource eItemLastSource  size: 1 byte
+    private ItemSource itemOriginalSource;// EItemSource eItemOriginalSource  size: 1 byte
     private byte[] padding;           // char cPadding[6]  size: 6 bytes
-    private byte rarity;               // EItemRarity eRarity  size: 1 byte
+    private ItemRarity rarity;        // EItemRarity eRarity  size: 1 byte
     private int mixUniqueId1;         // int sMixUniqueID1  size: 4 bytes
     private CurMax questMonsters;     // CurMax sQuestMonsters  size: 4 bytes
-    private int mixTypeName;          // EMixTypeName eMixTypeName  size: 4 bytes
+    private MixTypeName mixTypeName;  // EMixTypeName eMixTypeName  size: 4 bytes
     private int itemSpecialType;      // int iItemSpecialType  size: 4 bytes
     private int padding666;           // int iPadding666  size: 4 bytes
 
@@ -172,7 +176,7 @@ public final class Item {
         specData.readFrom(in);
         prefixData.readFrom(in);
         suffixData.readFrom(in);
-        craftType = in.getInt();
+        craftType = ItemCraftType.fromValue(in.getInt());
         mixEffect = in.getInt();
         ageLevelOrMixColorId = in.getShort();
         maturingOrQuestMonId = in.getShort();
@@ -182,13 +186,13 @@ public final class Item {
         createTime = in.getInt();
         for (int i = 0; i < 2; i++) socketData[i].readFrom(in);
         itemFlags = in.get();
-        itemLastSource = in.get();
-        itemOriginalSource = in.get();
+        itemLastSource = ItemSource.fromValue(in.get());
+        itemOriginalSource = ItemSource.fromValue(in.get());
         in.get(padding);
-        rarity = in.get();
+        rarity = ItemRarity.fromValue(in.get());
         mixUniqueId1 = in.getInt();
         questMonsters.readFrom(in);
-        mixTypeName = in.getInt();
+        mixTypeName = MixTypeName.fromValue(in.getInt());
         itemSpecialType = in.getInt();
         padding666 = in.getInt();
         int readSoFar = in.position() - start;
@@ -257,7 +261,7 @@ public final class Item {
         specData.writeTo(out);
         prefixData.writeTo(out);
         suffixData.writeTo(out);
-        out.putInt(craftType);
+        out.putInt(craftType.getValue());
         out.putInt(mixEffect);
         out.putShort(ageLevelOrMixColorId);
         out.putShort(maturingOrQuestMonId);
@@ -267,13 +271,13 @@ public final class Item {
         out.putInt(createTime);
         for (int i = 0; i < 2; i++) socketData[i].writeTo(out);
         out.put(itemFlags);
-        out.put(itemLastSource);
-        out.put(itemOriginalSource);
+        out.put((byte) itemLastSource.getValue());
+        out.put((byte) itemOriginalSource.getValue());
         out.put(padding != null && padding.length >= 6 ? padding : new byte[6]);
-        out.put(rarity);
+        out.put((byte) rarity.getValue());
         out.putInt(mixUniqueId1);
         questMonsters.writeTo(out);
-        out.putInt(mixTypeName);
+        out.putInt(mixTypeName.getValue());
         out.putInt(itemSpecialType);
         out.putInt(padding666);
         if (trailingPadding != null && trailingPadding.length > 0) {

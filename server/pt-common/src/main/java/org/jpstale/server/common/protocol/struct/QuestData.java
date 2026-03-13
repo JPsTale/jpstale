@@ -4,8 +4,8 @@ import lombok.Data;
 
 import java.nio.ByteBuffer;
 
-import org.jpstale.server.common.enums.QuestType;
-import org.jpstale.server.common.enums.QuestUserStatus;
+import org.jpstale.server.common.enums.quest.QuestType;
+import org.jpstale.server.common.enums.quest.QuestUserStatus;
 
 /**
  * 对应 shared/quest.h 中 PacketDynamicQuestOpen 内部 struct QuestData，SIZE = 80 bytes.

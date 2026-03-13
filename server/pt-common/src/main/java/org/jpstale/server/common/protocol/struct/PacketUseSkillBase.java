@@ -3,8 +3,8 @@ package org.jpstale.server.common.protocol.struct;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
-import org.jpstale.server.common.enums.CharacterClass;
-import org.jpstale.server.common.enums.SkillId;
+import org.jpstale.server.common.enums.packets.CharacterClass;
+import org.jpstale.server.common.enums.skill.SkillId;
 
 
 /**

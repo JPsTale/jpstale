@@ -1,7 +1,7 @@
 package org.jpstale.server.common.protocol.struct;
 
 import lombok.Data;
-import org.jpstale.server.common.enums.AllowedClassSpecFlag;
+import org.jpstale.server.common.enums.packets.AllowedClassSpecFlag;
 
 import java.nio.ByteBuffer;
 

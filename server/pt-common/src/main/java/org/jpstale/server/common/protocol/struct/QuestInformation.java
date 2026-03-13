@@ -4,8 +4,8 @@ import lombok.Data;
 
 import java.nio.ByteBuffer;
 
-import org.jpstale.server.common.enums.QuestPartyType;
-import org.jpstale.server.common.enums.QuestType;
+import org.jpstale.server.common.enums.quest.QuestPartyType;
+import org.jpstale.server.common.enums.quest.QuestType;
 
 /**
  * 对应 shared/quest.h 中的 C++ struct QuestInformation，size = 92 bytes。

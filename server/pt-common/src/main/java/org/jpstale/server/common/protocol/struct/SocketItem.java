@@ -1,9 +1,9 @@
 package org.jpstale.server.common.protocol.struct;
 
 import lombok.Data;
-import org.jpstale.server.common.enums.GemItem;
-import org.jpstale.server.common.enums.GemType;
-import org.jpstale.server.common.enums.SocketType;
+import org.jpstale.server.common.enums.item.GemItem;
+import org.jpstale.server.common.enums.item.GemType;
+import org.jpstale.server.common.enums.item.SocketType;
 
 import java.nio.ByteBuffer;
 

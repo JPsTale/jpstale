@@ -3,7 +3,7 @@ package org.jpstale.server.common.protocol.struct;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
-import org.jpstale.server.common.enums.ItemId;
+import org.jpstale.server.common.enums.item.ItemId;
 
 
 /**

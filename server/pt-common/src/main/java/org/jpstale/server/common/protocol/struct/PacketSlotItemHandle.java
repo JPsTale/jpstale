@@ -3,8 +3,8 @@ package org.jpstale.server.common.protocol.struct;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
-import org.jpstale.server.common.enums.SlotTypeHandle;
-import org.jpstale.server.common.enums.SlotTypeHandleWhere;
+import org.jpstale.server.common.enums.item.SlotTypeHandle;
+import org.jpstale.server.common.enums.item.SlotTypeHandleWhere;
 
 
 /**

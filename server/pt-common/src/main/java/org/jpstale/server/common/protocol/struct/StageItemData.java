@@ -1,6 +1,7 @@
 package org.jpstale.server.common.protocol.struct;
 
 import lombok.Data;
+import org.jpstale.server.common.enums.packets.ItemFlag;
 
 import java.nio.ByteBuffer;
 
@@ -53,5 +54,19 @@ public final class StageItemData {
         out.putInt(z);
         Packet.writeCString(out, name, 32);
         out.putInt(clazz);
+    }
+
+    /**
+     * 以枚举形式获取物品标志位。
+     */
+    public ItemFlag getItemFlagsEnum() {
+        return ItemFlag.fromValue(itemFlags);
+    }
+
+    /**
+     * 以枚举形式设置物品标志位。
+     */
+    public void setItemFlagsEnum(ItemFlag flag) {
+        this.itemFlags = flag != null ? flag.getValue() : 0;
     }
 }

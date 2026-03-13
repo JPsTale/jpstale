@@ -3,10 +3,10 @@ package org.jpstale.server.common.protocol.struct;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
-import org.jpstale.server.common.enums.AsmQuestBit;
-import org.jpstale.server.common.enums.QuestExtraRewardType;
-import org.jpstale.server.common.enums.QuestPartyType;
-import org.jpstale.server.common.enums.QuestType;
+import org.jpstale.server.common.enums.quest.AsmQuestBit;
+import org.jpstale.server.common.enums.quest.QuestExtraRewardType;
+import org.jpstale.server.common.enums.quest.QuestPartyType;
+import org.jpstale.server.common.enums.quest.QuestType;
 
 
 /**

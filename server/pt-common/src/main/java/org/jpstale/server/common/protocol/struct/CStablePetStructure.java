@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.nio.ByteBuffer;
 
-import org.jpstale.server.common.enums.StablePetRarity;
+import org.jpstale.server.common.enums.pet.StablePetRarity;
 
 /**
  * 对应 shared/CStable.h 中 struct CStablePetStucture，SIZE = 38 bytes.

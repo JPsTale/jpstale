@@ -3,7 +3,7 @@ package org.jpstale.server.common.protocol.struct;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
-import org.jpstale.server.common.enums.FuryArenaState;
+import org.jpstale.server.common.enums.packets.FuryArenaState;
 
 
 /**

@@ -3,8 +3,8 @@ package org.jpstale.server.common.protocol.struct;
 import lombok.Data;
 
 import java.nio.ByteBuffer;
-import org.jpstale.server.common.enums.AttackProperty;
-import org.jpstale.server.common.enums.AttackState;
+import org.jpstale.server.common.enums.packets.AttackProperty;
+import org.jpstale.server.common.enums.packets.AttackState;
 
 
 /**

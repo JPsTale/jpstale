@@ -1,7 +1,7 @@
 package org.jpstale.server.common.protocol.struct;
 
 import lombok.Data;
-import org.jpstale.server.common.enums.ItemTimerType;
+import org.jpstale.server.common.enums.item.ItemTimerType;
 
 import java.nio.ByteBuffer;
 
@@ -12,13 +12,13 @@ import java.nio.ByteBuffer;
 public final class ItemPremium {
     public static final int SIZE_OF = 16;
 
-    private int type;       // EItemTimerType eType (int)
+    private ItemTimerType type;       // EItemTimerType eType (int)
     private int code;       // DWORD dwCode
     private int timeLeft;   // DWORD dwTimeLeft
     private int timeTotal;  // DWORD dwTimeTotal
 
     public void readFrom(ByteBuffer in) {
-        type = in.getInt();
+        type = ItemTimerType.fromValue(in.getInt());
         code = in.getInt();
         timeLeft = in.getInt();
         timeTotal = in.getInt();
@@ -29,7 +29,7 @@ public final class ItemPremium {
     }
 
     public void writeTo(ByteBuffer out) {
-        out.putInt(type);
+        out.putInt(type.getValue());
         out.putInt(code);
         out.putInt(timeLeft);
         out.putInt(timeTotal);
