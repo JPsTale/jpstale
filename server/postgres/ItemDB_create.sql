@@ -1,7 +1,5 @@
--- 创建 schema
 CREATE SCHEMA IF NOT EXISTS itemdb;
 
--- 设置搜索路径（可选）
 SET search_path TO itemdb, public;
 
 -- 物品表

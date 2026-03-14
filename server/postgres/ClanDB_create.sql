@@ -1,7 +1,5 @@
--- 创建 clandb schema（如果不存在）
 CREATE SCHEMA IF NOT EXISTS clandb;
 
--- 设置搜索路径（可选）
 SET search_path TO clandb, public;
 
 -- 1. bbs_main

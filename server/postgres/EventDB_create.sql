@@ -1,78 +1,88 @@
+CREATE SCHEMA IF NOT EXISTS eventdb;
 
-CREATE TABLE BellatraMonster(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	Round integer NOT NULL,
-	Monster1 varchar(32) NOT NULL,
-	Count1 integer NOT NULL,
-	Monster2 varchar(32) NOT NULL,
-	Count2 integer NOT NULL,
-	Monster3 varchar(32) NOT NULL,
-	Count3 integer NOT NULL,
-	Monster4 varchar(32) NOT NULL,
-	Count4 integer NOT NULL,
-	Boss varchar(32) NOT NULL,
-	BossAppear integer NOT NULL,
-	ViewSight integer NOT NULL,
-	StartRound integer NOT NULL,
-	Gold integer NOT NULL,
-	DelayRound integer NOT NULL,
-	PercentMonsters integer NOT NULL,
-	MaxMonsters integer NOT NULL,
+SET search_path TO eventdb, public;
+
+-- 1. bellatra_monster
+CREATE TABLE eventdb.bellatra_monster (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    round integer NOT NULL,
+    monster1 varchar(32) NOT NULL,
+    count1 integer NOT NULL,
+    monster2 varchar(32) NOT NULL,
+    count2 integer NOT NULL,
+    monster3 varchar(32) NOT NULL,
+    count3 integer NOT NULL,
+    monster4 varchar(32) NOT NULL,
+    count4 integer NOT NULL,
+    boss varchar(32) NOT NULL,
+    boss_appear integer NOT NULL,
+    view_sight integer NOT NULL,
+    start_round integer NOT NULL,
+    gold integer NOT NULL,
+    delay_round integer NOT NULL,
+    percent_monsters integer NOT NULL,
+    max_monsters integer NOT NULL
 );
 
-CREATE TABLE BellatraMonsterDebugMode(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	Round integer NOT NULL,
-	Monster1 varchar(32) NOT NULL,
-	Count1 integer NOT NULL,
-	Monster2 varchar(32) NOT NULL,
-	Count2 integer NOT NULL,
-	Monster3 varchar(32) NOT NULL,
-	Count3 integer NOT NULL,
-	Monster4 varchar(32) NOT NULL,
-	Count4 integer NOT NULL,
-	Boss varchar(32) NOT NULL,
-	BossAppear integer NOT NULL,
-	ViewSight integer NOT NULL,
-	StartRound integer NOT NULL,
-	Gold integer NOT NULL,
-	DelayRound integer NOT NULL,
-	PercentMonsters integer NOT NULL,
-	MaxMonsters integer NOT NULL,
+-- 2. bellatra_monster_debug_mode
+CREATE TABLE eventdb.bellatra_monster_debug_mode (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    round integer NOT NULL,
+    monster1 varchar(32) NOT NULL,
+    count1 integer NOT NULL,
+    monster2 varchar(32) NOT NULL,
+    count2 integer NOT NULL,
+    monster3 varchar(32) NOT NULL,
+    count3 integer NOT NULL,
+    monster4 varchar(32) NOT NULL,
+    count4 integer NOT NULL,
+    boss varchar(32) NOT NULL,
+    boss_appear integer NOT NULL,
+    view_sight integer NOT NULL,
+    start_round integer NOT NULL,
+    gold integer NOT NULL,
+    delay_round integer NOT NULL,
+    percent_monsters integer NOT NULL,
+    max_monsters integer NOT NULL
 );
 
-CREATE TABLE FuryArenaRewardTracker(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	FuryEventID integer NOT NULL,
-	CharacterID integer NOT NULL,
+-- 3. fury_arena_reward_tracker
+CREATE TABLE eventdb.fury_arena_reward_tracker (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    fury_event_id integer NOT NULL,
+    character_id integer NOT NULL
 );
 
-CREATE TABLE WantedMoriphDrops(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	CharID integer NOT NULL,
-	MapID integer NOT NULL,
-	ItemName varchar(32) NOT NULL,
-	UnixTime integer NOT NULL,
+-- 4. wanted_moriph_drops
+CREATE TABLE eventdb.wanted_moriph_drops (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    char_id integer NOT NULL,
+    map_id integer NOT NULL,
+    item_name varchar(32) NOT NULL,
+    unix_time integer NOT NULL
 );
 
-CREATE TABLE WantedMoriphKills(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	CharID integer NOT NULL,
-	MapID integer NOT NULL,
-	UnixTime integer NOT NULL,
+-- 5. wanted_moriph_kills
+CREATE TABLE eventdb.wanted_moriph_kills (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    char_id integer NOT NULL,
+    map_id integer NOT NULL,
+    unix_time integer NOT NULL
 );
 
-CREATE TABLE WantedWolfDrops(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	CharID integer NOT NULL,
-	MapID integer NOT NULL,
-	ItemName varchar(32) NOT NULL,
-	UnixTime integer NOT NULL,
+-- 6. wanted_wolf_drops
+CREATE TABLE eventdb.wanted_wolf_drops (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    char_id integer NOT NULL,
+    map_id integer NOT NULL,
+    item_name varchar(32) NOT NULL,
+    unix_time integer NOT NULL
 );
 
-CREATE TABLE WantedWolfKills(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	CharID integer NOT NULL,
-	MapID integer NOT NULL,
-	UnixTime integer NOT NULL,
+-- 7. wanted_wolf_kills
+CREATE TABLE eventdb.wanted_wolf_kills (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    char_id integer NOT NULL,
+    map_id integer NOT NULL,
+    unix_time integer NOT NULL
 );

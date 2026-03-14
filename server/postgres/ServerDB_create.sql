@@ -1,137 +1,160 @@
--- Auto-converted from server\mssql\ServerDB.sql
--- 请在测试环境中验证类型、约束和序列设置是否符合预期。
+CREATE SCHEMA IF NOT EXISTS serverdb;
 
+SET search_path TO serverdb, public;
 
-
-
-
-CREATE ROLE db_table_spawn
-
-CREATE TABLE BellatraReward(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	ItemCode varchar(32) NOT NULL,
-	Quantity integer NOT NULL,
-	Percent integer NOT NULL,
- CONSTRAINT PK_BellatraReward PRIMARY KEY(ID));
-CREATE TABLE BlessCastleSettings(
-	ClanID1 integer NOT NULL,
-	ClanID2 integer NOT NULL,
-	ClanID3 integer NOT NULL,
-	Tax integer NOT NULL,
-	Skill integer NOT NULL,
-	Tower1Type integer NOT NULL,
-	Tower2Type integer NOT NULL,
-	Tower3Type integer NOT NULL,
-	Tower4Type integer NOT NULL,
-	Tower5Type integer NOT NULL,
-	Tower6Type integer NOT NULL,
-	Guard1Amount integer NOT NULL,
-	Guard2Amount integer NOT NULL,
-	Guard3Amount integer NOT NULL
+-- 1. bellatra_reward
+CREATE TABLE serverdb.bellatra_reward (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    item_code varchar(32) NOT NULL,
+    quantity integer NOT NULL,
+    percent integer NOT NULL
 );
-CREATE TABLE Command(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	CommandTypeID integer NOT NULL,
-	Parameter1 varchar(64) NULL,
-	Parameter2 varchar(64) NULL,
-	Parameter3 varchar(64) NULL,
-	DateProcessed timestamp without time zone NULL,
- CONSTRAINT PK_Command PRIMARY KEY(ID));
-CREATE TABLE CrashData(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	AccountName varchar(32) NOT NULL,
-	IP varchar(16) NOT NULL,
-	Version integer NOT NULL,
-	Address integer NOT NULL,
-	Flags integer NOT NULL,
-	Code integer NOT NULL,
-	EAX integer NOT NULL,
-	ECX integer NOT NULL,
-	EDX integer NOT NULL,
-	EBX integer NOT NULL,
-	ESP integer NOT NULL,
-	EBP integer NOT NULL,
-	ESI integer NOT NULL,
-	EDI integer NOT NULL,
-	EIP integer NOT NULL,
-	DateReceived timestamp without time zone NOT NULL,
- CONSTRAINT PK_CrashData PRIMARY KEY(ID));
-CREATE TABLE FunctionChecksumList(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	Size integer NOT NULL,
-	Address varchar(50) NOT NULL,
-	Checksum varchar(32) NOT NULL,
- CONSTRAINT PK_FunctionChecksumList PRIMARY KEY(ID));
-CREATE TABLE FuryArena(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	ItemCode varchar(32) NOT NULL,
-	Percent integer NOT NULL,
-	BossID integer NOT NULL,
- CONSTRAINT PK_FuryArena PRIMARY KEY(ID));
-CREATE TABLE GMCommand(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	AccountName varchar(32) NOT NULL,
-	Command varchar(100) NOT NULL,
-	UnixTime integer NOT NULL,
-	UnixTimeToExecute integer NOT NULL,
-	IsActive integer NOT NULL,
-	Result integer NOT NULL,
- CONSTRAINT PK_GMCommand PRIMARY KEY(ID));
-CREATE TABLE Maintenance(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	Mode integer NOT NULL,
-	IP varchar(32) NOT NULL,
-	Corno varchar(50) NULL,
- CONSTRAINT PK_Maintenance PRIMARY KEY(ID));
-CREATE TABLE MessageLogin(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	Message varchar(128) NOT NULL,
- CONSTRAINT PK_MessageLogin PRIMARY KEY(ID));
-CREATE TABLE Metadata(
-	Key varchar(30) NOT NULL,
-	Value integer NOT NULL,
-	IsPublic integer NOT NULL,
- CONSTRAINT PK_Metadata PRIMARY KEY 
-(
-	Key 
-)
+
+-- 2. bless_castle_settings
+CREATE TABLE serverdb.bless_castle_settings (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    clan_id1 integer NOT NULL,
+    clan_id2 integer NOT NULL,
+    clan_id3 integer NOT NULL,
+    tax integer NOT NULL,
+    skill integer NOT NULL,
+    tower1_type integer NOT NULL,
+    tower2_type integer NOT NULL,
+    tower3_type integer NOT NULL,
+    tower4_type integer NOT NULL,
+    tower5_type integer NOT NULL,
+    tower6_type integer NOT NULL,
+    guard1_amount integer NOT NULL,
+    guard2_amount integer NOT NULL,
+    guard3_amount integer NOT NULL
 );
-CREATE TABLE OnlineReward(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	ItemCode varchar(32) NOT NULL,
-	Quantity integer NOT NULL,
-	Percent integer NOT NULL,
- CONSTRAINT PK_OnlineReward PRIMARY KEY(ID));
-CREATE TABLE PostBox(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	AccountName varchar(32) NOT NULL,
-	Item varchar(32) NOT NULL,
-	SpecOrCount integer NOT NULL,
- CONSTRAINT PK_PostBox PRIMARY KEY(ID));
-CREATE TABLE SpawnCamera(
-	MapNumber integer NOT NULL,
-	SpawnX integer NOT NULL,
-	SpawnY integer NOT NULL,
-	SpawnZ integer NOT NULL,
-	CamXCoord integer NOT NULL,
-	CamZCoord integer NOT NULL,
-	CamTurn integer NOT NULL,
-	CamAngle integer NOT NULL,
-	CamZoom integer NOT NULL,
-	MinPlayerCount integer NOT NULL,
-	SearchRadius integer NOT NULL,
-	SpawnType integer NOT NULL
+
+-- 3. command
+CREATE TABLE serverdb.command (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    command_type_id integer NOT NULL,
+    parameter1 varchar(64) NULL,
+    parameter2 varchar(64) NULL,
+    parameter3 varchar(64) NULL,
+    date_processed timestamp without time zone NULL
 );
-CREATE TABLE UsersOnline(
-	AccountName varchar(32) NOT NULL,
-	CharacterName varchar(32) NOT NULL,
-	IP varchar(32) NOT NULL,
-	CharacterClass integer NOT NULL,
-	CharacterLevel integer NOT NULL,
-	Ticket integer NOT NULL,
-	LoginTime timestamp without time zone NOT NULL
+
+-- 4. crash_data
+CREATE TABLE serverdb.crash_data (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(32) NOT NULL,
+    ip varchar(16) NOT NULL,
+    version integer NOT NULL,
+    address integer NOT NULL,
+    flags integer NOT NULL,
+    code integer NOT NULL,
+    eax integer NOT NULL,
+    ecx integer NOT NULL,
+    edx integer NOT NULL,
+    ebx integer NOT NULL,
+    esp integer NOT NULL,
+    ebp integer NOT NULL,
+    esi integer NOT NULL,
+    edi integer NOT NULL,
+    eip integer NOT NULL,
+    date_received timestamp without time zone NOT NULL
 );
-CREATE TABLE WindowCheatList(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL,
-	WindowName varchar(64) NOT NULL,
- CONSTRAINT PK_WindowCheatList PRIMARY KEY(ID));
+
+-- 5. function_checksum_list
+CREATE TABLE serverdb.function_checksum_list (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    size integer NOT NULL,
+    address varchar(50) NOT NULL,
+    checksum varchar(32) NOT NULL
+);
+
+-- 6. fury_arena
+CREATE TABLE serverdb.fury_arena (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    item_code varchar(32) NOT NULL,
+    percent integer NOT NULL,
+    boss_id integer NOT NULL
+);
+
+-- 7. gm_command
+CREATE TABLE serverdb.gm_command (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(32) NOT NULL,
+    command varchar(100) NOT NULL,
+    unix_time integer NOT NULL,
+    unix_time_to_execute integer NOT NULL,
+    is_active integer NOT NULL,
+    result integer NOT NULL
+);
+
+-- 8. maintenance
+CREATE TABLE serverdb.maintenance (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    mode integer NOT NULL,
+    ip varchar(32) NOT NULL,
+    corno varchar(50) NULL
+);
+
+-- 9. message_login
+CREATE TABLE serverdb.message_login (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    message varchar(128) NOT NULL
+);
+
+-- 10. metadata
+CREATE TABLE serverdb.metadata (
+    key varchar(30) NOT NULL PRIMARY KEY,
+    value integer NOT NULL,
+    is_public integer NOT NULL
+);
+
+-- 11. online_reward
+CREATE TABLE serverdb.online_reward (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    item_code varchar(32) NOT NULL,
+    quantity integer NOT NULL,
+    percent integer NOT NULL
+);
+
+-- 12. post_box
+CREATE TABLE serverdb.post_box (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(32) NOT NULL,
+    item varchar(32) NOT NULL,
+    spec_or_count integer NOT NULL
+);
+
+-- 13. spawn_camera
+CREATE TABLE serverdb.spawn_camera (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+    map_number integer NOT NULL,
+    spawn_x integer NOT NULL,
+    spawn_y integer NOT NULL,
+    spawn_z integer NOT NULL,
+    cam_x_coord integer NOT NULL,
+    cam_z_coord integer NOT NULL,
+    cam_turn integer NOT NULL,
+    cam_angle integer NOT NULL,
+    cam_zoom integer NOT NULL,
+    min_player_count integer NOT NULL,
+    search_radius integer NOT NULL,
+    spawn_type integer NOT NULL
+);
+
+-- 14. users_online
+CREATE TABLE serverdb.users_online (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+    account_name varchar(32) NOT NULL,
+    character_name varchar(32) NOT NULL,
+    ip varchar(32) NOT NULL,
+    character_class integer NOT NULL,
+    character_level integer NOT NULL,
+    ticket integer NOT NULL,
+    login_time timestamp without time zone NOT NULL
+);
+
+-- 15. window_cheat_list
+CREATE TABLE serverdb.window_cheat_list (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    window_name varchar(64) NOT NULL
+);

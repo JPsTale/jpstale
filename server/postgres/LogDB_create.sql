@@ -1,237 +1,263 @@
-CREATE TABLE AccountLog(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	IP varchar(50) NOT NULL,
-	AccountName varchar(32) NOT NULL,
-	LogID integer NOT NULL,
-	Description varchar(512) NOT NULL,
-	Date timestamp without time zone NOT NULL,
-	ServerID integer NOT NULL
+CREATE SCHEMA IF NOT EXISTS logdb;
+
+SET search_path TO logdb, public;
+
+-- 1. account_log
+CREATE TABLE logdb.account_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    ip varchar(50) NOT NULL,
+    account_name varchar(32) NOT NULL,
+    log_id integer NOT NULL,
+    description varchar(512) NOT NULL,
+    date timestamp without time zone NOT NULL,
+    server_id integer NOT NULL
 );
 
-CREATE TABLE AgingRecovery(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	AccountName varchar(32) NOT NULL,
-	CharacterID integer NOT NULL,
-	Date timestamp without time zone NOT NULL,
-	ItemName varchar(32) NOT NULL,
-	AgeNumber integer NOT NULL,
-	Code1 integer NOT NULL,
-	Code2 integer NOT NULL,
-	DateRecovered timestamp without time zone NULL
+-- 2. aging_recovery
+CREATE TABLE logdb.aging_recovery (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(32) NOT NULL,
+    character_id integer NOT NULL,
+    date timestamp without time zone NOT NULL,
+    item_name varchar(32) NOT NULL,
+    age_number integer NOT NULL,
+    code1 integer NOT NULL,
+    code2 integer NOT NULL,
+    date_recovered timestamp without time zone NULL
 );
 
-CREATE TABLE BellatraRewardLog(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	AccountName varchar(32) NOT NULL,
-	Name varchar(32) NOT NULL,
-	ItemName varchar(32) NOT NULL,
-	Quantity integer NOT NULL,
-	Date timestamp without time zone NOT NULL
+-- 3. bellatra_reward_log
+CREATE TABLE logdb.bellatra_reward_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(32) NOT NULL,
+    name varchar(32) NOT NULL,
+    item_name varchar(32) NOT NULL,
+    quantity integer NOT NULL,
+    date timestamp without time zone NOT NULL
 );
 
-CREATE TABLE CharacterLog(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	IP varchar(50) NOT NULL,
-	AccountName varchar(50) NOT NULL,
-	LogID integer NOT NULL,
-	Description varchar(256) NOT NULL,
-	Date timestamp without time zone NOT NULL,
-	ServerID integer NOT NULL
+-- 4. character_log
+CREATE TABLE logdb.character_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    ip varchar(50) NOT NULL,
+    account_name varchar(50) NOT NULL,
+    log_id integer NOT NULL,
+    description varchar(256) NOT NULL,
+    date timestamp without time zone NOT NULL,
+    server_id integer NOT NULL
 );
 
-CREATE TABLE CheatLog(
-	ID bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	IP varchar(20) NOT NULL,
-	AccountName varchar(32) NOT NULL,
-	Action integer NOT NULL,
-	LogID integer NOT NULL,
-	Description varchar(256) NOT NULL,
-	Date timestamp without time zone NOT NULL,
-	ServerID integer NOT NULL
+-- 5. cheat_log
+CREATE TABLE logdb.cheat_log (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    ip varchar(20) NOT NULL,
+    account_name varchar(32) NOT NULL,
+    action integer NOT NULL,
+    log_id integer NOT NULL,
+    description varchar(256) NOT NULL,
+    date timestamp without time zone NOT NULL,
+    server_id integer NOT NULL
 );
 
-CREATE TABLE CoinLog(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	AccountName varchar(32) NOT NULL,
-	Description varchar(256) NOT NULL,
-	Date timestamp without time zone NOT NULL
+-- 6. coin_log
+CREATE TABLE logdb.coin_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(32) NOT NULL,
+    description varchar(256) NOT NULL,
+    date timestamp without time zone NOT NULL
 );
 
-CREATE TABLE Disconnects(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	IP varchar(32) NOT NULL,
-	AccountName varchar(32) NOT NULL,
-	NetServer integer NOT NULL,
-	KeepAlive integer NOT NULL,
-	ServerType varchar(32) NOT NULL,
-	Location varchar(128) NOT NULL,
-	ReturnAddress varchar(32) NOT NULL,
-	ReturnAddressCall varchar(32) NOT NULL,
-	Date timestamp without time zone NOT NULL
-);
-CREATE TABLE EventLog(
-    ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	CharacterID integer NOT NULL,
-	CharacterName varchar(32) NOT NULL,
-	EventType integer NOT NULL,
-	Value1 integer NOT NULL,
-	Value2 integer NOT NULL,
-	Value3 integer NOT NULL,
-	Value4 integer NOT NULL,
-	Date timestamp without time zone NOT NULL
+-- 7. disconnects
+CREATE TABLE logdb.disconnects (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    ip varchar(32) NOT NULL,
+    account_name varchar(32) NOT NULL,
+    net_server integer NOT NULL,
+    keep_alive integer NOT NULL,
+    server_type varchar(32) NOT NULL,
+    location varchar(128) NOT NULL,
+    return_address varchar(32) NOT NULL,
+    return_address_call varchar(32) NOT NULL,
+    date timestamp without time zone NOT NULL
 );
 
-CREATE TABLE FuryArenaLog(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	Description varchar(256) NOT NULL,
-	Date timestamp without time zone NOT NULL
+-- 8. event_log
+CREATE TABLE logdb.event_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    character_id integer NOT NULL,
+    character_name varchar(32) NOT NULL,
+    event_type integer NOT NULL,
+    value1 integer NOT NULL,
+    value2 integer NOT NULL,
+    value3 integer NOT NULL,
+    value4 integer NOT NULL,
+    date timestamp without time zone NOT NULL
 );
 
-CREATE TABLE GoldLog(
-	ID bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	AccountName varchar(50) NOT NULL,
-	"Where" integer NOT NULL,
-	Gold integer NOT NULL,
-	InventoryGold integer NOT NULL,
-	Str varchar(200) NOT NULL,
-	Date timestamp without time zone NOT NULL,
-	IsGameServer integer NOT NULL
+-- 9. fury_arena_log
+CREATE TABLE logdb.fury_arena_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    description varchar(256) NOT NULL,
+    date timestamp without time zone NOT NULL
 );
 
-CREATE TABLE InventoryItemLog(
-	ID bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	UserID varchar(32) NOT NULL,
-	CharName varchar(32) NOT NULL,
-	Action integer NOT NULL,
-	ItemName varchar(32) NOT NULL,
-	ItemID integer NOT NULL,
-	Code1 integer NOT NULL,
-	Code2 integer NOT NULL,
-	Date timestamp without time zone NOT NULL
+-- 10. gold_log
+CREATE TABLE logdb.gold_log (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(50) NOT NULL,
+    source integer NOT NULL,   -- 原 "Where" 字段，表示金币来源
+    gold integer NOT NULL,
+    inventory_gold integer NOT NULL,
+    str varchar(200) NOT NULL,
+    date timestamp without time zone NOT NULL,
+    is_game_server integer NOT NULL
 );
 
-CREATE TABLE ItemCreateLog(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	ItemID integer NOT NULL,
-	Code1 integer NOT NULL,
-	Code2 integer NOT NULL,
-	Item bytea NOT NULL,
-	Date timestamp without time zone NOT NULL
+-- 11. inventory_item_log
+CREATE TABLE logdb.inventory_item_log (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    user_id varchar(32) NOT NULL,
+    char_name varchar(32) NOT NULL,
+    action integer NOT NULL,
+    item_name varchar(32) NOT NULL,
+    item_id integer NOT NULL,
+    code1 integer NOT NULL,
+    code2 integer NOT NULL,
+    date timestamp without time zone NOT NULL
 );
 
-CREATE TABLE ItemLog(
-	ID bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	IP varchar(20) NOT NULL,
-	AccountName varchar(32) NOT NULL,
-	LogID integer NOT NULL,
-	Description varchar(256) NOT NULL,
-	Code1 integer NOT NULL,
-	Code2 integer NOT NULL,
-	Date timestamp without time zone NOT NULL,
-	ServerID integer NOT NULL
+-- 12. item_create_log
+CREATE TABLE logdb.item_create_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    item_id integer NOT NULL,
+    code1 integer NOT NULL,
+    code2 integer NOT NULL,
+    item bytea NOT NULL,
+    date timestamp without time zone NOT NULL
 );
 
-CREATE TABLE MutePlayerLog(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	AccountName varchar(32) NOT NULL,
-	CharacterName varchar(32) NOT NULL,
-	UnixMuteStart integer NOT NULL,
-	UnixMuteEnd integer NOT NULL,
-	MuteCount integer NOT NULL,
-	MuteReason varchar(50) NOT NULL,
-	MutedBy varchar(32) NOT NULL
+-- 13. item_log
+CREATE TABLE logdb.item_log (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    ip varchar(20) NOT NULL,
+    account_name varchar(32) NOT NULL,
+    log_id integer NOT NULL,
+    description varchar(256) NOT NULL,
+    code1 integer NOT NULL,
+    code2 integer NOT NULL,
+    date timestamp without time zone NOT NULL,
+    server_id integer NOT NULL
 );
 
-CREATE TABLE OnlineRewardLog(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	AccountName varchar(32) NOT NULL,
-	Name varchar(32) NOT NULL,
-	ItemName varchar(32) NOT NULL,
-	Quantity integer NOT NULL,
-	Date timestamp without time zone NOT NULL
+-- 14. mute_player_log
+CREATE TABLE logdb.mute_player_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(32) NOT NULL,
+    character_name varchar(32) NOT NULL,
+    unix_mute_start integer NOT NULL,
+    unix_mute_end integer NOT NULL,
+    mute_count integer NOT NULL,
+    mute_reason varchar(50) NOT NULL,
+    muted_by varchar(32) NOT NULL
 );
 
-CREATE TABLE PostBoxLog(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	IP varchar(30) NOT NULL,
-	AccountName varchar(32) NOT NULL,
-	LogID integer NOT NULL,
-	Description varchar(256) NOT NULL,
-	Date timestamp without time zone NOT NULL,
-	ServerID integer NOT NULL
+-- 15. online_reward_log
+CREATE TABLE logdb.online_reward_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(32) NOT NULL,
+    name varchar(32) NOT NULL,
+    item_name varchar(32) NOT NULL,
+    quantity integer NOT NULL,
+    date timestamp without time zone NOT NULL
 );
 
-CREATE TABLE RegisterLog(
-    ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	account_name varchar(50) NULL,
-	ip_address varchar(50) NULL,
-	log_date varchar(50) NULL,
-	email varchar(128) NULL,
-	password varchar(50) NULL
+-- 16. post_box_log
+CREATE TABLE logdb.post_box_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    ip varchar(30) NOT NULL,
+    account_name varchar(32) NOT NULL,
+    log_id integer NOT NULL,
+    description varchar(256) NOT NULL,
+    date timestamp without time zone NOT NULL,
+    server_id integer NOT NULL
 );
 
-CREATE TABLE ServerLog(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	Type integer NOT NULL,
-	Server integer NOT NULL,
-	Message varchar(150) NOT NULL,
-	UnixTime integer NOT NULL,
-	Date timestamp without time zone NOT NULL
+-- 17. register_log
+CREATE TABLE logdb.register_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(50) NULL,
+    ip_address varchar(50) NULL,
+    log_date varchar(50) NULL,
+    email varchar(128) NULL,
+    password varchar(50) NULL
 );
 
-CREATE TABLE UsersOnlineRecord(
-	ID integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	UsersOnlineSubServer1 integer NOT NULL,
-	UsersOnlineSubServer2 integer NOT NULL,
-	UsersOnlineSubServer3 integer NOT NULL,
-	TotalUsersOnline integer NOT NULL,
-	Date timestamp without time zone NOT NULL
+-- 18. server_log
+CREATE TABLE logdb.server_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    type integer NOT NULL,
+    server integer NOT NULL,
+    message varchar(150) NOT NULL,
+    unix_time integer NOT NULL,
+    date timestamp without time zone NOT NULL
 );
 
-CREATE TABLE WarehouseLog(
-	ID bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
-	UserID varchar(32) NOT NULL,
-	CharName varchar(32) NOT NULL,
-	Action integer NOT NULL,
-	ItemName varchar(32) NOT NULL,
-	ItemID integer NOT NULL,
-	Code1 integer NOT NULL,
-	Code2 integer NOT NULL,
-	Date timestamp without time zone NOT NULL
+-- 19. users_online_record
+CREATE TABLE logdb.users_online_record (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    users_online_sub_server1 integer NOT NULL,
+    users_online_sub_server2 integer NOT NULL,
+    users_online_sub_server3 integer NOT NULL,
+    total_users_online integer NOT NULL,
+    date timestamp without time zone NOT NULL
 );
 
--- 为 CleanUpOldLogs 存储过程中涉及的表在 Date 列上创建索引，以加速删除操作
-CREATE INDEX IF NOT EXISTS idx_disconnects_date ON Disconnects (Date);
-CREATE INDEX IF NOT EXISTS idx_itemcreatelog_date ON ItemCreateLog (Date);
-CREATE INDEX IF NOT EXISTS idx_itemlog_date ON ItemLog (Date);
-CREATE INDEX IF NOT EXISTS idx_goldlog_date ON GoldLog (Date);
-CREATE INDEX IF NOT EXISTS idx_serverlog_date ON ServerLog (Date);
-CREATE INDEX IF NOT EXISTS idx_warehouselog_date ON WarehouseLog (Date);
-CREATE INDEX IF NOT EXISTS idx_cheatlog_date ON CheatLog (Date);
-CREATE INDEX IF NOT EXISTS idx_characterlog_date ON CharacterLog (Date);
-CREATE INDEX IF NOT EXISTS idx_accountlog_date ON AccountLog (Date);
-CREATE INDEX IF NOT EXISTS idx_coinlog_date ON CoinLog (Date);
-CREATE INDEX IF NOT EXISTS idx_onlinerewardlog_date ON OnlineRewardLog (Date);
+-- 20. warehouse_log
+CREATE TABLE logdb.warehouse_log (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    user_id varchar(32) NOT NULL,
+    char_name varchar(32) NOT NULL,
+    action integer NOT NULL,
+    item_name varchar(32) NOT NULL,
+    item_id integer NOT NULL,
+    code1 integer NOT NULL,
+    code2 integer NOT NULL,
+    date timestamp without time zone NOT NULL
+);
 
-CREATE OR REPLACE PROCEDURE CleanUpOldLogs()
+-- 为 CleanUpOldLogs 存储过程中涉及的表在 date 列上创建索引，以加速删除操作
+CREATE INDEX IF NOT EXISTS idx_disconnects_date ON logdb.disconnects (date);
+CREATE INDEX IF NOT EXISTS idx_item_create_log_date ON logdb.item_create_log (date);
+CREATE INDEX IF NOT EXISTS idx_item_log_date ON logdb.item_log (date);
+CREATE INDEX IF NOT EXISTS idx_gold_log_date ON logdb.gold_log (date);
+CREATE INDEX IF NOT EXISTS idx_server_log_date ON logdb.server_log (date);
+CREATE INDEX IF NOT EXISTS idx_warehouse_log_date ON logdb.warehouse_log (date);
+CREATE INDEX IF NOT EXISTS idx_cheat_log_date ON logdb.cheat_log (date);
+CREATE INDEX IF NOT EXISTS idx_character_log_date ON logdb.character_log (date);
+CREATE INDEX IF NOT EXISTS idx_account_log_date ON logdb.account_log (date);
+CREATE INDEX IF NOT EXISTS idx_coin_log_date ON logdb.coin_log (date);
+CREATE INDEX IF NOT EXISTS idx_online_reward_log_date ON logdb.online_reward_log (date);
+
+-- 存储过程：清理旧日志
+CREATE OR REPLACE PROCEDURE logdb.clean_up_old_logs()
 LANGUAGE plpgsql
 AS $$
 BEGIN
     -- 删除超过 1 个月的日志
-    DELETE FROM Disconnects    WHERE Date < CURRENT_DATE - INTERVAL '1 month';
-    DELETE FROM ItemCreateLog  WHERE Date < CURRENT_DATE - INTERVAL '1 month';
-    DELETE FROM ItemLog        WHERE Date < CURRENT_DATE - INTERVAL '1 month';
-    DELETE FROM GoldLog        WHERE Date < CURRENT_DATE - INTERVAL '1 month';
-    DELETE FROM ServerLog      WHERE Date < CURRENT_DATE - INTERVAL '1 month';
+    DELETE FROM logdb.disconnects         WHERE date < CURRENT_DATE - INTERVAL '1 month';
+    DELETE FROM logdb.item_create_log     WHERE date < CURRENT_DATE - INTERVAL '1 month';
+    DELETE FROM logdb.item_log            WHERE date < CURRENT_DATE - INTERVAL '1 month';
+    DELETE FROM logdb.gold_log            WHERE date < CURRENT_DATE - INTERVAL '1 month';
+    DELETE FROM logdb.server_log          WHERE date < CURRENT_DATE - INTERVAL '1 month';
 
     -- 删除超过 3 个月的日志
-    DELETE FROM WarehouseLog   WHERE Date < CURRENT_DATE - INTERVAL '3 months';
-    DELETE FROM CheatLog       WHERE Date < CURRENT_DATE - INTERVAL '3 months';
-    DELETE FROM CharacterLog   WHERE Date < CURRENT_DATE - INTERVAL '3 months';
-    DELETE FROM AccountLog     WHERE Date < CURRENT_DATE - INTERVAL '3 months';
+    DELETE FROM logdb.warehouse_log       WHERE date < CURRENT_DATE - INTERVAL '3 months';
+    DELETE FROM logdb.cheat_log           WHERE date < CURRENT_DATE - INTERVAL '3 months';
+    DELETE FROM logdb.character_log       WHERE date < CURRENT_DATE - INTERVAL '3 months';
+    DELETE FROM logdb.account_log         WHERE date < CURRENT_DATE - INTERVAL '3 months';
 
     -- 删除超过 5 个月的日志
-    DELETE FROM CoinLog         WHERE Date < CURRENT_DATE - INTERVAL '5 months';
-    DELETE FROM OnlineRewardLog WHERE Date < CURRENT_DATE - INTERVAL '5 months';
+    DELETE FROM logdb.coin_log             WHERE date < CURRENT_DATE - INTERVAL '5 months';
+    DELETE FROM logdb.online_reward_log    WHERE date < CURRENT_DATE - INTERVAL '5 months';
 END;
 $$;

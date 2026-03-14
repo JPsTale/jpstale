@@ -1,4 +1,3 @@
--- 创建 schema
 CREATE SCHEMA IF NOT EXISTS userdb;
 
 SET search_path TO userdb, public;
