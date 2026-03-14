@@ -1,4 +1,4 @@
-INSERT INTO ItemBase (ItemBaseId, ItemBaseName, ItemBaseHex, ItemBaseAbbrv) OVERRIDING SYSTEM VALUE VALUES
+INSERT INTO itemdb.item_base (item_base_id, item_base_name, item_base_hex, item_base_abbrv) OVERRIDING SYSTEM VALUE VALUES
 (-1, 'Any', '\xFFFFFFFF', NULL),
 (0, 'None', '\x00000000', NULL),
 (16777216, 'Weapon', '\x01000000', 'W'),
@@ -12,7 +12,7 @@ INSERT INTO ItemBase (ItemBaseId, ItemBaseName, ItemBaseHex, ItemBaseAbbrv) OVER
 (150994944, 'Quest2', '\x09000000', NULL),
 (167772160, 'Recipe', '\x0A000000', 'SD');
 
-INSERT INTO ItemCraftType (ItemCraftTypeId, ItemCraftTypeName) OVERRIDING SYSTEM VALUE VALUES
+INSERT INTO itemdb.item_craft_type (Item_Craft_Type_Id, Item_Craft_Type_Name) OVERRIDING SYSTEM VALUE VALUES
 (-1, 'NPC'),
 (0, 'None'),
 (1, 'Mixing'),
@@ -26,7 +26,7 @@ INSERT INTO ItemCraftType (ItemCraftTypeId, ItemCraftTypeName) OVERRIDING SYSTEM
 (9, 'TGFKingFury'),
 (10, 'TGFLordBabel');
 
-INSERT INTO ItemType (ItemTypeId, ItemTypeName, ItemTypeHex, ItemTypeAbbrv) OVERRIDING SYSTEM VALUE VALUES 
+INSERT INTO itemdb.item_type (Item_Type_Id, Item_Type_Name, Item_Type_Hex, Item_Type_Abbrv) OVERRIDING SYSTEM VALUE VALUES
 (-1, 'Any', '\xFFFFFFFF', NULL),
 (0, 'None', '\x00000000', NULL),
 (16842752, 'Axe', '\x01010000', 'WA'),
