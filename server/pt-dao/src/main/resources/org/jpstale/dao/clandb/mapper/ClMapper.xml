@@ -2,4 +2,43 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.clandb.mapper.ClMapper">
 
+    <!-- ClanSystem ASP: IDX=id -->
+    <select id="selectIdClanZangMemCntByClanName" resultType="org.jpstale.dao.clandb.entity.Cl">
+        SELECT id, clan_zang, mem_cnt FROM clandb.cl WHERE clan_name = #{clanName} LIMIT 1
+    </select>
+    <select id="selectClanZangByClanName" resultType="java.lang.String">
+        SELECT clan_zang FROM clandb.cl WHERE clan_name = #{clanName} LIMIT 1
+    </select>
+    <select id="selectIdByClanName" resultType="java.lang.Integer">
+        SELECT id FROM clandb.cl WHERE clan_name = #{clanName} LIMIT 1
+    </select>
+    <select id="selectClanNameNoteByMIconCnt" resultType="org.jpstale.dao.clandb.entity.Cl">
+        SELECT clan_name, note FROM clandb.cl WHERE m_icon_cnt = #{mIconCnt} LIMIT 1
+    </select>
+    <select id="selectClanZangByClanNameForCheck" resultType="java.lang.String">
+        SELECT clan_zang FROM clandb.cl WHERE clan_name = #{clanName} LIMIT 1
+    </select>
+    <select id="selectByClanNameOrderByCpointDesc" resultType="org.jpstale.dao.clandb.entity.Cl">
+        SELECT * FROM clandb.cl ORDER BY c_point DESC
+    </select>
+    <select id="selectClanZangMemCntNoteMIconCntRegiDateLimitDatePFlagKFlagClanMoneyByClanName" resultType="org.jpstale.dao.clandb.entity.Cl">
+        SELECT clan_zang, mem_cnt, note, m_icon_cnt, regi_date, limit_date, p_flag, k_flag, clan_money FROM clandb.cl WHERE clan_name = #{clanName} LIMIT 1
+    </select>
+
+    <insert id="insertCl" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO clandb.cl (clan_name, user_id, clan_zang, mem_cnt, note, m_icon_cnt, regi_date, limit_date, del_active, p_flag, k_flag, flag, note_cnt, c_point, c_win, c_fail, clan_money, cn_flag, siege_money)
+        VALUES (#{clanName}, #{userId}, #{clanZang}, #{memCnt}, #{note}, #{mIconCnt}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '3600 seconds', #{delActive}, #{pFlag}, #{kFlag}, #{flag}, #{noteCnt}, #{cPoint}, #{cWin}, #{cFail}, #{clanMoney}, #{cnFlag}, #{siegeMoney})
+    </insert>
+
+    <update id="updateMemCntByClanName">
+        UPDATE clandb.cl SET mem_cnt = #{memCnt} WHERE clan_name = #{clanName}
+    </update>
+    <update id="updateClanZangAndUserIdByClanName">
+        UPDATE clandb.cl SET clan_zang = #{clanZang}, user_id = #{userId} WHERE clan_name = #{clanName}
+    </update>
+
+    <delete id="deleteByClanName">
+        DELETE FROM clandb.cl WHERE clan_name = #{clanName}
+    </delete>
+
 </mapper>

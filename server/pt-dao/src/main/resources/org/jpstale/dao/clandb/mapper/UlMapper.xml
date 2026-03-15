@@ -7,4 +7,49 @@
         UPDATE clandb.ul SET ch_name = #{newName} WHERE ch_name = #{oldName}
     </update>
 
+    <!-- ClanSystem ASP -->
+    <select id="selectClanNameByChName" resultType="java.lang.String">
+        SELECT clan_name FROM clandb.ul WHERE ch_name = #{chName} LIMIT 1
+    </select>
+    <select id="selectClanNameAndPermiByChName" resultType="org.jpstale.dao.clandb.entity.Ul">
+        SELECT clan_name, permi FROM clandb.ul WHERE ch_name = #{chName} LIMIT 1
+    </select>
+    <select id="selectChNameByPermi2AndClanName" resultType="java.lang.String">
+        SELECT ch_name FROM clandb.ul WHERE permi = '2' AND clan_name = #{clanName} LIMIT 1
+    </select>
+    <select id="selectChNameListByClanName" resultType="java.lang.String">
+        SELECT ch_name FROM clandb.ul WHERE clan_name = #{clanName}
+    </select>
+    <select id="selectUserIdByChNameAndClanName" resultType="java.lang.String">
+        SELECT user_id FROM clandb.ul WHERE ch_name = #{chName} AND clan_name = #{clanName} LIMIT 1
+    </select>
+    <select id="selectByChName" resultType="org.jpstale.dao.clandb.entity.Ul">
+        SELECT * FROM clandb.ul WHERE ch_name = #{chName} LIMIT 1
+    </select>
+
+    <insert id="insertUl" useGeneratedKeys="true" keyProperty="midx">
+        INSERT INTO clandb.ul (idx, user_id, ch_name, clan_name, ch_type, ch_lv, permi, join_date, del_active, p_flag, k_flag, m_icon_cnt)
+        VALUES (#{idx}, #{userId}, #{chName}, #{clanName}, #{chType}, #{chLv}, #{permi}, CURRENT_TIMESTAMP, #{delActive}, #{pFlag}, #{kFlag}, #{mIconCnt})
+    </insert>
+
+    <update id="updatePermi0ByChName">
+        UPDATE clandb.ul SET permi = '0' WHERE ch_name = #{chName}
+    </update>
+    <update id="updatePermi2ByChName">
+        UPDATE clandb.ul SET permi = '2' WHERE ch_name = #{chName}
+    </update>
+    <update id="updatePermi0ByClanNameInChName">
+        UPDATE clandb.ul SET permi = '0' WHERE clan_name IN (SELECT clan_name FROM clandb.ul WHERE ch_name = #{chName})
+    </update>
+    <update id="updateMIconCntByChName">
+        UPDATE clandb.ul SET m_icon_cnt = #{mIconCnt} WHERE ch_name = #{chName}
+    </update>
+
+    <delete id="deleteByChName">
+        DELETE FROM clandb.ul WHERE ch_name = #{chName}
+    </delete>
+    <delete id="deleteByClanName">
+        DELETE FROM clandb.ul WHERE clan_name = #{clanName}
+    </delete>
+
 </mapper>

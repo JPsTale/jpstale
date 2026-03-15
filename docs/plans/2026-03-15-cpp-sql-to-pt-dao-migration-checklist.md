@@ -141,3 +141,4 @@
 - 设计文档: [2026-03-15-pt-dao-design.md](2026-03-15-pt-dao-design.md)
 - 实现计划: [2026-03-15-pt-dao-implementation.md](2026-03-15-pt-dao-implementation.md)
 - C++ SQL 入口: `SQLConnection::Prepare(const char*)`，[SQLConnection.h](E:\repo\PristonTale-EU-main\Server\server\SQLConnection.h)
+- **ClanSystem ASP SQL**: [2026-03-15-clansystem-asp-sql-migration.md](2026-03-15-clansystem-asp-sql-migration.md) — ClanSystem（ASP）使用的 CT/CL/UL/LI/ClanList 已全部在 pt-dao 中实现。

@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.clandb.mapper.CtMapper">
 
+    <!-- ClanSystem ASP settings.asp CheckTicket: SELECT SNo FROM CT WHERE UserID=? AND ServerName=? -->
+    <select id="selectSNoByUserIdAndServerName" resultType="java.lang.Integer">
+        SELECT s_no FROM clandb.ct WHERE user_id = #{userId} AND server_name = #{serverName} LIMIT 1
+    </select>
+
     <!-- C++ bellatraserver - CL table (Ct) -->
     <select id="selectClanMoneyByClanZang" resultType="java.lang.Long">
         SELECT clan_money FROM clandb.ct WHERE clan_zang = #{clanZang}

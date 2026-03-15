@@ -58,4 +58,22 @@
         SELECT clan_name FROM clandb.clan_list WHERE id = #{id} LIMIT 1
     </select>
 
+    <!-- ClanSystem ASP -->
+    <select id="selectByAccountName" resultType="org.jpstale.dao.clandb.entity.ClanList">
+        SELECT * FROM clandb.clan_list WHERE account_name = #{accountName}
+    </select>
+    <select id="selectClanLeaderByClanName" resultType="java.lang.String">
+        SELECT clan_leader FROM clandb.clan_list WHERE clan_name = #{clanName} LIMIT 1
+    </select>
+    <select id="selectIdByClanName" resultType="java.lang.Integer">
+        SELECT id FROM clandb.clan_list WHERE clan_name = #{clanName} LIMIT 1
+    </select>
+    <insert id="insertClanList" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO clandb.clan_list (clan_name, clan_leader, note, account_name, members_count, icon_id, regis_date, limit_date, delete_active, flag, siege_war_points, bellatra_date, bellatra_points, siege_war_gold, bellatra_gold, login_message)
+        VALUES (#{clanName}, #{clanLeader}, #{note}, #{accountName}, #{membersCount}, #{iconId}, #{regisDate}, #{limitDate}, #{deleteActive}, #{flag}, #{siegeWarPoints}, #{bellatraDate}, #{bellatraPoints}, #{siegeWarGold}, #{bellatraGold}, #{loginMessage})
+    </insert>
+    <delete id="deleteByClanName">
+        DELETE FROM clandb.clan_list WHERE clan_name = #{clanName}
+    </delete>
+
 </mapper>

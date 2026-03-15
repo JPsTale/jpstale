@@ -2,4 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.clandb.mapper.LiMapper">
 
+    <!-- ClanSystem ASP: LI 单行 (ID=1) 存下一个 icon 编号 -->
+    <select id="selectImgById" resultType="java.lang.Integer">
+        SELECT img FROM clandb.li WHERE id = #{id} LIMIT 1
+    </select>
+    <insert id="insertLi">
+        INSERT INTO clandb.li (id, img) VALUES (#{id}, #{img})
+    </insert>
+    <update id="updateImgById">
+        UPDATE clandb.li SET img = #{img} WHERE id = #{id}
+    </update>
+
 </mapper>
