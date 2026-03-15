@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.DropItemMapper">
 
+    <!-- C++ lootserver.cpp:30 -->
+    <select id="selectAllByDropIdGt0" resultType="org.jpstale.dao.gamedb.entity.DropItem">
+        SELECT * FROM gamedb.drop_item WHERE drop_id &gt; 0 ORDER BY drop_id ASC, chance DESC
+    </select>
+
 </mapper>

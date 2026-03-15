@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.logdb.mapper.CoinLogMapper">
 
+    <!-- C++ CoinShopHandler.cpp:23 -->
+    <insert id="insertCoinLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.coin_log (account_name, description, date) VALUES (#{accountName}, #{description}, CURRENT_TIMESTAMP)
+    </insert>
+
 </mapper>

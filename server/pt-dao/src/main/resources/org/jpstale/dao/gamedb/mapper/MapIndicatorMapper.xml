@@ -2,4 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.MapIndicatorMapper">
 
+    <!-- C++ mapserver.cpp -->
+    <insert id="insertMapIndicator">
+        INSERT INTO gamedb.map_indicator (map_id, type, value, pos_x, pos_z, angle_y) VALUES (#{mapId}, #{type}, #{value}, #{posX}, #{posZ}, #{angleY})
+    </insert>
+    <delete id="deleteByMapIdAndPosXAndPosZ">
+        DELETE FROM gamedb.map_indicator WHERE map_id = #{mapId} AND pos_x = #{posX} AND pos_z = #{posZ}
+    </delete>
+    <select id="selectAllOrderByMapId" resultType="org.jpstale.dao.gamedb.entity.MapIndicator">
+        SELECT map_id, type, value, pos_x, pos_z, angle_y FROM gamedb.map_indicator ORDER BY map_id
+    </select>
+
 </mapper>

@@ -2,4 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.userdb.mapper.NotificationDataMapper">
 
+    <!-- C++ accountserver.cpp:1365 -->
+    <select id="selectMessageByAccountNameUnchecked" resultType="org.jpstale.dao.userdb.entity.NotificationData">
+        SELECT id, message FROM userdb.notification_data WHERE account_name = #{accountName} AND checked = 0 ORDER BY id ASC
+    </select>
+
+    <!-- C++ accountserver.cpp:1384 -->
+    <update id="updateCheckedByAccountName">
+        UPDATE userdb.notification_data SET checked = 1 WHERE account_name = #{accountName}
+    </update>
+
 </mapper>

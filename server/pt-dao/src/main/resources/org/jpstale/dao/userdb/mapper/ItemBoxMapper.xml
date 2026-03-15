@@ -2,4 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.userdb.mapper.ItemBoxMapper">
 
+    <!-- C++ itemserver.cpp -->
+    <select id="selectIdItemCodeItemSpecCoinShopHasItemByAccountNameAndDateReceivedNull" resultType="map">
+        SELECT id, item_code, item_spec, coin_shop, CAST(CASE WHEN item IS NULL THEN 0 ELSE 1 END AS INTEGER) AS has_item FROM userdb.item_box WHERE account_name = #{accountName} AND date_received IS NULL
+    </select>
+    <update id="updateDateReceivedById">
+        UPDATE userdb.item_box SET date_received = CURRENT_TIMESTAMP WHERE id = #{id}
+    </update>
+    <select id="selectCountByAccountNameAndDateReceivedNull" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM userdb.item_box WHERE account_name = #{accountName} AND date_received IS NULL
+    </select>
+    <select id="selectItemByIdAndAccountName" resultType="org.jpstale.dao.userdb.entity.ItemBox">
+        SELECT item FROM userdb.item_box WHERE id = #{id} AND account_name = #{accountName}
+    </select>
+    <insert id="insertItemBox" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO userdb.item_box (account_name, item_code, item_spec, coin_shop, date_received) VALUES (#{accountName}, #{itemCode}, #{itemSpec}, #{coinShop}, NULL)
+    </insert>
+    <insert id="insertItemBoxWithItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO userdb.item_box (account_name, item_code, item_spec, coin_shop, item, date_received) VALUES (#{accountName}, #{itemCode}, #{itemSpec}, #{coinShop}, #{item}, NULL)
+    </insert>
+
 </mapper>

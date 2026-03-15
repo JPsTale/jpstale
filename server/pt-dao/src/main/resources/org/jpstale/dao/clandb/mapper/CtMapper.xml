@@ -2,4 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.clandb.mapper.CtMapper">
 
+    <!-- C++ bellatraserver - CL table (Ct) -->
+    <select id="selectClanMoneyByClanZang" resultType="java.lang.Long">
+        SELECT clan_money FROM clandb.ct WHERE clan_zang = #{clanZang}
+    </select>
+    <update id="updateClanMoneyByClanZang">
+        UPDATE clandb.ct SET clan_money = #{clanMoney} WHERE clan_zang = #{clanZang}
+    </update>
+    <update id="updateCpoint0">
+        UPDATE clandb.ct SET cpoint = 0
+    </update>
+    <update id="updateCpointSodDateByClanName">
+        UPDATE clandb.ct SET cpoint = #{cpoint}, sod_date = CURRENT_TIMESTAMP WHERE clan_name = #{clanName}
+    </update>
+    <update id="updateClanMoneyAddByClanName">
+        UPDATE clandb.ct SET clan_money = clan_money + #{amount} WHERE clan_name = #{clanName}
+    </update>
+    <!-- characterserver:345 - rename -->
+    <update id="updateClanZangByClanZang">
+        UPDATE clandb.ct SET clan_zang = #{newZang} WHERE clan_zang = #{oldZang}
+    </update>
+
 </mapper>

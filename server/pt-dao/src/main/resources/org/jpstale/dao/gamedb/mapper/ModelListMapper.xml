@@ -2,4 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.ModelListMapper">
 
+    <!-- C++ unitinfo.cpp -->
+    <select id="selectIdByModel" resultType="java.lang.Integer">
+        SELECT id FROM gamedb.model_list WHERE model = #{model}
+    </select>
+    <select id="selectDeathModelIdByModel" resultType="java.lang.Integer">
+        SELECT death_model_id FROM gamedb.model_list WHERE model = #{model}
+    </select>
+    <select id="selectWidthHeightById" resultType="org.jpstale.dao.gamedb.entity.ModelList">
+        SELECT width, height FROM gamedb.model_list WHERE id = #{id}
+    </select>
+    <select id="selectModelById" resultType="java.lang.String">
+        SELECT model FROM gamedb.model_list WHERE id = #{id}
+    </select>
+    <insert id="insertModelList" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO gamedb.model_list (model, width, height, death_model_id) VALUES (#{model}, #{width}, #{height}, #{deathModelId})
+    </insert>
+    <select id="selectTop1IdOrderByIdDesc" resultType="java.lang.Integer">
+        SELECT id FROM gamedb.model_list ORDER BY id DESC LIMIT 1
+    </select>
+
 </mapper>

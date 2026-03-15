@@ -2,4 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.userdb.mapper.CharacterPvpMapper">
 
+    <!-- C++ pvpserver.cpp -->
+    <select id="selectTop100CharacterNameByKills" resultType="java.lang.String">
+        SELECT character_name FROM userdb.character_pvp WHERE kills &gt; 0 ORDER BY kills DESC LIMIT 100
+    </select>
+    <update id="updateTopPvpByCharacterName">
+        UPDATE userdb.character_pvp SET top_pvp = 1 WHERE character_name = #{characterName}
+    </update>
+    <update id="resetAllKillsDeaths">
+        UPDATE userdb.character_pvp SET kills = 0, deaths = 0, kill_streak = 0, top_pvp = 0
+    </update>
+    <select id="selectIdByCharacterName" resultType="java.lang.Integer">
+        SELECT id FROM userdb.character_pvp WHERE character_name = #{characterName}
+    </select>
+    <select id="selectKillsDeathsTopPvpByCharacterName" resultType="org.jpstale.dao.userdb.entity.CharacterPvp">
+        SELECT kills, deaths, top_pvp FROM userdb.character_pvp WHERE character_name = #{characterName}
+    </select>
+    <update id="updateTopPvp0ByCharacterName">
+        UPDATE userdb.character_pvp SET top_pvp = 0 WHERE character_name = #{characterName}
+    </update>
+    <update id="updateKillsDeathsKillStreakByCharacterName">
+        UPDATE userdb.character_pvp SET kills = #{kills}, deaths = #{deaths}, kill_streak = #{killStreak} WHERE character_name = #{characterName}
+    </update>
+    <insert id="insertCharacterPvp" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO userdb.character_pvp (character_name, kills, deaths, kill_streak, top_pvp) VALUES (#{characterName}, #{kills}, #{deaths}, #{killStreak}, 0)
+    </insert>
+    <!-- characterserver rename -->
+    <update id="updateCharacterNameByCharacterName">
+        UPDATE userdb.character_pvp SET character_name = #{newName} WHERE character_name = #{oldName}
+    </update>
+
 </mapper>

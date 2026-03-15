@@ -2,4 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.MapListMapper">
 
+    <!-- C++ writeServerField.cpp:36 -->
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM gamedb.map_list
+    </select>
+
+    <!-- C++ writeServerField.cpp:49, mapserver.cpp:778 -->
+    <select id="selectAllOrderById" resultType="org.jpstale.dao.gamedb.entity.MapList">
+        SELECT * FROM gamedb.map_list ORDER BY id ASC
+    </select>
+
 </mapper>

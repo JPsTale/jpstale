@@ -2,4 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.clandb.mapper.BellatraPersonalScoreMapper">
 
+    <!-- C++ bellatraserver -->
+    <delete id="deleteAll">
+        DELETE FROM clandb.bellatra_personal_score
+    </delete>
+    <select id="selectTotalPointByCharacterName" resultType="java.lang.Integer">
+        SELECT total_point FROM clandb.bellatra_personal_score WHERE character_name = #{characterName}
+    </select>
+    <select id="selectIdByCharacterName" resultType="java.lang.Integer">
+        SELECT id FROM clandb.bellatra_personal_score WHERE character_name = #{characterName}
+    </select>
+    <update id="updateKillsScoreDateByCharacterName">
+        UPDATE clandb.bellatra_personal_score SET kills = #{kills}, score = #{score}, date = #{date} WHERE character_name = #{characterName} AND score &lt; #{minScore}
+    </update>
+    <insert id="insertBellatraPersonalScore" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO clandb.bellatra_personal_score (account_name, character_name, kills, score, date) VALUES (#{accountName}, #{characterName}, #{kills}, #{score}, #{date})
+    </insert>
+    <!-- characterserver:314 - rename -->
+    <update id="updateCharacterNameByCharacterName">
+        UPDATE clandb.bellatra_personal_score SET character_name = #{newName} WHERE character_name = #{oldName}
+    </update>
+
 </mapper>

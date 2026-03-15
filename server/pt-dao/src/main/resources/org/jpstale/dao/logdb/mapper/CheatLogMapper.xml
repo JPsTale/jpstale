@@ -2,4 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.logdb.mapper.CheatLogMapper">
 
+    <!-- C++ logserver.cpp:728 -->
+    <insert id="insertCheatLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.cheat_log (ip, account_name, action, log_id, description, date, server_id)
+        VALUES (#{ip}, #{accountName}, #{action}, #{logId}, #{description}, CURRENT_TIMESTAMP, #{serverId})
+    </insert>
+
 </mapper>

@@ -2,4 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.logdb.mapper.GoldLogMapper">
 
+    <!-- C++ userserver.cpp:536,566 -->
+    <insert id="insertGoldLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.gold_log (account_name, source, gold, inventory_gold, str, date, is_game_server)
+        VALUES (#{accountName}, #{source}, #{gold}, #{inventoryGold}, #{str}, CURRENT_TIMESTAMP, #{isGameServer})
+    </insert>
+
 </mapper>

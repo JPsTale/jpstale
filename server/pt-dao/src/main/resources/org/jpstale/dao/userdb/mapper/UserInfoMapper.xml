@@ -2,4 +2,79 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.userdb.mapper.UserInfoMapper">
 
+    <!-- C++ accountserver.cpp:298 - SELECT TOP(1) UserInfo by AccountName -->
+    <select id="selectOneByAccountName" resultType="org.jpstale.dao.userdb.entity.UserInfo">
+        SELECT id, account_name, password, flag, active, coins, game_master_type, game_master_level,
+               game_master_mac_address, ban_status, unban_date, is_muted, mute_count, unmute_date
+        FROM userdb.user_info WHERE account_name = #{accountName}
+        LIMIT 1
+    </select>
+
+    <!-- C++ accountserver.cpp:758 -->
+    <select id="selectIsMutedMuteCountByAccountName" resultType="org.jpstale.dao.userdb.entity.UserInfo">
+        SELECT is_muted, mute_count FROM userdb.user_info WHERE account_name = #{accountName}
+    </select>
+
+    <!-- C++ accountserver.cpp:786 -->
+    <select id="selectGameMasterByAccountName" resultType="org.jpstale.dao.userdb.entity.UserInfo">
+        SELECT game_master_type, game_master_level FROM userdb.user_info WHERE account_name = #{accountName}
+    </select>
+
+    <!-- C++ accountserver.cpp:819 -->
+    <select id="selectFlagByAccountName" resultType="org.jpstale.dao.userdb.entity.UserInfo">
+        SELECT flag FROM userdb.user_info WHERE account_name = #{accountName}
+    </select>
+
+    <!-- C++ accountserver.cpp:853,902,930,955 - unban / unmute -->
+    <update id="updateUnbanById">
+        UPDATE userdb.user_info SET ban_status = 0, unban_date = NULL WHERE id = #{id}
+    </update>
+    <update id="updateUnbanByAccountName">
+        UPDATE userdb.user_info SET ban_status = 0, unban_date = NULL WHERE account_name = #{accountName}
+    </update>
+    <update id="updateUnmuteByAccountName">
+        UPDATE userdb.user_info SET is_muted = 0, unmute_date = NULL WHERE account_name = #{accountName}
+    </update>
+    <update id="updateUnmuteById">
+        UPDATE userdb.user_info SET is_muted = 0, unmute_date = NULL WHERE id = #{id}
+    </update>
+
+    <!-- C++ accountserver.cpp:250,259 - decrement mute -->
+    <update id="updateUnmuteDecrementMuteById">
+        UPDATE userdb.user_info SET is_muted = 0, mute_count = (mute_count - 1), unmute_date = NULL WHERE id = #{id}
+    </update>
+
+    <!-- C++ accountserver.cpp:4993 servercommand - mute user -->
+    <update id="updateMuteById">
+        UPDATE userdb.user_info SET is_muted = 1, mute_count = #{muteCount},
+               unmute_date = CURRENT_TIMESTAMP + (#{hours} * INTERVAL '1 hour') WHERE id = #{id}
+    </update>
+
+    <!-- C++ logserver.cpp:758, cheatserver.cpp:36 -->
+    <update id="updateBanStatusByAccountName">
+        UPDATE userdb.user_info SET ban_status = #{banStatus}, unban_date = NULL WHERE account_name = #{accountName}
+    </update>
+
+    <!-- C++ userserver.cpp:137 - select ID by AccountName -->
+    <select id="selectIdByAccountName" resultType="java.lang.Integer">
+        SELECT id FROM userdb.user_info WHERE account_name = #{accountName}
+    </select>
+
+    <!-- C++ CoinShopHandler - coins -->
+    <select id="selectCoinsByAccountName" resultType="java.lang.Integer">
+        SELECT coins FROM userdb.user_info WHERE account_name = #{accountName}
+    </select>
+    <select id="selectCoinsTradedByAccountName" resultType="java.lang.Integer">
+        SELECT coins_traded FROM userdb.user_info WHERE account_name = #{accountName}
+    </select>
+    <update id="updateCoinsDecrementByAccountName">
+        UPDATE userdb.user_info SET coins = coins - #{amount} WHERE account_name = #{accountName}
+    </update>
+    <update id="updateCoinsTradedIncrementByAccountName">
+        UPDATE userdb.user_info SET coins_traded = coins_traded + #{amount} WHERE account_name = #{accountName}
+    </update>
+    <update id="updateCoinsIncrementByAccountName">
+        UPDATE userdb.user_info SET coins = coins + #{amount} WHERE account_name = #{accountName}
+    </update>
+
 </mapper>

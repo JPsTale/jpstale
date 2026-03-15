@@ -2,4 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.MonsterListMapper">
 
+    <!-- C++ unitinfo.cpp:832 - full select -->
+    <select id="selectAllMonsterList" resultType="org.jpstale.dao.gamedb.entity.MonsterList">
+        SELECT name, model_file, level, glow, size, camera_y, camera_z, monster_id, drop_is_public, drop_quantity,
+               spawn_time, spawn_min, spawn_max, inteligence, monster_type, view_sight, health_point, exp,
+               special_skill_type, special_skill_hit, special_hit_rate, special_hit_scope, special_hit_power_min, special_hit_power_max,
+               atk_pow_min, atk_pow_max, absorb, stunchance, block, defense, attack_speed, attack_rating, attack_range,
+               perfect_attack_rate, size_shadow, organic, lightning, ice, fire, poison, magic, property_mon,
+               move_speed, potion_percent, potions, effect, quest_item_drop, quest_id, quest_map
+        FROM gamedb.monster_list
+    </select>
+
+    <!-- C++ characterserver.cpp:2766, eventserver.cpp:36,51 -->
+    <select id="selectIdByName" resultType="java.lang.Integer">
+        SELECT id FROM gamedb.monster_list WHERE name = #{name}
+    </select>
+
 </mapper>

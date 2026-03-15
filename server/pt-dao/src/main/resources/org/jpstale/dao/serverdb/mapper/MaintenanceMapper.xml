@@ -2,4 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.serverdb.mapper.MaintenanceMapper">
 
+    <!-- C++ accountserver.cpp:360,382,405,451,473,504 - SELECT Corno by Mode and IP -->
+    <select id="selectCornoByModeAndIp" resultType="java.lang.String">
+        SELECT corno FROM serverdb.maintenance WHERE mode = #{mode} AND ip = #{ip}
+    </select>
+
+    <!-- C++ server.cpp:1167 -->
+    <select id="selectIpByMode3" resultType="java.lang.String">
+        SELECT ip FROM serverdb.maintenance WHERE mode = 3
+    </select>
+
 </mapper>

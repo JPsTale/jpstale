@@ -2,4 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.QuestListMapper">
 
+    <!-- C++ questserver -->
+    <select id="selectDurationTypeMaxDurationById" resultType="org.jpstale.dao.gamedb.entity.QuestList">
+        SELECT duration_type, max_duration FROM gamedb.quest_list WHERE id = #{id}
+    </select>
+    <select id="selectMapIdNpcIdAreaTypeById" resultType="org.jpstale.dao.gamedb.entity.QuestList">
+        SELECT map_id, npc_id, area_type, min_x, max_x, min_z, max_z, radius FROM gamedb.quest_list WHERE id = #{id}
+    </select>
+    <select id="selectDetailById" resultType="org.jpstale.dao.gamedb.entity.QuestList">
+        SELECT name, quest_book_group_id, short_description, party, pvp, quest_type, min_level, max_level, multiple, wait_time, max_duration, main_quest_id, quest_book_group_rank FROM gamedb.quest_list WHERE id = #{id}
+    </select>
+    <select id="selectNameById" resultType="java.lang.String">
+        SELECT name FROM gamedb.quest_list WHERE id = #{id}
+    </select>
+    <select id="selectIdMonsterIdWhereMonsterIdGt0" resultType="org.jpstale.dao.gamedb.entity.QuestList">
+        SELECT id, monster_id FROM gamedb.quest_list WHERE monster_id &gt; '0'
+    </select>
+
 </mapper>

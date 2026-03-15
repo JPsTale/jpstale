@@ -2,4 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.ModelAnimationListMapper">
 
+    <!-- C++ unitinfo.cpp -->
+    <select id="selectCountByModelId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM gamedb.model_animation_list WHERE model_id = #{modelId}
+    </select>
+    <select id="selectByModelId" resultType="org.jpstale.dao.gamedb.entity.ModelAnimationList">
+        SELECT * FROM gamedb.model_animation_list WHERE model_id = #{modelId}
+    </select>
+    <insert id="insertModelAnimationList" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO gamedb.model_animation_list (model_id, type, frame_begin, frame_end, frame_event1, frame_event2, frame_event3, frame_event4)
+        VALUES (#{modelId}, #{type}, #{frameBegin}, #{frameEnd}, #{frameEvent1}, #{frameEvent2}, #{frameEvent3}, #{frameEvent4})
+    </insert>
+    <insert id="insertModelAnimationListShort" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO gamedb.model_animation_list (model_id, type, frame_begin, frame_end)
+        VALUES (#{modelId}, #{type}, #{frameBegin}, #{frameEnd})
+    </insert>
+
 </mapper>

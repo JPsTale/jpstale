@@ -2,4 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.logdb.mapper.MutePlayerLogMapper">
 
+    <!-- C++ servercommand.cpp:5011 -->
+    <insert id="insertMutePlayerLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.mute_player_log (account_name, character_name, unix_mute_start, unix_mute_end, mute_count, mute_reason, muted_by)
+        VALUES (#{accountName}, #{characterName}, #{unixMuteStart}, #{unixMuteEnd}, #{muteCount}, #{muteReason}, #{mutedBy})
+    </insert>
+
 </mapper>

@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.QuestWindowListMapper">
 
+    <!-- C++ questserver.cpp:2294 -->
+    <select id="selectNpcIdQuestListId" resultType="org.jpstale.dao.gamedb.entity.QuestWindowList">
+        SELECT npc_id, quest_list_id FROM gamedb.quest_window_list
+    </select>
+    <!-- questserver.cpp:2605 -->
+    <select id="selectQuestListIdMainImageMainTextByNpcId" resultType="org.jpstale.dao.gamedb.entity.QuestWindowList">
+        SELECT quest_list_id, main_image, main_text FROM gamedb.quest_window_list WHERE npc_id = #{npcId}
+    </select>
+
 </mapper>

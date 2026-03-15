@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.CoinShopItemMapper">
 
+    <!-- C++ CoinShopHandler.cpp:148 -->
+    <select id="selectByTabIdAndDisabled0" resultType="org.jpstale.dao.gamedb.entity.CoinShopItem">
+        SELECT id, name, description, code, image, value, discount, bulk, max_bulk, is_spec, is_quantity FROM gamedb.coin_shop_item WHERE tab_id = #{tabId} AND disabled = 0 ORDER BY list_order ASC
+    </select>
+
 </mapper>

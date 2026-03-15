@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.BaselineModMapper">
 
+    <!-- C++ itemserver.cpp:4398 -->
+    <select id="selectClassAndPercentBaseline" resultType="org.jpstale.dao.gamedb.entity.BaselineMod">
+        SELECT clazz, percent_baseline_strength, percent_baseline_spirit, percent_baseline_talent, percent_baseline_agility, percent_baseline_health FROM gamedb.baseline_mod
+    </select>
+
 </mapper>

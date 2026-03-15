@@ -2,4 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.serverdb.mapper.CrashDataMapper">
 
+    <!-- C++ cheatserver.cpp:135 -->
+    <insert id="insertCrashData" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO serverdb.crash_data (account_name, ip, version, address, flags, code, eax, ecx, edx, ebx, esp, ebp, esi, edi, eip, date_received)
+        VALUES (#{accountName}, #{ip}, #{version}, #{address}, #{flags}, #{code}, #{eax}, #{ecx}, #{edx}, #{ebx}, #{esp}, #{ebp}, #{esi}, #{edi}, #{eip}, CURRENT_TIMESTAMP)
+    </insert>
+
 </mapper>

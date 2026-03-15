@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.RarityChanceGroupMapper">
 
+    <!-- C++ itemserver.cpp:4358 -->
+    <select id="selectIdMinLevelMaxLevel" resultType="org.jpstale.dao.gamedb.entity.RarityChanceGroup">
+        SELECT id, min_level, max_level FROM gamedb.rarity_chance_group
+    </select>
+
 </mapper>

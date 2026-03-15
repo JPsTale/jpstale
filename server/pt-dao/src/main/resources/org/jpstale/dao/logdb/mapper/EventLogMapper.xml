@@ -2,4 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.logdb.mapper.EventLogMapper">
 
+    <!-- C++ servercommand.cpp:652 -->
+    <delete id="deleteByEventType">
+        DELETE FROM logdb.event_log WHERE event_type = #{eventType}
+    </delete>
+    <!-- servercommand.cpp:695, itemserver.cpp:3698 -->
+    <insert id="insertEventLog8" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.event_log (character_id, character_name, event_type, value1, date)
+        VALUES (#{characterId}, #{characterName}, 8, 0, CURRENT_TIMESTAMP)
+    </insert>
+    <!-- logserver.cpp:1175 -->
+    <insert id="insertEventLogFull" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.event_log (character_id, character_name, event_type, value1, value2, value3, value4, date)
+        VALUES (#{characterId}, #{characterName}, #{eventType}, #{value1}, #{value2}, #{value3}, #{value4}, CURRENT_TIMESTAMP)
+    </insert>
+
 </mapper>

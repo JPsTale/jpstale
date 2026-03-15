@@ -2,4 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.serverdb.mapper.PostBoxMapper">
 
+    <!-- C++ accountserver.cpp:1631 -->
+    <select id="selectById" resultType="org.jpstale.dao.serverdb.entity.PostBox">
+        SELECT * FROM serverdb.post_box WHERE id = #{id}
+    </select>
+
+    <!-- C++ accountserver.cpp:1646 -->
+    <delete id="deleteById">
+        DELETE FROM serverdb.post_box WHERE id = #{id}
+    </delete>
+
 </mapper>

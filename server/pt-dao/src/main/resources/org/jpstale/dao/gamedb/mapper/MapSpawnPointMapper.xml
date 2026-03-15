@@ -2,4 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.MapSpawnPointMapper">
 
+    <!-- C++ unitinfo.cpp -->
+    <select id="selectCountByStage" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM gamedb.map_spawn_point WHERE stage = #{stage}
+    </select>
+    <select id="selectByStage" resultType="org.jpstale.dao.gamedb.entity.MapSpawnPoint">
+        SELECT * FROM gamedb.map_spawn_point WHERE stage = #{stage}
+    </select>
+    <select id="selectCountByStageAndXAndZ" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM gamedb.map_spawn_point WHERE stage = #{stage} AND x = #{x} AND z = #{z}
+    </select>
+    <select id="selectTop1IdOrderByIdDesc" resultType="java.lang.Integer">
+        SELECT id FROM gamedb.map_spawn_point ORDER BY id DESC LIMIT 1
+    </select>
+    <insert id="insertMapSpawnPoint">
+        INSERT INTO gamedb.map_spawn_point (id, stage, x, z, description) VALUES (#{id}, #{stage}, #{x}, #{z}, #{description})
+    </insert>
+    <delete id="deleteByXAndZ">
+        DELETE FROM gamedb.map_spawn_point WHERE x = #{x} AND z = #{z}
+    </delete>
+    <!-- mapserver.cpp:3651 -->
+    <select id="selectXZByStage" resultType="org.jpstale.dao.gamedb.entity.MapSpawnPoint">
+        SELECT x, z FROM gamedb.map_spawn_point WHERE stage = #{stage}
+    </select>
+
 </mapper>

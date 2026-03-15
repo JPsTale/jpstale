@@ -2,4 +2,151 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.userdb.mapper.CharacterInfoMapper">
 
+    <!-- C++ accountserver.cpp:602 -->
+    <select id="selectCountLevel10ByAccountName" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM userdb.character_info WHERE level &gt;= 10 AND account_name = #{accountName}
+    </select>
+
+    <!-- C++ accountserver.cpp:876 - update Banned by AccountName -->
+    <update id="updateBannedByAccountName">
+        UPDATE userdb.character_info SET banned = #{banned} WHERE account_name = #{accountName}
+    </update>
+
+    <!-- C++ accountserver.cpp:1556 delete char: 1564,1572 -->
+    <delete id="deleteByName">
+        DELETE FROM userdb.character_info WHERE name = #{name}
+    </delete>
+
+    <!-- C++ accountserver.cpp:1756 -->
+    <update id="updateIsOnline0ByAccountName">
+        UPDATE userdb.character_info SET is_online = 0 WHERE account_name = #{accountName}
+    </update>
+
+    <!-- C++ accountserver.cpp:1770 -->
+    <update id="updateLastSeenDateByName">
+        UPDATE userdb.character_info SET last_seen_date = CURRENT_TIMESTAMP WHERE name = #{name}
+    </update>
+
+    <!-- C++ userserver.cpp:188 -->
+    <select id="selectAccountNameByName" resultType="java.lang.String">
+        SELECT account_name FROM userdb.character_info WHERE name = #{name}
+    </select>
+
+    <!-- C++ servercore.cpp:1649,1665 -->
+    <update id="updateExperienceById">
+        UPDATE userdb.character_info SET experience = #{experience} WHERE id = #{id}
+    </update>
+
+    <!-- C++ servercommand.cpp:744 -->
+    <select id="selectAccountNameByNameForGM" resultType="java.lang.String">
+        SELECT account_name FROM userdb.character_info WHERE name = #{name}
+    </select>
+
+    <!-- characterserver - many -->
+    <update id="updateGmLevelByName">
+        UPDATE userdb.character_info SET gm_level = #{gmLevel} WHERE name = #{name}
+    </update>
+    <select id="selectAccountNameByNameLimit1" resultType="java.lang.String">
+        SELECT account_name FROM userdb.character_info WHERE name = #{name} LIMIT 1
+    </select>
+    <select id="selectIdAccountNameByName" resultType="org.jpstale.dao.userdb.entity.CharacterInfo">
+        SELECT id, account_name FROM userdb.character_info WHERE name = #{name}
+    </select>
+    <select id="selectByIdForLoad" resultType="org.jpstale.dao.userdb.entity.CharacterInfo">
+        SELECT id, account_name, level, experience, gold, job_code, clan_id, clan_permission, last_seen_date, last_stage
+        FROM userdb.character_info WHERE name = #{name}
+    </select>
+    <select id="selectClanIdByName" resultType="java.lang.Integer">
+        SELECT clan_id FROM userdb.character_info WHERE name = #{name}
+    </select>
+    <update id="updateNameByName">
+        UPDATE userdb.character_info SET name = #{newName} WHERE name = #{oldName}
+    </update>
+    <update id="updateLevelExperienceByName">
+        UPDATE userdb.character_info SET level = #{level}, experience = #{experience} WHERE name = #{name}
+    </update>
+    <update id="updateJobCodeByName">
+        UPDATE userdb.character_info SET job_code = #{jobCode} WHERE name = #{name}
+    </update>
+    <update id="updateLevelJobCodeExperienceGoldByName">
+        UPDATE userdb.character_info SET level = #{level}, job_code = #{jobCode}, experience = #{experience}, gold = #{gold} WHERE name = #{name}
+    </update>
+    <update id="updateLevelExperienceById">
+        UPDATE userdb.character_info SET level = #{level}, experience = #{experience} WHERE id = #{id}
+    </update>
+    <select id="selectJobCodeByName" resultType="java.lang.Integer">
+        SELECT job_code FROM userdb.character_info WHERE name = #{name}
+    </select>
+    <select id="selectTitleDialogSkinById" resultType="org.jpstale.dao.userdb.entity.CharacterInfo">
+        SELECT title, dialog_skin FROM userdb.character_info WHERE id = #{id}
+    </select>
+    <update id="updateDialogSkinNullById">
+        UPDATE userdb.character_info SET dialog_skin = NULL WHERE id = #{id}
+    </update>
+    <update id="updateAuraById">
+        UPDATE userdb.character_info SET aura = #{aura} WHERE id = #{id}
+    </update>
+    <update id="updateTitleNullById">
+        UPDATE userdb.character_info SET title = NULL WHERE id = #{id}
+    </update>
+    <update id="updateTitleById">
+        UPDATE userdb.character_info SET title = #{title} WHERE id = #{id}
+    </update>
+    <update id="updateExperienceLastSeenById">
+        UPDATE userdb.character_info SET experience = #{experience}, last_seen_date = CURRENT_TIMESTAMP WHERE id = #{id}
+    </update>
+    <update id="updateExperienceAddLastSeenById">
+        UPDATE userdb.character_info SET experience = (experience + #{delta}), last_seen_date = CURRENT_TIMESTAMP WHERE id = #{id}
+    </update>
+    <select id="selectCountByName" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM userdb.character_info WHERE name = #{name}
+    </select>
+    <select id="selectCountByAccountName" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM userdb.character_info WHERE account_name = #{accountName}
+    </select>
+    <select id="selectOldHeadFspById" resultType="org.jpstale.dao.userdb.entity.CharacterInfo">
+        SELECT old_head, fsp FROM userdb.character_info WHERE id = #{id}
+    </select>
+    <update id="updateIsOnline1JobCodeLastSeenById">
+        UPDATE userdb.character_info SET is_online = 1, job_code = #{jobCode}, last_seen_date = CURRENT_TIMESTAMP WHERE id = #{id}
+    </update>
+    <select id="selectClanIdByNameForClan" resultType="java.lang.Integer">
+        SELECT clan_id FROM userdb.character_info WHERE name = #{name}
+    </select>
+    <update id="updateFspByName">
+        UPDATE userdb.character_info SET fsp = #{fsp} WHERE name = #{name}
+    </update>
+    <update id="updateJobCodeLevelByName">
+        UPDATE userdb.character_info SET job_code = #{jobCode}, level = #{level} WHERE name = #{name}
+    </update>
+    <update id="updateLevelUpDateById">
+        UPDATE userdb.character_info SET level_up_date = CURRENT_TIMESTAMP WHERE id = #{id}
+    </update>
+    <select id="selectIdByName" resultType="java.lang.Integer">
+        SELECT id FROM userdb.character_info WHERE name = #{name}
+    </select>
+    <!-- itemserver -->
+    <update id="updateOldHeadById">
+        UPDATE userdb.character_info SET old_head = #{oldHead} WHERE id = #{id}
+    </update>
+    <select id="selectOldHeadById" resultType="java.lang.String">
+        SELECT old_head FROM userdb.character_info WHERE id = #{id}
+    </select>
+    <!-- blesscastleserver -->
+    <update id="updateBlessCastleScoreById">
+        UPDATE userdb.character_info SET bless_castle_score = #{blessCastleScore} WHERE id = #{id}
+    </update>
+    <select id="selectTop3ByBlessCastleScore" resultType="org.jpstale.dao.userdb.entity.CharacterInfo">
+        SELECT account_name, name, bless_castle_score FROM userdb.character_info ORDER BY bless_castle_score DESC LIMIT 3
+    </select>
+    <select id="selectTop3NameJobBlessCastleScore" resultType="org.jpstale.dao.userdb.entity.CharacterInfo">
+        SELECT name, job_code, bless_castle_score FROM userdb.character_info ORDER BY bless_castle_score DESC LIMIT 3
+    </select>
+    <select id="selectBlessCastleScoreById" resultType="java.lang.Integer">
+        SELECT bless_castle_score FROM userdb.character_info WHERE id = #{id}
+    </select>
+    <update id="updateBlessCastleScoreZero">
+        UPDATE userdb.character_info SET bless_castle_score = 0
+    </update>
+
 </mapper>

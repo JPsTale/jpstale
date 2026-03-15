@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.CoinShopTabMapper">
 
+    <!-- C++ CoinShopHandler.cpp:103 -->
+    <select id="selectByCoinShopId" resultType="org.jpstale.dao.gamedb.entity.CoinShopTab">
+        SELECT id, name, parent_id, discount, bulk, max_bulk FROM gamedb.coin_shop_tab WHERE coin_shop_id = #{coinShopId} ORDER BY parent_id ASC, list_order ASC
+    </select>
+
 </mapper>

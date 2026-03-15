@@ -2,4 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.serverdb.mapper.UsersOnlineMapper">
 
+    <!-- C++ accountserver.cpp:542 -->
+    <insert id="insertUsersOnline">
+        INSERT INTO serverdb.users_online (account_name, character_name, ip, character_class, character_level, ticket, login_time)
+        VALUES (#{accountName}, #{characterName}, #{ip}, #{characterClass}, #{characterLevel}, #{ticket}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <!-- C++ accountserver.cpp:557 -->
+    <delete id="deleteByAccountName">
+        DELETE FROM serverdb.users_online WHERE account_name = #{accountName}
+    </delete>
+
+    <!-- C++ accountserver.cpp:567 -->
+    <delete id="deleteAll">
+        DELETE FROM serverdb.users_online
+    </delete>
+
 </mapper>

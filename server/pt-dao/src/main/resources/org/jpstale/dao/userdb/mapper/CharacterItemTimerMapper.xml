@@ -2,4 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.userdb.mapper.CharacterItemTimerMapper">
 
+    <!-- C++ accountserver.cpp:1572 -->
+    <delete id="deleteByCharacterName">
+        DELETE FROM userdb.character_item_timer WHERE character_name = #{characterName}
+    </delete>
+
+    <!-- C++ characterserver.cpp:246 - rename -->
+    <update id="updateCharacterNameByCharacterName">
+        UPDATE userdb.character_item_timer SET character_name = #{newName} WHERE character_name = #{oldName}
+    </update>
+
+    <!-- C++ itemserver -->
+    <select id="selectItemIdTimeLeftTimeTotalByCharacterIdAndType" resultType="org.jpstale.dao.userdb.entity.CharacterItemTimer">
+        SELECT item_id, time_left, time_total FROM userdb.character_item_timer WHERE character_id = #{characterId} AND item_timer_type = #{itemTimerType}
+    </select>
+    <update id="updateTimeLeftByCharacterIdAndType">
+        UPDATE userdb.character_item_timer SET time_left = #{timeLeft} WHERE character_id = #{characterId} AND item_timer_type = #{itemTimerType} AND time_left &gt;= #{minTimeLeft}
+    </update>
+    <delete id="deleteByCharacterIdAndItemTimerType">
+        DELETE FROM userdb.character_item_timer WHERE character_id = #{characterId} AND item_timer_type = #{itemTimerType}
+    </delete>
+    <delete id="deleteByCharacterIdAndItemId">
+        DELETE FROM userdb.character_item_timer WHERE character_id = #{characterId} AND item_id = #{itemId}
+    </delete>
+    <insert id="insertCharacterItemTimer" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO userdb.character_item_timer (character_id, character_name, item_timer_type, item_id, time_left, time_total)
+        VALUES (#{characterId}, #{characterName}, #{itemTimerType}, #{itemId}, #{timeLeft}, #{timeTotal})
+    </insert>
+
 </mapper>

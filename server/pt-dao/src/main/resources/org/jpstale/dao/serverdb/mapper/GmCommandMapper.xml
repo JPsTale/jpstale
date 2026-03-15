@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.serverdb.mapper.GmCommandMapper">
 
+    <!-- C++ servercommand.cpp:218 -->
+    <select id="selectActiveCommands" resultType="org.jpstale.dao.serverdb.entity.GmCommand">
+        SELECT id, command, unix_time_to_execute FROM serverdb.gm_command WHERE is_active = 1
+    </select>
+    <!-- servercommand.cpp:258 -->
+    <update id="updateInactiveAndResultById">
+        UPDATE serverdb.gm_command SET is_active = 0, result = #{result} WHERE id = #{id}
+    </update>
+
 </mapper>

@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.MimicSpawnMapper">
 
+    <!-- C++ eventserver.cpp:119 -->
+    <select id="selectMapIdMimicNameSpawnChanceMinDelay" resultType="org.jpstale.dao.gamedb.entity.MimicSpawn">
+        SELECT map_id, mimic_name, spawn_chance, min_delay_between_spawn FROM gamedb.mimic_spawn
+    </select>
+
 </mapper>

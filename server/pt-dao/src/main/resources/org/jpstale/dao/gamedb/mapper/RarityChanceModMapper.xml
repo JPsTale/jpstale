@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.RarityChanceModMapper">
 
+    <!-- C++ itemserver.cpp:4322 -->
+    <select id="selectTypeAndMods" resultType="org.jpstale.dao.gamedb.entity.RarityChanceMod">
+        SELECT type, mod_common, mod_uncommon, mod_rare, mod_epic, mod_legendary FROM gamedb.rarity_chance_mod
+    </select>
+
 </mapper>

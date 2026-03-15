@@ -2,4 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.MapMonsterMapper">
 
+    <!-- C++ unitinfo.cpp -->
+    <select id="selectCountStageByStage" resultType="java.lang.Integer">
+        SELECT COUNT(stage) FROM gamedb.map_monster WHERE stage = #{stage}
+    </select>
+    <select id="selectByStage" resultType="org.jpstale.dao.gamedb.entity.MapMonster">
+        SELECT * FROM gamedb.map_monster WHERE stage = #{stage}
+    </select>
+
 </mapper>

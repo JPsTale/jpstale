@@ -2,4 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.logdb.mapper.ItemLogMapper">
 
+    <!-- C++ logserver.cpp - 8 columns -->
+    <insert id="insertItemLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.item_log (ip, account_name, log_id, description, code1, code2, date, server_id)
+        VALUES (#{ip}, #{accountName}, #{logId}, #{description}, #{code1}, #{code2}, CURRENT_TIMESTAMP, #{serverId})
+    </insert>
+
 </mapper>

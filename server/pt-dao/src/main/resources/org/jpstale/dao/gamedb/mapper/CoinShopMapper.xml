@@ -2,4 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.gamedb.mapper.CoinShopMapper">
 
+    <!-- C++ CoinShopHandler.cpp -->
+    <select id="selectById" resultType="org.jpstale.dao.gamedb.entity.CoinShop">
+        SELECT id, name, message, discount FROM gamedb.coin_shop WHERE id = #{id}
+    </select>
+    <select id="selectActive" resultType="org.jpstale.dao.gamedb.entity.CoinShop">
+        SELECT id, name, message, discount FROM gamedb.coin_shop WHERE active = 1
+    </select>
+    <update id="updateActive0">
+        UPDATE gamedb.coin_shop SET active = 0
+    </update>
+    <update id="updateActive1ById">
+        UPDATE gamedb.coin_shop SET active = 1 WHERE id = #{id}
+    </update>
+
 </mapper>

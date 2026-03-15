@@ -2,4 +2,60 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.clandb.mapper.ClanListMapper">
 
+    <!-- C++ characterserver.cpp:209 -->
+    <select id="selectTop1IconIdById" resultType="java.lang.Integer">
+        SELECT icon_id FROM clandb.clan_list WHERE id = #{id} LIMIT 1
+    </select>
+    <select id="selectLoginMessageById" resultType="java.lang.String">
+        SELECT login_message FROM clandb.clan_list WHERE id = #{id}
+    </select>
+    <select id="selectIdByClanLeader" resultType="java.lang.Integer">
+        SELECT id FROM clandb.clan_list WHERE clan_leader = #{clanLeader}
+    </select>
+    <!-- blesscastleserver, bellatraserver -->
+    <select id="selectAccountNameByIconId" resultType="java.lang.String">
+        SELECT account_name FROM clandb.clan_list WHERE icon_id = #{iconId}
+    </select>
+    <select id="selectClanNameByIconId" resultType="java.lang.String">
+        SELECT clan_name FROM clandb.clan_list WHERE icon_id = #{iconId}
+    </select>
+    <!-- characterserver:303 - rename -->
+    <update id="updateClanLeaderByClanLeader">
+        UPDATE clandb.clan_list SET clan_leader = #{newLeader} WHERE clan_leader = #{oldLeader}
+    </update>
+    <!-- bellatraserver -->
+    <select id="selectTop3IconIdByBellatraPoints" resultType="java.lang.Integer">
+        SELECT icon_id FROM clandb.clan_list WHERE bellatra_points &gt; 0 ORDER BY bellatra_points DESC, bellatra_date ASC LIMIT 3
+    </select>
+    <select id="selectBellatraGoldByClanLeader" resultType="java.lang.Long">
+        SELECT bellatra_gold FROM clandb.clan_list WHERE clan_leader = #{clanLeader}
+    </select>
+    <update id="updateBellatraGoldByClanLeader">
+        UPDATE clandb.clan_list SET bellatra_gold = #{bellatraGold} WHERE clan_leader = #{clanLeader}
+    </update>
+    <select id="selectCountWhereBellatraPointsGt0" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM clandb.clan_list WHERE bellatra_points &gt; 0
+    </select>
+    <select id="selectTop3ClanNameByBellatraPoints" resultType="java.lang.String">
+        SELECT clan_name FROM clandb.clan_list WHERE bellatra_points &gt; 0 ORDER BY bellatra_points DESC, bellatra_date ASC LIMIT 3
+    </select>
+    <update id="updateBellatraGoldAddByClanName">
+        UPDATE clandb.clan_list SET bellatra_gold = bellatra_gold + #{amount} WHERE clan_name = #{clanName}
+    </update>
+    <select id="selectTop1ClanNameBellatraPoints" resultType="org.jpstale.dao.clandb.entity.ClanList">
+        SELECT clan_name, bellatra_points FROM clandb.clan_list WHERE bellatra_points &gt; 0 ORDER BY bellatra_points DESC, bellatra_date ASC LIMIT 1
+    </select>
+    <update id="updateBellatraPointsBellatraDateByClanName">
+        UPDATE clandb.clan_list SET bellatra_points = #{bellatraPoints}, bellatra_date = #{bellatraDate} WHERE clan_name = #{clanName}
+    </update>
+    <select id="selectBellatraPointsByClanName" resultType="java.lang.Integer">
+        SELECT bellatra_points FROM clandb.clan_list WHERE clan_name = #{clanName}
+    </select>
+    <select id="selectBellatraPointsById" resultType="java.lang.Integer">
+        SELECT bellatra_points FROM clandb.clan_list WHERE id = #{id}
+    </select>
+    <select id="selectTop1ClanNameById" resultType="java.lang.String">
+        SELECT clan_name FROM clandb.clan_list WHERE id = #{id} LIMIT 1
+    </select>
+
 </mapper>

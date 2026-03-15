@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.serverdb.mapper.WindowCheatListMapper">
 
+    <!-- C++ cheatserver.cpp:87 -->
+    <select id="selectTop50OrderByIdDesc" resultType="org.jpstale.dao.serverdb.entity.WindowCheatList">
+        SELECT * FROM serverdb.window_cheat_list ORDER BY id DESC LIMIT 50
+    </select>
+
 </mapper>

@@ -2,4 +2,57 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.userdb.mapper.CharacterQuestMapper">
 
+    <!-- C++ questserver - join with QuestList -->
+    <select id="selectCompletedByCharacterId" resultType="map">
+        SELECT cq.id, cq.quest_id, ql.quest_type, cq.end_date
+        FROM userdb.character_quest cq
+        INNER JOIN gamedb.quest_list ql ON ql.id = cq.quest_id
+        WHERE cq.character_id = #{characterId} AND cq.end_date IS NOT NULL
+        ORDER BY cq.quest_id, cq.end_date DESC
+    </select>
+    <delete id="deleteById">
+        DELETE FROM userdb.character_quest WHERE id = #{id}
+    </delete>
+    <delete id="deleteByQuestIdAndCharacterId">
+        DELETE FROM userdb.character_quest WHERE quest_id = #{questId} AND character_id = #{characterId}
+    </delete>
+    <select id="selectNameByQuestId" resultType="java.lang.String">
+        SELECT name FROM gamedb.quest_list WHERE id = #{questId}
+    </select>
+    <update id="updateEndDateCounterByCharacterIdAndQuestId">
+        UPDATE userdb.character_quest SET end_date = CURRENT_TIMESTAMP, counter = counter + 1
+        WHERE character_id = #{characterId} AND quest_id = #{questId}
+    </update>
+    <select id="selectQuestIdByCharacterIdEndDateNull" resultType="java.lang.Integer">
+        SELECT quest_id FROM userdb.character_quest WHERE character_id = #{characterId} AND end_date IS NULL
+    </select>
+    <select id="selectCountByQuestIdAndAccountName" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM userdb.character_quest WHERE quest_id = #{questId} AND end_date IS NOT NULL AND account_name = #{accountName}
+    </select>
+    <insert id="insertCharacterQuestComplete" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO userdb.character_quest (quest_id, quest_reward_id, character_id, account_name, character_name, start_date, end_date, monster_count, item_count, time_left, counter)
+        VALUES (#{questId}, #{questRewardId}, #{characterId}, #{accountName}, #{characterName}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '', '', 0, 1)
+    </insert>
+    <insert id="insertCharacterQuestStart" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO userdb.character_quest (quest_id, quest_reward_id, character_id, account_name, character_name, start_date, end_date, monster_count, item_count, time_left, counter)
+        VALUES (#{questId}, #{questRewardId}, #{characterId}, #{accountName}, #{characterName}, CURRENT_TIMESTAMP, NULL, #{monsterCount}, #{itemCount}, #{timeLeft}, 1)
+    </insert>
+    <update id="updateStartDateEndDateNullByCharacterIdAndQuestId">
+        UPDATE userdb.character_quest SET start_date = CURRENT_TIMESTAMP, end_date = NULL, time_left = #{timeLeft}, monster_count = #{monsterCount}, item_count = #{itemCount}
+        WHERE character_id = #{characterId} AND quest_id = #{questId}
+    </update>
+    <update id="updateQuestIdByCharacterNameAndQuestId">
+        UPDATE userdb.character_quest SET quest_id = #{newQuestId} WHERE character_name = #{characterName} AND quest_id = #{oldQuestId}
+    </update>
+    <select id="selectTimeLeftStartDateByQuestIdAndCharacterId" resultType="org.jpstale.dao.userdb.entity.CharacterQuest">
+        SELECT time_left, start_date FROM userdb.character_quest WHERE quest_id = #{questId} AND character_id = #{characterId}
+    </select>
+    <select id="selectMonsterCountItemCountByQuestIdAndCharacterId" resultType="org.jpstale.dao.userdb.entity.CharacterQuest">
+        SELECT monster_count, item_count FROM userdb.character_quest WHERE quest_id = #{questId} AND character_id = #{characterId}
+    </select>
+    <!-- characterserver rename -->
+    <update id="updateCharacterNameByCharacterName">
+        UPDATE userdb.character_quest SET character_name = #{newName} WHERE character_name = #{oldName}
+    </update>
+
 </mapper>

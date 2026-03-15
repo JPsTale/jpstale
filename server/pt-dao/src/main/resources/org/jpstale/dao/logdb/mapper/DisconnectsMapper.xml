@@ -2,4 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.logdb.mapper.DisconnectsMapper">
 
+    <!-- C++ logserver.cpp:1338 -->
+    <insert id="insertDisconnects" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.disconnects (ip, account_name, net_server, keep_alive, server_type, location, return_address, return_address_call, date)
+        VALUES (#{ip}, #{accountName}, #{netServer}, #{keepAlive}, #{serverType}, #{location}, #{returnAddress}, #{returnAddressCall}, CURRENT_TIMESTAMP)
+    </insert>
+
 </mapper>

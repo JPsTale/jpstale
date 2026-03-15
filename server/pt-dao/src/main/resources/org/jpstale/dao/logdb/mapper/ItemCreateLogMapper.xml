@@ -2,4 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.logdb.mapper.ItemCreateLogMapper">
 
+    <!-- C++ itemserver.cpp -->
+    <select id="selectItemById" resultType="org.jpstale.dao.logdb.entity.ItemCreateLog">
+        SELECT item FROM logdb.item_create_log WHERE id = #{id}
+    </select>
+    <insert id="insertItemCreateLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.item_create_log (item_id, code1, code2, item, date) VALUES (#{itemId}, #{code1}, #{code2}, #{item}, CURRENT_TIMESTAMP)
+    </insert>
+    <select id="selectTop1ItemByCode1AndCode2" resultType="org.jpstale.dao.logdb.entity.ItemCreateLog">
+        SELECT item FROM logdb.item_create_log WHERE code1 = #{code1} AND code2 = #{code2} LIMIT 1
+    </select>
+
 </mapper>

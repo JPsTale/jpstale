@@ -2,4 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.serverdb.mapper.CommandMapper">
 
+    <!-- C++ servercommand.cpp:288 -->
+    <select id="selectUnprocessed" resultType="org.jpstale.dao.serverdb.entity.Command">
+        SELECT id, command_type_id, parameter1, parameter2, parameter3 FROM serverdb.command WHERE date_processed IS NULL
+    </select>
+    <!-- servercommand.cpp:317 -->
+    <update id="updateDateProcessedById">
+        UPDATE serverdb.command SET date_processed = CURRENT_TIMESTAMP WHERE id = #{id}
+    </update>
+    <!-- servercommand.cpp:340 -->
+    <select id="selectByParameter3AndUnprocessed" resultType="org.jpstale.dao.serverdb.entity.Command">
+        SELECT command_type_id, parameter1, parameter2, parameter3 FROM serverdb.command WHERE parameter3 = #{parameter3} AND date_processed IS NULL
+    </select>
+    <!-- servercommand.cpp:6125 -->
+    <insert id="insertCommand" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO serverdb.command (command_type_id, parameter1, parameter2, parameter3, date_processed)
+        VALUES (#{commandTypeId}, #{parameter1}, #{parameter2}, #{parameter3}, NULL)
+    </insert>
+
 </mapper>

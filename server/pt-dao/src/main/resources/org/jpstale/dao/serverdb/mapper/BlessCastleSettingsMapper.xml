@@ -2,4 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.serverdb.mapper.BlessCastleSettingsMapper">
 
+    <!-- C++ blesscastleserver.cpp -->
+    <update id="updateAll">
+        UPDATE serverdb.bless_castle_settings SET clan_id1 = #{clanId1}, clan_id2 = #{clanId2}, clan_id3 = #{clanId3}, tax = #{tax}, skill = #{skill}, tower1_type = #{tower1Type}, tower2_type = #{tower2Type}, tower3_type = #{tower3Type}, tower4_type = #{tower4Type}, tower5_type = #{tower5Type}, tower6_type = #{tower6Type}, guard1_amount = #{guard1Amount}, guard2_amount = #{guard2Amount}, guard3_amount = #{guard3Amount}
+    </update>
+    <select id="selectAll" resultType="org.jpstale.dao.serverdb.entity.BlessCastleSettings">
+        SELECT clan_id1, clan_id2, clan_id3, tax, skill, tower1_type, tower2_type, tower3_type, tower4_type, tower5_type, tower6_type, guard1_amount, guard2_amount, guard3_amount FROM serverdb.bless_castle_settings
+    </select>
+
 </mapper>

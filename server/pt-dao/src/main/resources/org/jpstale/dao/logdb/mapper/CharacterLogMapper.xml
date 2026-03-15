@@ -2,4 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jpstale.dao.logdb.mapper.CharacterLogMapper">
 
+    <!-- C++ accountserver.cpp:653 -->
+    <insert id="insertCharacterLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.character_log (ip, account_name, log_id, description, date, server_id)
+        VALUES (#{ip}, #{accountName}, #{logId}, #{description}, CURRENT_TIMESTAMP, #{serverId})
+    </insert>
+
 </mapper>
