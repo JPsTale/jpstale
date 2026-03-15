@@ -44,6 +44,7 @@
 
     <build>
         <plugins>
+            <!-- DaoCodeGenerator 仅手动执行，不绑定任何生命周期阶段：mvn exec:java 时再运行 -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -52,6 +53,7 @@
                     <mainClass>org.jpstale.dao.generator.DaoCodeGenerator</mainClass>
                     <classpathScope>test</classpathScope>
                 </configuration>
+                <!-- 不配置 executions，避免在 test-compile/test 等阶段自动执行 -->
             </plugin>
         </plugins>
     </build>

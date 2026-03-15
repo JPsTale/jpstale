@@ -352,7 +352,7 @@ Expected: BUILD SUCCESS.
 **Step 4: 启动验证（可选，需本地 PostgreSQL pt 库）**
 
 Run: `cd server/pt-login-server && mvn spring-boot:run`
-Expected: 应用启动成功，无 DataSource 相关错误。若暂无 Flyway 脚本或库不存在，可仅验证到 “Started LoginServerApplication” 或根据环境跳过。
+Expected: 应用启动成功、无 DataSource 相关错误；**pt-login-server 是 Netty 服务器，会阻塞监听端口，进程不会自行退出**。在日志中确认出现 “Started LoginServerApplication” 或类似字样即表示启动成功，随后可用 Ctrl+C 结束进程。若暂无 Flyway 脚本或库不存在，可仅验证到启动日志无报错或根据环境跳过。
 
 **Step 5: Commit**
 
@@ -369,7 +369,7 @@ git commit -m "feat(pt-login-server): switch to pt-dao-starter, use spring.datas
 - 生成器类放在 **pt-dao 的 src/test/java**，不参与主代码打包；生成结果输出到 **server/pt-dao 模块** 的 `src/main/java` / `src/main/resources`（即本模块目录，不写到 JPsTale 根目录）。
 - 生成的 Entity 必须带 **@TableName(schema = "当前 schema", value = "表名")**（默认 MyBatis-Plus 生成不会带 schema，需自定义模板或注入变量）。
 - 生成的实体使用 Lombok **@Data**，不要仅用 @Getter/@Setter。
-- **允许生成 Service 与 ServiceImpl**；**禁止生成 Controller**（MyBatis-Plus 默认会生成 Controller，需在策略或模板配置中显式关闭）。
+- **不生成 Service/Controller**：pt-dao 仅提供 entity、mapper，业务 Service 由各应用内实现；需在 templateConfig 中 disable CONTROLLER、SERVICE、SERVICE_IMPL。
 
 **Files:**
 - Create: `server/pt-dao/src/test/java/org/jpstale/dao/generator/DaoCodeGenerator.java`
@@ -397,12 +397,11 @@ git commit -m "feat(pt-login-server): switch to pt-dao-starter, use spring.datas
 - 对 schema 列表（userdb、gamedb、clandb、itemdb、eventdb、serverdb、logdb）循环：
   - `dataSourceConfig(b -> b.schema(schemaName))`，连接库 `pt`，账号密码从环境变量 DB_USER/DB_PASSWORD 或默认读取。
   - `globalConfig`：`outputDir` = pt-dao 模块下的 `src/main/java`（见 Step 1）。
-  - `packageConfig`：parent `org.jpstale.dao`，entity `<schema>.entity`，mapper `<schema>.mapper`，**service `<schema>.service`**，**serviceImpl `<schema>.service.impl`**（允许生成 Service）；`pathInfo(OutputFile.xml, ...)` 指向 pt-dao 下 `src/main/resources/org/jpstale/dao/<schema>/mapper`。
+  - `packageConfig`：parent `org.jpstale.dao`，entity `<schema>.entity`，mapper `<schema>.mapper`；`pathInfo(OutputFile.xml, ...)` 指向 pt-dao 下 `src/main/resources/org/jpstale/dao/<schema>/mapper`（不配置 service/serviceImpl）。
   - **InjectionConfig**：`customMap` 注入 **schema** 为当前循环的 schema 名，供实体模板中的 `@TableName(schema = "${schema}", ...)` 使用。
-  - **TemplateConfig / StrategyConfig**：实体模板指定为上述自定义模板（如 `/templates/entity.java.ftl`，确保从 test resources 加载）。
-  - **禁止 Controller**：通过 `strategyConfig.controllerBuilder().disable()` 或 `templateConfig.disable(TemplateType.CONTROLLER)` 关闭 Controller 生成（以当前 mybatis-plus-generator API 为准）。
-  - `strategyConfig`：`entityBuilder()` 启用 Lombok（模板里用 @Data 即可）、表字段注解、下划线转驼峰等；`addInclude("*")` 或显式表名列表。
-- 使用 Freemarker 引擎，每次循环 `execute()` 生成该 schema 的 entity、mapper、service、serviceImpl（及可选 XML），**不生成 controller**。
+  - **TemplateConfig / StrategyConfig**：实体模板指定为上述自定义模板；**禁止 Service/Controller**：`templateConfig.disable(TemplateType.CONTROLLER, TemplateType.SERVICE, TemplateType.SERVICE_IMPL)`。
+  - `strategyConfig`：`entityBuilder()` 启用 Lombok（模板里用 @Data 即可）、表字段注解、下划线转驼峰等；不调用 `addInclude("*")`（* 会当正则报错），不指定则生成该 schema 下所有表。
+- 使用 Freemarker 引擎，每次循环 `execute()` 仅生成该 schema 的 **entity、mapper（及可选 XML）**，不生成 service/controller。
 
 参考实现要点（API 以当前 mybatis-plus-generator 为准）：
 ```java
@@ -427,22 +426,20 @@ String outXml = moduleRoot + "/src/main/resources";
     .parent("org.jpstale.dao")
     .entity(schema + ".entity")
     .mapper(schema + ".mapper")
-    .service(schema + ".service")
-    .serviceImpl(schema + ".service.impl")
-    .pathInfo(...)  // xml 等
+    .pathInfo(...)  // xml
+)
+.templateConfig(b -> b
+    .disable(TemplateType.CONTROLLER, TemplateType.SERVICE, TemplateType.SERVICE_IMPL)
+    .entity("templates/entity.java")
 )
 .strategyConfig(sc -> sc
-    .addInclude("*")
     .entityBuilder()
     .naming(NamingStrategy.underline_to_camel)
     .columnNaming(NamingStrategy.underline_to_camel)
     .enableLombok()
-    .setTemplatePath("/templates/entity.java.ftl")  // 自定义实体模板
-    // 禁止生成 Controller
-    .controllerBuilder().disable()
 )
 ```
-注意：禁止 Controller 的 API 可能是 `strategyConfig.controllerBuilder().disable()` 或全局 `templateConfig.disable(TemplateType.CONTROLLER)`，以 mybatis-plus-generator 文档为准。
+注意：不生成 service/controller 通过 `templateConfig.disable(TemplateType.CONTROLLER, TemplateType.SERVICE, TemplateType.SERVICE_IMPL)` 实现。
 
 **Step 4: 运行方式（test 类）**
 
@@ -494,4 +491,4 @@ git commit -m "docs(pt-dao): add config and code generator usage"
 - [ ] pt-dao：包结构 org.jpstale.dao.<schema>.entity/mapper（schema：userdb、gamedb、clandb、itemdb、eventdb、serverdb、logdb）、generator；可选 generator 依赖。
 - [ ] pt-dao-spring-boot-starter：PtDaoAutoConfiguration、MapperScan、AutoConfiguration.imports；配置说明使用 spring.datasource.dynamic。
 - [ ] pt-login-server：已依赖 pt-dao-spring-boot-starter，已移除 spring-boot-starter-jdbc，application.yml 使用 spring.datasource.dynamic。
-- [ ] DaoCodeGenerator：位于 pt-dao 的 src/test/java；按 schema 循环生成；输出到 server/pt-dao 模块；实体使用 @TableName(schema, value) 与 @Data；**允许生成 Service/ServiceImpl，禁止生成 Controller**；README 或设计文档中说明运行方式（test-compile + exec classpathScope=test）。
+- [ ] DaoCodeGenerator：位于 pt-dao 的 src/test/java；按 schema 循环生成 **仅 entity、mapper（及可选 XML）**，不生成 service/controller；输出到 server/pt-dao 模块；实体使用 @TableName(schema, value) 与 @Data；README 中说明运行方式（仅手动 exec:java）。

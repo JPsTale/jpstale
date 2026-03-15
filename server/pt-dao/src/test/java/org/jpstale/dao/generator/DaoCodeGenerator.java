@@ -13,11 +13,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 按 schema 循环生成 entity、mapper、service、serviceImpl（不生成 controller）。
+ * 按 schema 循环生成 entity、mapper（及可选 XML）。不生成 service/controller，业务 Service 由各应用自行实现。
  * 输出到 pt-dao 模块的 src/main/java 与 src/main/resources。
  * 实体带 @TableName(schema="...", value="表名") 和 Lombok @Data。
  * <p>
- * 运行：cd server/pt-dao && mvn test-compile exec:java -Dexec.mainClass="org.jpstale.dao.generator.DaoCodeGenerator" -Dexec.classpathScope=test
+ * 运行：cd server/pt-dao && mvn test-compile exec:java
  */
 public final class DaoCodeGenerator {
 
@@ -61,18 +61,15 @@ public final class DaoCodeGenerator {
                             .parent("org.jpstale.dao")
                             .entity(schema + ".entity")
                             .mapper(schema + ".mapper")
-                            .service(schema + ".service")
-                            .serviceImpl(schema + ".service.impl")
                             .pathInfo(Collections.singletonMap(
                                     OutputFile.xml,
                                     outResources + "/org/jpstale/dao/" + schema + "/mapper")))
                     .injectionConfig(ic -> ic
                             .customMap(Collections.singletonMap("schema", schema)))
                     .templateConfig(b -> b
-                            .disable(TemplateType.CONTROLLER)
-                            .entity("templates/entity.java.ftl"))
+                            .disable(TemplateType.CONTROLLER, TemplateType.SERVICE, TemplateType.SERVICE_IMPL)
+                            .entity("templates/entity.java"))
                     .strategyConfig(sc -> sc
-                            .addInclude("*")
                             .entityBuilder()
                             .naming(NamingStrategy.underline_to_camel)
                             .columnNaming(NamingStrategy.underline_to_camel)
