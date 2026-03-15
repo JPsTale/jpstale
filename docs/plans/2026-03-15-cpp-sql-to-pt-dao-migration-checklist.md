@@ -95,7 +95,29 @@
 - **WantedMoriphKillsMapper** — deleteAll
 - **WantedMoriphDropsMapper** — deleteAll
 
+### chatdb（C++ ChatServer）
+- **PublicChatMapper** — insertPublicChat
+- **GameMasterCommandMapper** — insertGameMasterCommand
+- **ClanChatMapper** — insertClanChat
+- **PartyChatMapper** — insertPartyChat
+- **TradeChatMapper** — insertTradeChat
+- **PrivateChatMapper** — insertPrivateChat
+
+### 其他已补（第 3 章原缺表）
+- **itemdb**：GoldDumpMapper — insertGoldDump, deleteAll；ItemDumpMapper — deleteAll（见上）
+- **logdb**：EventKillLogMapper — insertEventKillLog；PacketLogMapper — insertPacketLog
+
 ## 3. 未迁移 / 动态 SQL（需后续处理）
+
+### 3.1 已补：原缺表与 Mapper（表 + pt-dao 已就绪）
+
+- **GoldDump / ItemDump (itemdb)**：itemdb.gold_dump、itemdb.item_dump 已建；GoldDumpMapper（insertGoldDump、deleteAll）、ItemDumpMapper（deleteAll）已写入 XML。
+- **PacketLog (logdb)**：logdb.packet_log 已建；PacketLogMapper.insertPacketLog 已写入 XML。
+- **EventKillLog (logdb)**：logdb.event_kill_log 已建；EventKillLogMapper.insertEventKillLog 已写入 XML。
+- **Chat 相关表 (chatdb)**：chatdb 已建（public_chat、game_master_command、clan_chat、party_chat、trade_chat、private_chat）；各 Mapper 已提供 insertXxx，对应 C++ ChatServer 的 INSERT。
+- **SkillDB**：postgres-init 已提供 01-create-skilldb.sql（skilldb schema + 130+ 技能表）；pt-dao 含 skilldb 各表 Mapper（按需使用），C++ DATABASEID_SkillDB 对应 skilldb。
+
+### 3.2 未迁移：动态 SQL（需后续处理）
 
 - **动态 SQL**（`Prepare(query.c_str())` / `Prepare(szQuery)` 等）未在 XML 中写出，需按调用链归纳为固定 SQL 或单独实现：
   - accountserver.cpp:1424 — `query` 为 CharacterInfo 按 AccountName/Seasonal 的 TOP 6 查询
@@ -108,11 +130,6 @@
   - characterserver.cpp:537,635,730,1249,1472,1623,1678,2065 — 动态 query
   - bellatraserver.cpp — 多处 query.c_str()
   - RankingListHandler.cpp, HNSSkill.cpp — query.c_str()
-- **GoldDump / ItemDump (servercore/server)**：C++ 使用 [dbo].[GoldDump]、[dbo].[ItemDump]；ItemDump 已落在 itemdb.item_dump 并增加 deleteAll；GoldDump 未在 pt-dao 中建表，若需可补 entity/mapper 后增加对应 XML。
-- **PacketLog**（socketserver.cpp）：INSERT INTO PacketLog(...) — 未在 pt-dao 中建表，若需可补 logdb 或 serverdb 表及 Mapper。
-- **Chat 相关表**（chatserver — PublicChat, ClanChat, PartyChat, TradeChat, PrivateChat, GameMasterCommand）：当前 pt-dao 无对应 schema/表，计划未纳入；若后续需要可归入 serverdb 或单独 schema 再补。
-- **EventKillLog**（eventserver）：INSERT 已存在 C++ 端，pt-dao 未发现 event_kill_log 实体，可后续补 eventdb 表与 Mapper。
-- **SkillDB / SkillDBNew**：C++ 有 DATABASEID_SkillDB，pt-dao 设计仅 7 个 schema，未含 skilldb；若表实际在 GameDB 则已覆盖，否则需在迁移清单中标注“待定 schema”。
 
 ## 4. 校验
 

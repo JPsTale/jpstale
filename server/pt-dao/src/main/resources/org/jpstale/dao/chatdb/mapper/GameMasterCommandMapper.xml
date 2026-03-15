@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jpstale.dao.chatdb.mapper.GameMasterCommandMapper">
+
+    <!-- C++ ChatServer GameMasterCommand INSERT -->
+    <insert id="insertGameMasterCommand" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO chatdb.game_master_command (ip, character_name, command, unix_time)
+        VALUES (#{ip}, #{characterName}, #{command}, #{unixTime})
+    </insert>
+
+</mapper>

@@ -25,7 +25,7 @@ public final class DaoCodeGenerator {
     private static final String USER = System.getenv().getOrDefault("DB_USER", "postgres");
     private static final String PASSWORD = System.getenv().getOrDefault("DB_PASSWORD", "123456");
     private static final List<String> SCHEMAS = List.of(
-            "userdb", "gamedb", "clandb", "itemdb", "eventdb", "serverdb", "logdb");
+            "userdb", "gamedb", "clandb", "chatdb", "itemdb", "eventdb", "serverdb", "skilldb", "logdb");
 
     private static String resolvePtDaoModuleRoot() {
         try {

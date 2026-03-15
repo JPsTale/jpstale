@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jpstale.dao.logdb.mapper.EventKillLogMapper">
+
+    <!-- C++ eventserver EventKillLog INSERT -->
+    <insert id="insertEventKillLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.event_kill_log (event_id, map_id, character_id, monster_id, monster_effect_id, date_time)
+        VALUES (#{eventId}, #{mapId}, #{characterId}, #{monsterId}, #{monsterEffectId}, COALESCE(#{dateTime}, CURRENT_TIMESTAMP))
+    </insert>
+
+</mapper>

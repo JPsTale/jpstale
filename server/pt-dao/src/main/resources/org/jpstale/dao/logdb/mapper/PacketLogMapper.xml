@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jpstale.dao.logdb.mapper.PacketLogMapper">
+
+    <!-- C++ socketserver.cpp PacketLog INSERT -->
+    <insert id="insertPacketLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO logdb.packet_log (server_type, packet_id, total_count, total_duration_ms, min_duration_ms, max_duration_ms, date_time)
+        VALUES (#{serverType}, #{packetId}, #{totalCount}, #{totalDurationMs}, #{minDurationMs}, #{maxDurationMs}, COALESCE(#{dateTime}, CURRENT_TIMESTAMP))
+    </insert>
+
+</mapper>

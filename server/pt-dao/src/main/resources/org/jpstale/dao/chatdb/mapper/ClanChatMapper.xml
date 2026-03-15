@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jpstale.dao.chatdb.mapper.ClanChatMapper">
+
+    <!-- C++ ChatServer ClanChat INSERT -->
+    <insert id="insertClanChat" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO chatdb.clan_chat (clan_id, character_name, message, unix_time)
+        VALUES (#{clanId}, #{characterName}, #{message}, #{unixTime})
+    </insert>
+
+</mapper>

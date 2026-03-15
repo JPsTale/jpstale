@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jpstale.dao.itemdb.mapper.GoldDumpMapper">
+
+    <!-- C++ servercore/server GoldDump INSERT -->
+    <insert id="insertGoldDump" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO itemdb.gold_dump (account_name, char_name, warehouse_gold, character_gold)
+        VALUES (#{accountName}, #{charName}, #{warehouseGold}, #{characterGold})
+    </insert>
+
+    <!-- C++ 全表清理 -->
+    <delete id="deleteAll">
+        DELETE FROM itemdb.gold_dump
+    </delete>
+
+</mapper>

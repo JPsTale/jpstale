@@ -1,0 +1,32 @@
+package org.jpstale.dao.chatdb.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
+/**
+ * 
+ *
+ * @author pt-dao
+ * @since 2026-03-15
+ */
+@Data
+@TableName(schema = "chatdb", value = "game_master_command")
+public class GameMasterCommand {
+
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+    @TableField("ip")
+    private String ip;
+    @TableField("character_name")
+    private String characterName;
+    @TableField("command")
+    private String command;
+    @TableField("unix_time")
+    private Integer unixTime;
+}
