@@ -1,0 +1,19 @@
+server:
+  port: ${PT_ADMIN_PORT:8081}
+
+spring:
+  application:
+    name: pt-admin-server
+  datasource:
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        master:
+          url: jdbc:postgresql://localhost:5432/pt
+          username: ${DB_USER:postgres}
+          password: ${DB_PASSWORD:123456}
+          driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration

@@ -10,6 +10,12 @@
         LIMIT 1
     </select>
 
+    <!-- 注册查重：按邮箱 -->
+    <select id="selectOneByEmail" resultType="org.jpstale.dao.userdb.entity.UserInfo">
+        SELECT id, account_name, email FROM userdb.user_info WHERE email = #{email}
+        LIMIT 1
+    </select>
+
     <!-- C++ accountserver.cpp:758 -->
     <select id="selectIsMutedMuteCountByAccountName" resultType="org.jpstale.dao.userdb.entity.UserInfo">
         SELECT is_muted, mute_count FROM userdb.user_info WHERE account_name = #{accountName}

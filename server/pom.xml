@@ -20,6 +20,9 @@
         <module>pt-dao-spring-boot-starter</module>
         <module>pt-login-server</module>
         <module>pt-game-server</module>
+        <module>pt-web-server</module>
+        <module>pt-admin-server</module>
+        <module>pt-clan-server</module>
     </modules>
 
     <properties>

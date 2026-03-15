@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>注册账号 - PristonTale</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <h1>注册账号</h1>
+      <p>创建账号后即可使用游戏客户端登录</p>
+    </header>
+    <main class="card">
+      <div id="msg" class="msg hidden" role="alert"></div>
+      <form id="registerForm" novalidate>
+        <div class="form-group">
+          <label for="account">账号</label>
+          <input type="text" id="account" name="account" placeholder="请输入账号（1–32 字符）" autocomplete="username" required maxlength="32">
+        </div>
+        <div class="form-group">
+          <label for="email">邮箱</label>
+          <input type="email" id="email" name="email" placeholder="请输入邮箱（必填，唯一）" autocomplete="email" required maxlength="150">
+        </div>
+        <div class="form-group">
+          <label for="password">密码</label>
+          <input type="password" id="password" name="password" placeholder="请输入密码" autocomplete="new-password" required maxlength="64">
+        </div>
+        <div class="form-group">
+          <label for="passwordConfirm">确认密码</label>
+          <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="再次输入密码" autocomplete="new-password" required maxlength="64">
+        </div>
+        <button type="submit" class="btn" id="submitBtn">注册</button>
+        <a href="/index.html" class="btn btn-secondary">返回首页</a>
+      </form>
+    </main>
+    <footer class="footer">
+      <span class="links"><a href="/index.html">返回首页</a></span>
+    </footer>
+  </div>
+  <script src="/js/register.js"></script>
+</body>
+</html>

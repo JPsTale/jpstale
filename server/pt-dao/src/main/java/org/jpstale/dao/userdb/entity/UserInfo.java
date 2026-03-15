@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -26,8 +27,9 @@ public class UserInfo {
     private String accountName;
     @TableField("password")
     private String password;
+    /** 注册时间，UTC 存库，展示时按用户时区格式化 */
     @TableField("regis_day")
-    private String regisDay;
+    private Instant regisDay;
     @TableField("flag")
     private Integer flag;
     @TableField("active")

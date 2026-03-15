@@ -13,4 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface AccountLogMapper extends BaseMapper<AccountLog> {
 
+    /** C++ accountserver.cpp LogAccountLogin */
+    int insertAccountLog(AccountLog entity);
+
 }

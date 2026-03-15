@@ -175,3 +175,13 @@ INSERT INTO userdb.title_def (title_id, title_category, sub_category, title, tit
 (100, 'Custom', NULL, 'The Ban Hammer', 6),
 (101, 'Custom', NULL, 'Destroyer of Metas', 5),
 (102, 'Custom', NULL, 'Now You See Me', 5);
+
+-- 开发/测试用账号：admin / 123456（客户端发送 SHA256(UPPERCASE(账号)+":"+密码) 的十六进制大写，与 C++ GameCore 一致）
+-- 仅当不存在该账号时插入，便于重复执行初始化脚本
+INSERT INTO userdb.user_info (
+    account_name, password, regis_day, flag, active, active_code, coins, email,
+    game_master_type, game_master_level, game_master_mac_address, coins_traded,
+    ban_status, is_muted, mute_count
+)
+SELECT 'admin', '6CCDEEF78D42BCA3BBACA378E9AB180801DF781434AE4709BA696905CB67F218', CURRENT_TIMESTAMP, 114, 1, '0', 0, 'admin@localhost', 1, 2, '0', 0, 0, 0, 0
+WHERE NOT EXISTS (SELECT 1 FROM userdb.user_info WHERE account_name = 'admin');

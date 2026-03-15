@@ -1,9 +1,16 @@
 package org.jpstale.server.login.service.impl;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.jpstale.dao.logdb.entity.AccountLog;
+import org.jpstale.dao.logdb.mapper.AccountLogMapper;
+import org.jpstale.dao.userdb.entity.UserInfo;
+import org.jpstale.dao.userdb.mapper.UserInfoMapper;
 import org.jpstale.server.common.enums.packets.PacketHeader;
 import org.jpstale.server.common.codec.PacketSender;
+import org.jpstale.server.common.enums.account.AccountFlag;
+import org.jpstale.server.common.enums.account.AccountLogId;
 import org.jpstale.server.common.enums.account.AccountLogin;
+import org.jpstale.server.common.enums.account.BanStatus;
 import org.jpstale.server.common.struct.Server;
 import org.jpstale.server.common.struct.account.PacketAccountLoginCode;
 import org.jpstale.server.common.struct.packets.Header;
@@ -15,61 +22,166 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * AccountServer 默认实现。
- *
- * 直接移植自原 core 包下的 AccountServer 类，后续可按 C++ accountserver.cpp 逐步替换硬编码逻辑。
+ * AccountServer 实现，对齐 C++ accountserver.cpp 的 ProcessAccountLogin 流程，
+ * 使用 pt-dao 的 UserInfoMapper / AccountLogMapper 访问数据库。
+ * 账号标志、封禁状态、日志类型均使用 pt-common 的枚举。
  */
 @Service
 public class AccountServerImpl implements AccountServer {
 
     private static final Logger log = LoggerFactory.getLogger(AccountServerImpl.class);
 
-    /** 与 C++ accountserver.cpp 一致：登录成功后生成 [1, 1000] 的随机 ticket，供选服/进游戏校验。 */
+    private final UserInfoMapper userInfoMapper;
+    private final AccountLogMapper accountLogMapper;
+
+    public AccountServerImpl(UserInfoMapper userInfoMapper, AccountLogMapper accountLogMapper) {
+        this.userInfoMapper = userInfoMapper;
+        this.accountLogMapper = accountLogMapper;
+    }
+
     private static int generateLoginTicket() {
         return ThreadLocalRandom.current().nextInt(1, 1001);
     }
 
     @Override
     public int processAccountLogin(ChannelHandlerContext ctx, PacketLoginUser login) {
-        String userId = login.getUserId();
-        String password = login.getPassword();
-        log.info("userId:{}. password:{}", userId, password);
+        String accountName = login.getUserId() != null ? login.getUserId().trim() : "";
+        String password = login.getPassword() != null ? login.getPassword().trim() : "";
+        String clientIp = getClientIp(ctx);
 
-        // TODO: 版本校验应与 GameXor.GAME_VERSION 对齐，目前先简单通过。
+        log.info("accountLogin accountName=[{}] ip=[{}]", accountName, clientIp);
 
-        AccountLogin code;
-        // 客户端哈希规则: SHA256(UPPERCASE(用户名)+":"+密码) 十六进制大写，见 GameCore.cpp
-        // 6CCDEEF78D42BCA3BBACA378E9AB180801DF781434AE4709BA696905CB67F218 = SHA256("ADMIN:123456")
-        if ("admin".equalsIgnoreCase(userId) && "6CCDEEF78D42BCA3BBACA378E9AB180801DF781434AE4709BA696905CB67F218".equals(password)) {
-            code = AccountLogin.SUCCESS;
-        } else {
+        AccountLogin code = AccountLogin.LOGIN_PENDING;
+
+        // 1) 空账号 / 空密码（C++ ProcessAccountLogin 1007-1016）
+        if (accountName.isEmpty()) {
+            code = AccountLogin.INCORRECT_NAME;
+        } else if (password.isEmpty()) {
             code = AccountLogin.INCORRECT_PASSWORD;
         }
 
-        if (code == AccountLogin.SUCCESS) {
-            int ticket = generateLoginTicket(); // C++: pcUserData->iTicket = Dice::RandomI(1, 1000)
-            sendAccountLoginCode(ctx, code, "OK");
-            sendUserInfo(ctx, userId);
-            sendServerList(ctx, ticket);
+        UserInfo userInfo = null;
+        if (code == AccountLogin.LOGIN_PENDING) {
+            userInfo = userInfoMapper.selectOneByAccountName(accountName);
+            if (userInfo == null) {
+                code = AccountLogin.INCORRECT_NAME;
+            }
+        }
+
+        if (code == AccountLogin.LOGIN_PENDING) {
+            int flag = userInfo.getFlag() != null ? userInfo.getFlag() : AccountFlag.NOT_EXIST.getValue();
+
+            if (flag == AccountFlag.NOT_EXIST.getValue()) {
+                code = AccountLogin.INCORRECT_NAME;
+            } else if ((AccountFlag.ACTIVATED.getValue() & flag) == 0) {
+                code = AccountLogin.ACCOUNT_NOT_ACTIVE;
+            } else if ((AccountFlag.ACCEPTED_LATEST_TOA.getValue() & flag) == 0) {
+                code = AccountLogin.ACCOUNT_NOT_ACTIVE;
+            } else if ((AccountFlag.APPROVED.getValue() & flag) == 0) {
+                code = AccountLogin.ACCOUNT_NOT_ACTIVE;
+            } else if ((AccountFlag.MUST_CONFIRM.getValue() & flag) != 0) {
+                code = AccountLogin.ACCOUNT_NOT_ACTIVE;
+            }
+
+            if (code == AccountLogin.LOGIN_PENDING) {
+                BanStatus banStatus = BanStatus.fromValue(userInfo.getBanStatus() != null ? userInfo.getBanStatus() : BanStatus.NOT_BANNED.getValue());
+                if (banStatus == BanStatus.BANNED) {
+                    code = AccountLogin.BANNED;
+                } else if (banStatus == BanStatus.TEMP_BANNED) {
+                    LocalDateTime unbanDate = userInfo.getUnbanDate();
+                    if (unbanDate != null && LocalDateTime.now().isBefore(unbanDate)) {
+                        code = AccountLogin.TEMP_BANNED;
+                    } else {
+                        if (userInfo.getId() != null) {
+                            userInfoMapper.updateUnbanById(userInfo.getId());
+                        }
+                    }
+                }
+            }
+
+            if (code == AccountLogin.LOGIN_PENDING && userInfo.getIsMuted() != null && userInfo.getIsMuted() != 0) {
+                LocalDateTime unmuteDate = userInfo.getUnmuteDate();
+                if (unmuteDate != null && LocalDateTime.now().isBefore(unmuteDate)) {
+                    // 仍处于禁言期，C++ 会设置 pcUser->bMuted，登录服仅放行
+                } else {
+                    if (userInfo.getId() != null) {
+                        userInfoMapper.updateUnmuteById(userInfo.getId());
+                    }
+                }
+            }
+
+            if (code == AccountLogin.LOGIN_PENDING) {
+                String dbPassword = userInfo.getPassword();
+                if (dbPassword == null) {
+                    dbPassword = "";
+                }
+                if (password.equals(dbPassword)) {
+                    code = AccountLogin.SUCCESS;
+                } else {
+                    code = AccountLogin.INCORRECT_PASSWORD;
+                }
+            }
+        }
+
+        String message;
+        AccountLogin sendCode = code;
+        if (code == AccountLogin.BANNED || code == AccountLogin.TEMP_BANNED) {
+            if (code == AccountLogin.TEMP_BANNED && userInfo.getUnbanDate() != null) {
+                message = "Account is banned until " + userInfo.getUnbanDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")) + " GMT";
+            } else {
+                message = messageForLoginCode(AccountLogin.BANNED);
+            }
+            sendCode = AccountLogin.BANNED;
         } else {
-            sendAccountLoginCode(ctx, code, messageForLoginCode(code));
+            message = messageForLoginCode(code);
+        }
+
+        if (code == AccountLogin.SUCCESS) {
+            sendAccountLoginCode(ctx, AccountLogin.SUCCESS, "OK");
+            sendUserInfo(ctx, accountName);
+            int ticket = generateLoginTicket();
+            sendServerList(ctx, ticket);
+            logAccountLogin(clientIp, accountName, AccountLogId.LOGIN_SUCCESS.getValue(), "Login Success", ctx);
+        } else {
+            int logId = code == AccountLogin.INCORRECT_NAME ? AccountLogId.INCORRECT_ACCOUNT.getValue()
+                : code == AccountLogin.INCORRECT_PASSWORD ? AccountLogId.INCORRECT_PASSWORD.getValue()
+                : AccountLogId.BLOCKED_ACCOUNT.getValue();
+            logAccountLogin(clientIp, accountName, logId, message, ctx);
+            sendAccountLoginCode(ctx, sendCode, message);
         }
 
         if (log.isTraceEnabled()) {
-            log.trace("processAccountLogin result code={} for user={}", code, userId);
+            log.trace("processAccountLogin result code={} for account={}", code, accountName);
         }
-
         return code.getValue();
     }
 
-    /**
-     * 与 C++ account.h 注释一致的错误提示文案，写入 PacketAccountLoginCode.szMessage。
-     * 注意：多数客户端（含原版 exe）仅根据 iCode 从本地字符串表显示固定文案（如 "Incorrect password"），
-     * 不会使用服务端下发的 szMessage。若需自定义提示，需使用会绘制 0x04B0DFA0 内容的客户端构建。
-     */
+    private void logAccountLogin(String ip, String accountName, int logId, String description, ChannelHandlerContext ctx) {
+        try {
+            AccountLog logEntity = new AccountLog();
+            logEntity.setIp(ip != null ? ip : "");
+            logEntity.setAccountName(accountName != null ? accountName : "");
+            logEntity.setLogId(logId);
+            logEntity.setDescription(description != null ? description : "");
+            logEntity.setServerId(1);
+            accountLogMapper.insertAccountLog(logEntity);
+        } catch (Exception e) {
+            log.warn("insertAccountLog failed: {}", e.getMessage());
+        }
+    }
+
+    private static String getClientIp(ChannelHandlerContext ctx) {
+        if (ctx == null || ctx.channel() == null || ctx.channel().remoteAddress() == null) {
+            return "";
+        }
+        return ctx.channel().remoteAddress().toString().replaceFirst("/", "");
+    }
+
     private static String messageForLoginCode(AccountLogin code) {
         switch (code) {
             case INCORRECT_NAME:
@@ -106,14 +218,11 @@ public class AccountServerImpl implements AccountServer {
         packet.setPktHeader(PacketHeader.PKTHDR_AccountLoginCode);
         packet.setReserved(0);
         packet.setCode(code);
-        // C++ 失败路径用 iFailCode=2（见 accountserver.cpp 1282 行），仅 LoginPending 用 1
         packet.setFailCode(code == AccountLogin.LOGIN_PENDING ? 1 : (code.getValue() < 0 ? 2 : 0));
         packet.setMessage(message != null ? message : "");
-
         if (log.isTraceEnabled()) {
             log.trace("sendAccountLoginCode {}", packet);
         }
-
         PacketSender.sendPacket(ctx, packet);
     }
 
@@ -123,8 +232,7 @@ public class AccountServerImpl implements AccountServer {
         packet.setPktHeader(PacketHeader.PKTHDR_UserInfo);
         packet.setUserId(accountName != null ? accountName : "");
         packet.setCharCount(0);
-        // TODO: 若后续对齐 C++ 中 TransCharInfo 结构，这里需要填充角色信息数组。
-
+        // TODO: 从 CharacterInfoMapper 查该账号角色列表并填充 sCharacterData（对齐 C++ OnLoginSuccess）
         PacketSender.sendPacket(ctx, packet);
     }
 
@@ -132,7 +240,6 @@ public class AccountServerImpl implements AccountServer {
     public void sendServerList(ChannelHandlerContext ctx, int ticket) {
         PacketServerList packet = new PacketServerList();
         packet.setPktHeader(PacketHeader.PKTHDR_ServerList);
-
         Header header = new Header();
         header.setServerName("Local");
         header.setTime((int) (System.currentTimeMillis() / 1000L));
@@ -141,23 +248,18 @@ public class AccountServerImpl implements AccountServer {
         header.setClanServerIndex(0);
         header.setGameServers(1);
         packet.setHeader(header);
-
         Server[] servers = new Server[4];
         for (int i = 0; i < servers.length; i++) {
             servers[i] = new Server();
         }
         Server s0 = servers[0];
         s0.setName("A Dedicated Java Server");
-        // TODO: IP 和端口应从配置或数据库加载，此处先硬编码本地测试环境。
         s0.getIp()[0] = "127.0.0.1";
         s0.getPort()[0] = 8485;
         s0.getPort()[1] = 8485;
         s0.getPort()[2] = 8485;
         s0.getPort()[3] = 0;
-
         packet.setServers(servers);
-
         PacketSender.sendPacket(ctx, packet);
     }
 }
-
