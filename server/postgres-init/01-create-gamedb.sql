@@ -26,7 +26,7 @@ CREATE TABLE gamedb.age_list (
 
 -- 4. baseline_mod
 CREATE TABLE gamedb.baseline_mod (
-    class integer NOT NULL PRIMARY KEY,
+    clazz integer NOT NULL PRIMARY KEY,
     percent_baseline_strength integer NOT NULL,
     percent_baseline_spirit integer NOT NULL,
     percent_baseline_talent integer NOT NULL,
