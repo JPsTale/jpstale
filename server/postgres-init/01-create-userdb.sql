@@ -3,13 +3,13 @@ CREATE SCHEMA IF NOT EXISTS userdb;
 SET search_path TO userdb, public;
 
 -- 角色经验定义
-CREATE TABLE userdb.character_exp_def (
+CREATE TABLE IF NOT EXISTS userdb.character_exp_def (
     level integer NOT NULL,
     exp_required bigint NOT NULL
 );
 
 -- 角色信息
-CREATE TABLE userdb.character_info (
+CREATE TABLE IF NOT EXISTS userdb.character_info (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     name varchar(32) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE userdb.character_info (
 );
 
 -- 已删除角色信息
-CREATE TABLE userdb.character_info_delete (
+CREATE TABLE IF NOT EXISTS userdb.character_info_delete (
     id integer NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     name varchar(32) NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE userdb.character_info_delete (
 );
 
 -- 角色物品计时器
-CREATE TABLE userdb.character_item_timer (
+CREATE TABLE IF NOT EXISTS userdb.character_item_timer (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     character_id integer NOT NULL,
     character_name varchar(32) NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE userdb.character_item_timer (
 );
 
 -- 角色击杀统计
-CREATE TABLE userdb.character_monster_kill_tracker (
+CREATE TABLE IF NOT EXISTS userdb.character_monster_kill_tracker (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     character_id integer NOT NULL,
     monster_id integer NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE userdb.character_monster_kill_tracker (
 );
 
 -- 角色PVP统计
-CREATE TABLE userdb.character_pvp (
+CREATE TABLE IF NOT EXISTS userdb.character_pvp (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     character_name varchar(32) NOT NULL,
     kills integer NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE userdb.character_pvp (
 );
 
 -- 角色任务
-CREATE TABLE userdb.character_quest (
+CREATE TABLE IF NOT EXISTS userdb.character_quest (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     quest_id integer NOT NULL,
     quest_reward_id integer NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE userdb.character_quest (
 );
 
 -- 角色称号列表
-CREATE TABLE userdb.character_title_list (
+CREATE TABLE IF NOT EXISTS userdb.character_title_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     character_id integer NOT NULL,
     title_id integer NOT NULL,
@@ -114,13 +114,13 @@ CREATE TABLE userdb.character_title_list (
 );
 
 -- 职业定义
-CREATE TABLE userdb.class_def (
+CREATE TABLE IF NOT EXISTS userdb.class_def (
     class_id integer NOT NULL PRIMARY KEY,
     class_name varchar(20) NOT NULL
 );
 
 -- 物品箱
-CREATE TABLE userdb.item_box (
+CREATE TABLE IF NOT EXISTS userdb.item_box (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     item_code varchar(32) NOT NULL,
@@ -132,7 +132,7 @@ CREATE TABLE userdb.item_box (
 );
 
 -- 通知数据
-CREATE TABLE userdb.notification_data (
+CREATE TABLE IF NOT EXISTS userdb.notification_data (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     message varchar(100) NOT NULL,
@@ -140,7 +140,7 @@ CREATE TABLE userdb.notification_data (
 );
 
 -- 称号定义
-CREATE TABLE userdb.title_def (
+CREATE TABLE IF NOT EXISTS userdb.title_def (
     title_id integer NOT NULL PRIMARY KEY,
     title_category varchar(16) NOT NULL,
     sub_category varchar(16) NULL,
@@ -149,7 +149,7 @@ CREATE TABLE userdb.title_def (
 );
 
 -- 用户信息
-CREATE TABLE userdb.user_info (
+CREATE TABLE IF NOT EXISTS userdb.user_info (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     password varchar(64) NOT NULL,

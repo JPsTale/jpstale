@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS itemdb;
 SET search_path TO itemdb, public;
 
 -- 物品表
-CREATE TABLE itemdb.item (
+CREATE TABLE IF NOT EXISTS itemdb.item (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     character_id integer NOT NULL,
     location integer NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE itemdb.item (
 );
 
 -- 物品基础定义
-CREATE TABLE itemdb.item_base (
+CREATE TABLE IF NOT EXISTS itemdb.item_base (
     item_base_id integer NOT NULL PRIMARY KEY,
     item_base_name varchar(20) NOT NULL,
     item_base_hex bytea NOT NULL,
@@ -27,13 +27,13 @@ CREATE TABLE itemdb.item_base (
 );
 
 -- 物品制作类型
-CREATE TABLE itemdb.item_craft_type (
+CREATE TABLE IF NOT EXISTS itemdb.item_craft_type (
     item_craft_type_id smallint NOT NULL PRIMARY KEY,
     item_craft_type_name varchar(15) NOT NULL
 );
 
 -- 物品转储日志
-CREATE TABLE itemdb.item_dump (
+CREATE TABLE IF NOT EXISTS itemdb.item_dump (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NULL,
     char_name varchar(32) NULL,
@@ -90,8 +90,19 @@ CREATE TABLE itemdb.item_dump (
     created_date integer NOT NULL
 );
 
+-- 金币转储快照（与 item_dump 同库，C++ servercore/server 使用）
+-- INSERT: AccountName, CharName, WarehouseGold, CharacterGold（部分可为 NULL）；DELETE 全表
+CREATE TABLE IF NOT EXISTS itemdb.gold_dump (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    account_name varchar(32) NOT NULL,
+    char_name varchar(32) NULL,
+    warehouse_gold integer NULL,
+    character_gold integer NULL,
+    date_time timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- 物品类型
-CREATE TABLE itemdb.item_type (
+CREATE TABLE IF NOT EXISTS itemdb.item_type (
     item_type_id integer NOT NULL PRIMARY KEY,
     item_type_name varchar(20) NOT NULL,
     item_type_hex bytea NOT NULL,

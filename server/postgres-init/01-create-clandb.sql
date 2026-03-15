@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS clandb;
 SET search_path TO clandb, public;
 
 -- 1. bbs_main
-CREATE TABLE clandb.bbs_main (
+CREATE TABLE IF NOT EXISTS clandb.bbs_main (
     idx integer NOT NULL,
     midx integer NOT NULL,
     user_id varchar(25) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE clandb.bbs_main (
 );
 
 -- 2. bbs_sub
-CREATE TABLE clandb.bbs_sub (
+CREATE TABLE IF NOT EXISTS clandb.bbs_sub (
     sidx integer NOT NULL,
     mindex integer NOT NULL,
     user_id varchar(25) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE clandb.bbs_sub (
 );
 
 -- 3. bellatra_personal_score
-CREATE TABLE clandb.bellatra_personal_score (
+CREATE TABLE IF NOT EXISTS clandb.bellatra_personal_score (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     character_name varchar(32) NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE clandb.bellatra_personal_score (
 );
 
 -- 4. bellatra_personal_score_new
-CREATE TABLE clandb.bellatra_personal_score_new (
+CREATE TABLE IF NOT EXISTS clandb.bellatra_personal_score_new (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     character_id integer NOT NULL,
     character_name varchar(32) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE clandb.bellatra_personal_score_new (
 );
 
 -- 5. bellatra_team_score
-CREATE TABLE clandb.bellatra_team_score (
+CREATE TABLE IF NOT EXISTS clandb.bellatra_team_score (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     character_name varchar(32) NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE clandb.bellatra_team_score (
 );
 
 -- 6. chip_log
-CREATE TABLE clandb.chip_log (
+CREATE TABLE IF NOT EXISTS clandb.chip_log (
     lg_idx integer NOT NULL,
     cidx integer NOT NULL,
     c_server integer NOT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE clandb.chip_log (
 );
 
 -- 7. cl
-CREATE TABLE clandb.cl (
+CREATE TABLE IF NOT EXISTS clandb.cl (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
     clan_name varchar(50) NOT NULL,
     note text NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE clandb.cl (
 );
 
 -- 8. clan_home
-CREATE TABLE clandb.clan_home (
+CREATE TABLE IF NOT EXISTS clandb.clan_home (
     idx integer NOT NULL,
     midx integer NOT NULL,
     sel_server integer NOT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE clandb.clan_home (
 );
 
 -- 9. clan_list
-CREATE TABLE clandb.clan_list (
+CREATE TABLE IF NOT EXISTS clandb.clan_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     clan_name varchar(32) NOT NULL,
     clan_leader varchar(32) NOT NULL,
@@ -148,7 +148,7 @@ CREATE TABLE clandb.clan_list (
 );
 
 -- 10. clan_main_char_change_log
-CREATE TABLE clandb.clan_main_char_change_log (
+CREATE TABLE IF NOT EXISTS clandb.clan_main_char_change_log (
     idx integer NOT NULL,
     user_id varchar(50) NULL,
     before_char_name varchar(50) NULL,
@@ -158,7 +158,7 @@ CREATE TABLE clandb.clan_main_char_change_log (
 );
 
 -- 11. clan_main_deleted
-CREATE TABLE clandb.clan_main_deleted (
+CREATE TABLE IF NOT EXISTS clandb.clan_main_deleted (
     idx integer NOT NULL,
     midx integer NOT NULL,
     clan_name varchar(50) NOT NULL,
@@ -179,7 +179,7 @@ CREATE TABLE clandb.clan_main_deleted (
 );
 
 -- 12. clan_main_view
-CREATE TABLE clandb.clan_main_view (
+CREATE TABLE IF NOT EXISTS clandb.clan_main_view (
     idx integer NOT NULL,
     clan_name varchar(50) NOT NULL,
     note text NOT NULL,
@@ -204,7 +204,7 @@ CREATE TABLE clandb.clan_main_view (
 );
 
 -- 13. clan_money_log
-CREATE TABLE clandb.clan_money_log (
+CREATE TABLE IF NOT EXISTS clandb.clan_money_log (
     idx integer NOT NULL,
     cidx integer NULL,
     user_id varchar(50) NULL,
@@ -218,7 +218,7 @@ CREATE TABLE clandb.clan_money_log (
 );
 
 -- 14. clan_sub_char_change_log
-CREATE TABLE clandb.clan_sub_char_change_log (
+CREATE TABLE IF NOT EXISTS clandb.clan_sub_char_change_log (
     idx integer NOT NULL,
     user_id varchar(50) NULL,
     before_char_name varchar(50) NULL,
@@ -228,7 +228,7 @@ CREATE TABLE clandb.clan_sub_char_change_log (
 );
 
 -- 15. clan_sub_deleted
-CREATE TABLE clandb.clan_sub_deleted (
+CREATE TABLE IF NOT EXISTS clandb.clan_sub_deleted (
     idx integer NOT NULL,
     midx integer NOT NULL,
     user_id varchar(50) NOT NULL,
@@ -248,7 +248,7 @@ CREATE TABLE clandb.clan_sub_deleted (
 );
 
 -- 16. clan_sub_view
-CREATE TABLE clandb.clan_sub_view (
+CREATE TABLE IF NOT EXISTS clandb.clan_sub_view (
     idx integer NOT NULL,
     midx integer NOT NULL,
     user_id varchar(50) NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE clandb.clan_sub_view (
 );
 
 -- 17. clan_ticket
-CREATE TABLE clandb.clan_ticket (
+CREATE TABLE IF NOT EXISTS clandb.clan_ticket (
     s_no integer NULL,
     server_name varchar(50) NULL,
     midx integer NULL,
@@ -282,7 +282,7 @@ CREATE TABLE clandb.clan_ticket (
 );
 
 -- 18. ct
-CREATE TABLE clandb.ct (
+CREATE TABLE IF NOT EXISTS clandb.ct (
     s_no integer NULL,
     server_name varchar(50) NULL,
     midx integer NULL,
@@ -299,7 +299,7 @@ CREATE TABLE clandb.ct (
 );
 
 -- 19. game_notice
-CREATE TABLE clandb.game_notice (
+CREATE TABLE IF NOT EXISTS clandb.game_notice (
     user_id varchar(50) NULL,
     ch_name varchar(50) NULL,
     server integer NULL,
@@ -309,7 +309,7 @@ CREATE TABLE clandb.game_notice (
 );
 
 -- 20. game_notice_group
-CREATE TABLE clandb.game_notice_group (
+CREATE TABLE IF NOT EXISTS clandb.game_notice_group (
     idx integer NOT NULL,
     group_cd integer NOT NULL,
     main_cd integer NOT NULL,
@@ -325,7 +325,7 @@ CREATE TABLE clandb.game_notice_group (
 );
 
 -- 21. game_notice_private
-CREATE TABLE clandb.game_notice_private (
+CREATE TABLE IF NOT EXISTS clandb.game_notice_private (
     idx integer NOT NULL,
     user_id varchar(50) NOT NULL,
     title varchar(50) NOT NULL,
@@ -339,13 +339,13 @@ CREATE TABLE clandb.game_notice_private (
 );
 
 -- 22. li
-CREATE TABLE clandb.li (
+CREATE TABLE IF NOT EXISTS clandb.li (
     img integer NOT NULL,
     id integer NOT NULL
 );
 
 -- 23. notice
-CREATE TABLE clandb.notice (
+CREATE TABLE IF NOT EXISTS clandb.notice (
     idx integer NOT NULL,
     midx integer NOT NULL,
     user_id varchar(25) NOT NULL,
@@ -359,7 +359,7 @@ CREATE TABLE clandb.notice (
 );
 
 -- 24. pr_bbs_file
-CREATE TABLE clandb.pr_bbs_file (
+CREATE TABLE IF NOT EXISTS clandb.pr_bbs_file (
     idx integer NOT NULL,
     mindex integer NOT NULL,
     file_name varchar(255) NOT NULL,
@@ -368,7 +368,7 @@ CREATE TABLE clandb.pr_bbs_file (
 );
 
 -- 25. pr_bbs_main
-CREATE TABLE clandb.pr_bbs_main (
+CREATE TABLE IF NOT EXISTS clandb.pr_bbs_main (
     idx integer NOT NULL,
     pm_no varchar(20) NOT NULL,
     user_id varchar(25) NOT NULL,
@@ -384,7 +384,7 @@ CREATE TABLE clandb.pr_bbs_main (
 );
 
 -- 26. pr_bbs_sub
-CREATE TABLE clandb.pr_bbs_sub (
+CREATE TABLE IF NOT EXISTS clandb.pr_bbs_sub (
     sidx integer NOT NULL,
     mindex integer NOT NULL,
     pm_no varchar(20) NOT NULL,
@@ -397,7 +397,7 @@ CREATE TABLE clandb.pr_bbs_sub (
 );
 
 -- 27. siege_clan_list
-CREATE TABLE clandb.siege_clan_list (
+CREATE TABLE IF NOT EXISTS clandb.siege_clan_list (
     idx integer NOT NULL,
     user_id varchar(50) NOT NULL,
     char_name varchar(50) NOT NULL,
@@ -411,7 +411,7 @@ CREATE TABLE clandb.siege_clan_list (
 );
 
 -- 28. siege_current_list
-CREATE TABLE clandb.siege_current_list (
+CREATE TABLE IF NOT EXISTS clandb.siege_current_list (
     idx integer NOT NULL,
     cidx integer NULL,
     user_id varchar(50) NULL,
@@ -424,7 +424,7 @@ CREATE TABLE clandb.siege_current_list (
 );
 
 -- 29. siege_money_log
-CREATE TABLE clandb.siege_money_log (
+CREATE TABLE IF NOT EXISTS clandb.siege_money_log (
     idx integer GENERATED ALWAYS AS IDENTITY NOT NULL,
     cidx integer NULL,
     user_id varchar(50) NULL,
@@ -437,7 +437,7 @@ CREATE TABLE clandb.siege_money_log (
 );
 
 -- 30. siege_money_tax
-CREATE TABLE clandb.siege_money_tax (
+CREATE TABLE IF NOT EXISTS clandb.siege_money_tax (
     d_no integer GENERATED ALWAYS AS IDENTITY NOT NULL,
     idx integer NULL,
     mixing bigint NULL,
@@ -456,7 +456,7 @@ CREATE TABLE clandb.siege_money_tax (
 );
 
 -- 31. ul
-CREATE TABLE clandb.ul (
+CREATE TABLE IF NOT EXISTS clandb.ul (
     idx integer NOT NULL,
     midx integer GENERATED ALWAYS AS IDENTITY NOT NULL,
     user_id varchar(50) NOT NULL,

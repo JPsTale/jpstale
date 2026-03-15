@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS eventdb;
 SET search_path TO eventdb, public;
 
 -- 1. bellatra_monster
-CREATE TABLE eventdb.bellatra_monster (
+CREATE TABLE IF NOT EXISTS eventdb.bellatra_monster (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     round integer NOT NULL,
     monster1 varchar(32) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE eventdb.bellatra_monster (
 );
 
 -- 2. bellatra_monster_debug_mode
-CREATE TABLE eventdb.bellatra_monster_debug_mode (
+CREATE TABLE IF NOT EXISTS eventdb.bellatra_monster_debug_mode (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     round integer NOT NULL,
     monster1 varchar(32) NOT NULL,
@@ -47,14 +47,14 @@ CREATE TABLE eventdb.bellatra_monster_debug_mode (
 );
 
 -- 3. fury_arena_reward_tracker
-CREATE TABLE eventdb.fury_arena_reward_tracker (
+CREATE TABLE IF NOT EXISTS eventdb.fury_arena_reward_tracker (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     fury_event_id integer NOT NULL,
     character_id integer NOT NULL
 );
 
 -- 4. wanted_moriph_drops
-CREATE TABLE eventdb.wanted_moriph_drops (
+CREATE TABLE IF NOT EXISTS eventdb.wanted_moriph_drops (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     char_id integer NOT NULL,
     map_id integer NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE eventdb.wanted_moriph_drops (
 );
 
 -- 5. wanted_moriph_kills
-CREATE TABLE eventdb.wanted_moriph_kills (
+CREATE TABLE IF NOT EXISTS eventdb.wanted_moriph_kills (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     char_id integer NOT NULL,
     map_id integer NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE eventdb.wanted_moriph_kills (
 );
 
 -- 6. wanted_wolf_drops
-CREATE TABLE eventdb.wanted_wolf_drops (
+CREATE TABLE IF NOT EXISTS eventdb.wanted_wolf_drops (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     char_id integer NOT NULL,
     map_id integer NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE eventdb.wanted_wolf_drops (
 );
 
 -- 7. wanted_wolf_kills
-CREATE TABLE eventdb.wanted_wolf_kills (
+CREATE TABLE IF NOT EXISTS eventdb.wanted_wolf_kills (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     char_id integer NOT NULL,
     map_id integer NOT NULL,

@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS serverdb;
 SET search_path TO serverdb, public;
 
 -- 1. bellatra_reward
-CREATE TABLE serverdb.bellatra_reward (
+CREATE TABLE IF NOT EXISTS serverdb.bellatra_reward (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     item_code varchar(32) NOT NULL,
     quantity integer NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE serverdb.bellatra_reward (
 );
 
 -- 2. bless_castle_settings
-CREATE TABLE serverdb.bless_castle_settings (
+CREATE TABLE IF NOT EXISTS serverdb.bless_castle_settings (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     clan_id1 integer NOT NULL,
     clan_id2 integer NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE serverdb.bless_castle_settings (
 );
 
 -- 3. command
-CREATE TABLE serverdb.command (
+CREATE TABLE IF NOT EXISTS serverdb.command (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     command_type_id integer NOT NULL,
     parameter1 varchar(64) NULL,
@@ -40,7 +40,7 @@ CREATE TABLE serverdb.command (
 );
 
 -- 4. crash_data
-CREATE TABLE serverdb.crash_data (
+CREATE TABLE IF NOT EXISTS serverdb.crash_data (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     ip varchar(16) NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE serverdb.crash_data (
 );
 
 -- 5. function_checksum_list
-CREATE TABLE serverdb.function_checksum_list (
+CREATE TABLE IF NOT EXISTS serverdb.function_checksum_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     size integer NOT NULL,
     address varchar(50) NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE serverdb.function_checksum_list (
 );
 
 -- 6. fury_arena
-CREATE TABLE serverdb.fury_arena (
+CREATE TABLE IF NOT EXISTS serverdb.fury_arena (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     item_code varchar(32) NOT NULL,
     percent integer NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE serverdb.fury_arena (
 );
 
 -- 7. gm_command
-CREATE TABLE serverdb.gm_command (
+CREATE TABLE IF NOT EXISTS serverdb.gm_command (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     command varchar(100) NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE serverdb.gm_command (
 );
 
 -- 8. maintenance
-CREATE TABLE serverdb.maintenance (
+CREATE TABLE IF NOT EXISTS serverdb.maintenance (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     mode integer NOT NULL,
     ip varchar(32) NOT NULL,
@@ -96,20 +96,20 @@ CREATE TABLE serverdb.maintenance (
 );
 
 -- 9. message_login
-CREATE TABLE serverdb.message_login (
+CREATE TABLE IF NOT EXISTS serverdb.message_login (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     message varchar(128) NOT NULL
 );
 
 -- 10. metadata
-CREATE TABLE serverdb.metadata (
+CREATE TABLE IF NOT EXISTS serverdb.metadata (
     key varchar(30) NOT NULL PRIMARY KEY,
     value integer NOT NULL,
     is_public integer NOT NULL
 );
 
 -- 11. online_reward
-CREATE TABLE serverdb.online_reward (
+CREATE TABLE IF NOT EXISTS serverdb.online_reward (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     item_code varchar(32) NOT NULL,
     quantity integer NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE serverdb.online_reward (
 );
 
 -- 12. post_box
-CREATE TABLE serverdb.post_box (
+CREATE TABLE IF NOT EXISTS serverdb.post_box (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     item varchar(32) NOT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE serverdb.post_box (
 );
 
 -- 13. spawn_camera
-CREATE TABLE serverdb.spawn_camera (
+CREATE TABLE IF NOT EXISTS serverdb.spawn_camera (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
     map_number integer NOT NULL,
     spawn_x integer NOT NULL,
@@ -142,7 +142,7 @@ CREATE TABLE serverdb.spawn_camera (
 );
 
 -- 14. users_online
-CREATE TABLE serverdb.users_online (
+CREATE TABLE IF NOT EXISTS serverdb.users_online (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
     account_name varchar(32) NOT NULL,
     character_name varchar(32) NOT NULL,
@@ -154,7 +154,7 @@ CREATE TABLE serverdb.users_online (
 );
 
 -- 15. window_cheat_list
-CREATE TABLE serverdb.window_cheat_list (
+CREATE TABLE IF NOT EXISTS serverdb.window_cheat_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     window_name varchar(64) NOT NULL
 );

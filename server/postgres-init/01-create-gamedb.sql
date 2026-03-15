@@ -3,17 +3,17 @@ CREATE SCHEMA IF NOT EXISTS gamedb;
 SET search_path TO gamedb, public;
 
 -- 1. achievement_list
-CREATE TABLE gamedb.achievement_list (
+CREATE TABLE IF NOT EXISTS gamedb.achievement_list (
     id char(10) NULL
 );
 
 -- 2. action_field_settings
-CREATE TABLE gamedb.action_field_settings (
+CREATE TABLE IF NOT EXISTS gamedb.action_field_settings (
     id char(10) NULL
 );
 
 -- 3. age_list
-CREATE TABLE gamedb.age_list (
+CREATE TABLE IF NOT EXISTS gamedb.age_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     age_number integer NOT NULL,
     fail_chance integer NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE gamedb.age_list (
 );
 
 -- 4. baseline_mod
-CREATE TABLE gamedb.baseline_mod (
+CREATE TABLE IF NOT EXISTS gamedb.baseline_mod (
     clazz integer NOT NULL PRIMARY KEY,
     percent_baseline_strength integer NOT NULL,
     percent_baseline_spirit integer NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE gamedb.baseline_mod (
 );
 
 -- 5. character_class
-CREATE TABLE gamedb.character_class (
+CREATE TABLE IF NOT EXISTS gamedb.character_class (
     id integer NOT NULL,
     id2 integer NOT NULL,
     name varchar(32) NOT NULL,
@@ -43,13 +43,13 @@ CREATE TABLE gamedb.character_class (
 );
 
 -- 6. cheat_exception_list
-CREATE TABLE gamedb.cheat_exception_list (
+CREATE TABLE IF NOT EXISTS gamedb.cheat_exception_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     exception_name varchar(100) NULL
 );
 
 -- 7. cheat_list
-CREATE TABLE gamedb.cheat_list (
+CREATE TABLE IF NOT EXISTS gamedb.cheat_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     cheat_type integer NOT NULL,
     cheat_id integer NOT NULL,
@@ -58,13 +58,13 @@ CREATE TABLE gamedb.cheat_list (
 );
 
 -- 8. cheat_modules
-CREATE TABLE gamedb.cheat_modules (
+CREATE TABLE IF NOT EXISTS gamedb.cheat_modules (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     module_name varchar(64) NOT NULL
 );
 
 -- 9. coin_shop
-CREATE TABLE gamedb.coin_shop (
+CREATE TABLE IF NOT EXISTS gamedb.coin_shop (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     name varchar(32) NOT NULL,
     message varchar(128) NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE gamedb.coin_shop (
 );
 
 -- 10. coin_shop_item
-CREATE TABLE gamedb.coin_shop_item (
+CREATE TABLE IF NOT EXISTS gamedb.coin_shop_item (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     tab_id integer NOT NULL,
     name varchar(32) NOT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE gamedb.coin_shop_item (
 );
 
 -- 11. coin_shop_tab
-CREATE TABLE gamedb.coin_shop_tab (
+CREATE TABLE IF NOT EXISTS gamedb.coin_shop_tab (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     coin_shop_id integer NOT NULL,
     name varchar(32) NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE gamedb.coin_shop_tab (
 );
 
 -- 12. drop_item
-CREATE TABLE gamedb.drop_item (
+CREATE TABLE IF NOT EXISTS gamedb.drop_item (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     drop_id integer NOT NULL,
     items varchar(512) NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE gamedb.drop_item (
 );
 
 -- 13. item_attribute
-CREATE TABLE gamedb.item_attribute (
+CREATE TABLE IF NOT EXISTS gamedb.item_attribute (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     code integer NOT NULL,
     name varchar(32) NOT NULL,
@@ -124,13 +124,13 @@ CREATE TABLE gamedb.item_attribute (
 );
 
 -- 14. item_code
-CREATE TABLE gamedb.item_code (
+CREATE TABLE IF NOT EXISTS gamedb.item_code (
     code integer NOT NULL PRIMARY KEY,
     text varchar(16) NOT NULL
 );
 
 -- 15. item_fixes
-CREATE TABLE gamedb.item_fixes (
+CREATE TABLE IF NOT EXISTS gamedb.item_fixes (
     id integer NOT NULL PRIMARY KEY,
     name varchar(12) NOT NULL,
     min_level integer NOT NULL,
@@ -196,7 +196,7 @@ CREATE TABLE gamedb.item_fixes (
 );
 
 -- 16. item_list
-CREATE TABLE gamedb.item_list (
+CREATE TABLE IF NOT EXISTS gamedb.item_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     id_code integer NOT NULL,
     name varchar(50) NOT NULL,
@@ -308,7 +308,7 @@ CREATE TABLE gamedb.item_list (
 );
 
 -- 17. item_list_old
-CREATE TABLE gamedb.item_list_old (
+CREATE TABLE IF NOT EXISTS gamedb.item_list_old (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     id_code integer NOT NULL,
     name varchar(50) NOT NULL,
@@ -420,14 +420,14 @@ CREATE TABLE gamedb.item_list_old (
 );
 
 -- 18. item_spec
-CREATE TABLE gamedb.item_spec (
+CREATE TABLE IF NOT EXISTS gamedb.item_spec (
     item_id integer NOT NULL,
     character_class_id integer NOT NULL,
     main_spec integer NOT NULL
 );
 
 -- 19. item_spec_mod
-CREATE TABLE gamedb.item_spec_mod (
+CREATE TABLE IF NOT EXISTS gamedb.item_spec_mod (
     add_spec_class01 integer NOT NULL PRIMARY KEY,
     add_spec_class02 integer NOT NULL,
     add_spec_class03 integer NOT NULL,
@@ -447,7 +447,7 @@ CREATE TABLE gamedb.item_spec_mod (
 );
 
 -- 20. item_sub_type
-CREATE TABLE gamedb.item_sub_type (
+CREATE TABLE IF NOT EXISTS gamedb.item_sub_type (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     type_id integer NOT NULL,
     code integer NOT NULL,
@@ -455,14 +455,14 @@ CREATE TABLE gamedb.item_sub_type (
 );
 
 -- 21. item_type
-CREATE TABLE gamedb.item_type (
+CREATE TABLE IF NOT EXISTS gamedb.item_type (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     code integer NOT NULL,
     name varchar(32) NOT NULL
 );
 
 -- 22. item_value
-CREATE TABLE gamedb.item_value (
+CREATE TABLE IF NOT EXISTS gamedb.item_value (
     item_list_id integer NOT NULL,
     attribute_id integer NOT NULL,
     min_value double precision NOT NULL,
@@ -471,7 +471,7 @@ CREATE TABLE gamedb.item_value (
 );
 
 -- 23. map_boss
-CREATE TABLE gamedb.map_boss (
+CREATE TABLE IF NOT EXISTS gamedb.map_boss (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     map_id integer NOT NULL,
     boss_monster_id integer NOT NULL,
@@ -480,13 +480,13 @@ CREATE TABLE gamedb.map_boss (
 );
 
 -- 24. map_boss_hour
-CREATE TABLE gamedb.map_boss_hour (
+CREATE TABLE IF NOT EXISTS gamedb.map_boss_hour (
     boss_id integer NOT NULL,
     hour integer NOT NULL
 );
 
 -- 25. map_indicator
-CREATE TABLE gamedb.map_indicator (
+CREATE TABLE IF NOT EXISTS gamedb.map_indicator (
     map_id integer NOT NULL,
     type integer NOT NULL,
     value integer NOT NULL,
@@ -496,7 +496,7 @@ CREATE TABLE gamedb.map_indicator (
 );
 
 -- 26. map_list
-CREATE TABLE gamedb.map_list (
+CREATE TABLE IF NOT EXISTS gamedb.map_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     name varchar(50) NULL,
     short_name varchar(50) NULL,
@@ -507,7 +507,7 @@ CREATE TABLE gamedb.map_list (
 );
 
 -- 27. map_monster
-CREATE TABLE gamedb.map_monster (
+CREATE TABLE IF NOT EXISTS gamedb.map_monster (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     stage varchar(50) NULL,
     max_monsters integer NOT NULL,
@@ -552,7 +552,7 @@ CREATE TABLE gamedb.map_monster (
 );
 
 -- 28. map_npc
-CREATE TABLE gamedb.map_npc (
+CREATE TABLE IF NOT EXISTS gamedb.map_npc (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     stage integer NOT NULL,
     x integer NOT NULL,
@@ -565,7 +565,7 @@ CREATE TABLE gamedb.map_npc (
 );
 
 -- 29. map_spawn_point
-CREATE TABLE gamedb.map_spawn_point (
+CREATE TABLE IF NOT EXISTS gamedb.map_spawn_point (
     id integer NOT NULL PRIMARY KEY,
     stage integer NULL,
     x integer NULL,
@@ -574,13 +574,13 @@ CREATE TABLE gamedb.map_spawn_point (
 );
 
 -- 30. map_type
-CREATE TABLE gamedb.map_type (
+CREATE TABLE IF NOT EXISTS gamedb.map_type (
     id integer NOT NULL,
     name varchar(64) NOT NULL
 );
 
 -- 31. mimic_spawn
-CREATE TABLE gamedb.mimic_spawn (
+CREATE TABLE IF NOT EXISTS gamedb.mimic_spawn (
     map_id integer NOT NULL,
     mimic_name integer NOT NULL,
     spawn_chance integer NOT NULL,
@@ -588,7 +588,7 @@ CREATE TABLE gamedb.mimic_spawn (
 );
 
 -- 32. mix_effect
-CREATE TABLE gamedb.mix_effect (
+CREATE TABLE IF NOT EXISTS gamedb.mix_effect (
     id smallint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     code integer NOT NULL,
     before_value varchar(16) NOT NULL,
@@ -596,20 +596,20 @@ CREATE TABLE gamedb.mix_effect (
 );
 
 -- 33. mix_effect_type
-CREATE TABLE gamedb.mix_effect_type (
+CREATE TABLE IF NOT EXISTS gamedb.mix_effect_type (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     after_text varchar(16) NULL
 );
 
 -- 34. mix_item
-CREATE TABLE gamedb.mix_item (
+CREATE TABLE IF NOT EXISTS gamedb.mix_item (
     id smallint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     mix_id smallint NOT NULL,
     item_sub_type_id integer NOT NULL
 );
 
 -- 35. mix_list
-CREATE TABLE gamedb.mix_list (
+CREATE TABLE IF NOT EXISTS gamedb.mix_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     mix_unique_id integer NOT NULL,
     group_mix_id integer NOT NULL,
@@ -659,7 +659,7 @@ CREATE TABLE gamedb.mix_list (
 );
 
 -- 36. mix_value
-CREATE TABLE gamedb.mix_value (
+CREATE TABLE IF NOT EXISTS gamedb.mix_value (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     mix_id smallint NOT NULL,
     effect_id smallint NOT NULL,
@@ -668,7 +668,7 @@ CREATE TABLE gamedb.mix_value (
 );
 
 -- 37. model_animation_list
-CREATE TABLE gamedb.model_animation_list (
+CREATE TABLE IF NOT EXISTS gamedb.model_animation_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     model_id integer NOT NULL,
     type integer NOT NULL,
@@ -681,7 +681,7 @@ CREATE TABLE gamedb.model_animation_list (
 );
 
 -- 38. model_list
-CREATE TABLE gamedb.model_list (
+CREATE TABLE IF NOT EXISTS gamedb.model_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     model varchar(64) NOT NULL,
     width integer NOT NULL,
@@ -690,14 +690,14 @@ CREATE TABLE gamedb.model_list (
 );
 
 -- 39. monster_effect
-CREATE TABLE gamedb.monster_effect (
+CREATE TABLE IF NOT EXISTS gamedb.monster_effect (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     code integer NOT NULL,
     name varchar(32) NOT NULL
 );
 
 -- 40. monster_list
-CREATE TABLE gamedb.monster_list (
+CREATE TABLE IF NOT EXISTS gamedb.monster_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     name varchar(32) NULL,
     model_file varchar(64) NULL,
@@ -753,7 +753,7 @@ CREATE TABLE gamedb.monster_list (
 );
 
 -- 41. npc_list
-CREATE TABLE gamedb.npc_list (
+CREATE TABLE IF NOT EXISTS gamedb.npc_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     name varchar(64) NOT NULL,
     game_file varchar(250) NOT NULL,
@@ -774,13 +774,13 @@ CREATE TABLE gamedb.npc_list (
 );
 
 -- 42. npc_message
-CREATE TABLE gamedb.npc_message (
+CREATE TABLE IF NOT EXISTS gamedb.npc_message (
     npc_id integer NOT NULL,
     message varchar(128) NOT NULL
 );
 
 -- 43. pet_system
-CREATE TABLE gamedb.pet_system (
+CREATE TABLE IF NOT EXISTS gamedb.pet_system (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     pet_owner_name varchar(32) NULL,
     pet_name varchar(32) NULL,
@@ -788,7 +788,7 @@ CREATE TABLE gamedb.pet_system (
 );
 
 -- 44. pet_system_skin
-CREATE TABLE gamedb.pet_system_skin (
+CREATE TABLE IF NOT EXISTS gamedb.pet_system_skin (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     pet_name_summon varchar(32) NOT NULL,
     pet_size double precision NULL,
@@ -796,7 +796,7 @@ CREATE TABLE gamedb.pet_system_skin (
 );
 
 -- 45. quest_event_list
-CREATE TABLE gamedb.quest_event_list (
+CREATE TABLE IF NOT EXISTS gamedb.quest_event_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     quest_id integer NOT NULL,
     percent_increase_exp integer NOT NULL,
@@ -804,7 +804,7 @@ CREATE TABLE gamedb.quest_event_list (
 );
 
 -- 46. quest_list
-CREATE TABLE gamedb.quest_list (
+CREATE TABLE IF NOT EXISTS gamedb.quest_list (
     id integer NOT NULL PRIMARY KEY,
     name varchar(64) NOT NULL,
     short_description varchar(128) NOT NULL,
@@ -839,7 +839,7 @@ CREATE TABLE gamedb.quest_list (
 );
 
 -- 47. quest_reward_list
-CREATE TABLE gamedb.quest_reward_list (
+CREATE TABLE IF NOT EXISTS gamedb.quest_reward_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     quest_id integer NOT NULL,
     name varchar(64) NULL,
@@ -857,7 +857,7 @@ CREATE TABLE gamedb.quest_reward_list (
 );
 
 -- 48. quest_swap_list
-CREATE TABLE gamedb.quest_swap_list (
+CREATE TABLE IF NOT EXISTS gamedb.quest_swap_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     quest_race1 integer NOT NULL,
     quest_race2 integer NOT NULL,
@@ -865,7 +865,7 @@ CREATE TABLE gamedb.quest_swap_list (
 );
 
 -- 49. quest_window_list
-CREATE TABLE gamedb.quest_window_list (
+CREATE TABLE IF NOT EXISTS gamedb.quest_window_list (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     npc_id integer NOT NULL,
     quest_list_id varchar(255) NOT NULL,
@@ -874,21 +874,21 @@ CREATE TABLE gamedb.quest_window_list (
 );
 
 -- 50. rarity_chance
-CREATE TABLE gamedb.rarity_chance (
+CREATE TABLE IF NOT EXISTS gamedb.rarity_chance (
     rarity_chance_group integer NOT NULL,
     rarity integer NOT NULL,
     chance integer NOT NULL
 );
 
 -- 51. rarity_chance_group
-CREATE TABLE gamedb.rarity_chance_group (
+CREATE TABLE IF NOT EXISTS gamedb.rarity_chance_group (
     id integer NOT NULL PRIMARY KEY,
     min_level integer NOT NULL,
     max_level integer NOT NULL
 );
 
 -- 52. rarity_chance_mod
-CREATE TABLE gamedb.rarity_chance_mod (
+CREATE TABLE IF NOT EXISTS gamedb.rarity_chance_mod (
     type integer NOT NULL PRIMARY KEY,
     mod_common real NOT NULL,
     mod_uncommon real NOT NULL,

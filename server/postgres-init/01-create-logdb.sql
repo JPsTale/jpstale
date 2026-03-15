@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS logdb;
 SET search_path TO logdb, public;
 
 -- 1. account_log
-CREATE TABLE logdb.account_log (
+CREATE TABLE IF NOT EXISTS logdb.account_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     ip varchar(50) NOT NULL,
     account_name varchar(32) NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE logdb.account_log (
 );
 
 -- 2. aging_recovery
-CREATE TABLE logdb.aging_recovery (
+CREATE TABLE IF NOT EXISTS logdb.aging_recovery (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     character_id integer NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE logdb.aging_recovery (
 );
 
 -- 3. bellatra_reward_log
-CREATE TABLE logdb.bellatra_reward_log (
+CREATE TABLE IF NOT EXISTS logdb.bellatra_reward_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     name varchar(32) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE logdb.bellatra_reward_log (
 );
 
 -- 4. character_log
-CREATE TABLE logdb.character_log (
+CREATE TABLE IF NOT EXISTS logdb.character_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     ip varchar(50) NOT NULL,
     account_name varchar(50) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE logdb.character_log (
 );
 
 -- 5. cheat_log
-CREATE TABLE logdb.cheat_log (
+CREATE TABLE IF NOT EXISTS logdb.cheat_log (
     id bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     ip varchar(20) NOT NULL,
     account_name varchar(32) NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE logdb.cheat_log (
 );
 
 -- 6. coin_log
-CREATE TABLE logdb.coin_log (
+CREATE TABLE IF NOT EXISTS logdb.coin_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     description varchar(256) NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE logdb.coin_log (
 );
 
 -- 7. disconnects
-CREATE TABLE logdb.disconnects (
+CREATE TABLE IF NOT EXISTS logdb.disconnects (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     ip varchar(32) NOT NULL,
     account_name varchar(32) NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE logdb.disconnects (
 );
 
 -- 8. event_log
-CREATE TABLE logdb.event_log (
+CREATE TABLE IF NOT EXISTS logdb.event_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     character_id integer NOT NULL,
     character_name varchar(32) NOT NULL,
@@ -95,14 +95,14 @@ CREATE TABLE logdb.event_log (
 );
 
 -- 9. fury_arena_log
-CREATE TABLE logdb.fury_arena_log (
+CREATE TABLE IF NOT EXISTS logdb.fury_arena_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     description varchar(256) NOT NULL,
     date timestamp without time zone NOT NULL
 );
 
 -- 10. gold_log
-CREATE TABLE logdb.gold_log (
+CREATE TABLE IF NOT EXISTS logdb.gold_log (
     id bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(50) NOT NULL,
     source integer NOT NULL,   -- 原 "Where" 字段，表示金币来源
@@ -114,7 +114,7 @@ CREATE TABLE logdb.gold_log (
 );
 
 -- 11. inventory_item_log
-CREATE TABLE logdb.inventory_item_log (
+CREATE TABLE IF NOT EXISTS logdb.inventory_item_log (
     id bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     user_id varchar(32) NOT NULL,
     char_name varchar(32) NOT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE logdb.inventory_item_log (
 );
 
 -- 12. item_create_log
-CREATE TABLE logdb.item_create_log (
+CREATE TABLE IF NOT EXISTS logdb.item_create_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     item_id integer NOT NULL,
     code1 integer NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE logdb.item_create_log (
 );
 
 -- 13. item_log
-CREATE TABLE logdb.item_log (
+CREATE TABLE IF NOT EXISTS logdb.item_log (
     id bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     ip varchar(20) NOT NULL,
     account_name varchar(32) NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE logdb.item_log (
 );
 
 -- 14. mute_player_log
-CREATE TABLE logdb.mute_player_log (
+CREATE TABLE IF NOT EXISTS logdb.mute_player_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     character_name varchar(32) NOT NULL,
@@ -162,7 +162,7 @@ CREATE TABLE logdb.mute_player_log (
 );
 
 -- 15. online_reward_log
-CREATE TABLE logdb.online_reward_log (
+CREATE TABLE IF NOT EXISTS logdb.online_reward_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(32) NOT NULL,
     name varchar(32) NOT NULL,
@@ -172,7 +172,7 @@ CREATE TABLE logdb.online_reward_log (
 );
 
 -- 16. post_box_log
-CREATE TABLE logdb.post_box_log (
+CREATE TABLE IF NOT EXISTS logdb.post_box_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     ip varchar(30) NOT NULL,
     account_name varchar(32) NOT NULL,
@@ -183,7 +183,7 @@ CREATE TABLE logdb.post_box_log (
 );
 
 -- 17. register_log
-CREATE TABLE logdb.register_log (
+CREATE TABLE IF NOT EXISTS logdb.register_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     account_name varchar(50) NULL,
     ip_address varchar(50) NULL,
@@ -193,7 +193,7 @@ CREATE TABLE logdb.register_log (
 );
 
 -- 18. server_log
-CREATE TABLE logdb.server_log (
+CREATE TABLE IF NOT EXISTS logdb.server_log (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     type integer NOT NULL,
     server integer NOT NULL,
@@ -203,7 +203,7 @@ CREATE TABLE logdb.server_log (
 );
 
 -- 19. users_online_record
-CREATE TABLE logdb.users_online_record (
+CREATE TABLE IF NOT EXISTS logdb.users_online_record (
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     users_online_sub_server1 integer NOT NULL,
     users_online_sub_server2 integer NOT NULL,
@@ -213,7 +213,7 @@ CREATE TABLE logdb.users_online_record (
 );
 
 -- 20. warehouse_log
-CREATE TABLE logdb.warehouse_log (
+CREATE TABLE IF NOT EXISTS logdb.warehouse_log (
     id bigint GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
     user_id varchar(32) NOT NULL,
     char_name varchar(32) NOT NULL,
@@ -223,6 +223,31 @@ CREATE TABLE logdb.warehouse_log (
     code1 integer NOT NULL,
     code2 integer NOT NULL,
     date timestamp without time zone NOT NULL
+);
+
+-- 21. event_kill_log: 活动击杀记录（C++ eventserver EventKillLog）
+-- INSERT INTO EventKillLog (EventID, MapID, CharacterID, MonsterID, MonsterEffectID, DateTime)
+CREATE TABLE IF NOT EXISTS logdb.event_kill_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    event_id integer NOT NULL,
+    map_id integer NOT NULL,
+    character_id integer NOT NULL,
+    monster_id integer NOT NULL,
+    monster_effect_id integer NOT NULL,
+    date_time timestamp without time zone NOT NULL
+);
+
+-- 22. packet_log: 包统计日志（C++ socketserver PacketLog）
+-- INSERT INTO PacketLog (ServerType, PacketID, TotalCount, TotalDurationMS, MinDurationMS, MaxDurationMS, DateTime)
+CREATE TABLE IF NOT EXISTS logdb.packet_log (
+    id integer GENERATED ALWAYS AS IDENTITY NOT NULL PRIMARY KEY,
+    server_type integer NOT NULL,
+    packet_id integer NOT NULL,
+    total_count integer NOT NULL,
+    total_duration_ms bigint NOT NULL,
+    min_duration_ms integer NOT NULL,
+    max_duration_ms integer NOT NULL,
+    date_time timestamp without time zone NOT NULL
 );
 
 -- 为 CleanUpOldLogs 存储过程中涉及的表在 date 列上创建索引，以加速删除操作
@@ -237,6 +262,8 @@ CREATE INDEX IF NOT EXISTS idx_character_log_date ON logdb.character_log (date);
 CREATE INDEX IF NOT EXISTS idx_account_log_date ON logdb.account_log (date);
 CREATE INDEX IF NOT EXISTS idx_coin_log_date ON logdb.coin_log (date);
 CREATE INDEX IF NOT EXISTS idx_online_reward_log_date ON logdb.online_reward_log (date);
+CREATE INDEX IF NOT EXISTS idx_event_kill_log_date_time ON logdb.event_kill_log (date_time);
+CREATE INDEX IF NOT EXISTS idx_packet_log_date_time ON logdb.packet_log (date_time);
 
 -- 存储过程：清理旧日志
 CREATE OR REPLACE PROCEDURE logdb.clean_up_old_logs()
@@ -249,6 +276,8 @@ BEGIN
     DELETE FROM logdb.item_log            WHERE date < CURRENT_DATE - INTERVAL '1 month';
     DELETE FROM logdb.gold_log            WHERE date < CURRENT_DATE - INTERVAL '1 month';
     DELETE FROM logdb.server_log          WHERE date < CURRENT_DATE - INTERVAL '1 month';
+    DELETE FROM logdb.event_kill_log      WHERE date_time < CURRENT_DATE - INTERVAL '1 month';
+    DELETE FROM logdb.packet_log          WHERE date_time < CURRENT_DATE - INTERVAL '1 month';
 
     -- 删除超过 3 个月的日志
     DELETE FROM logdb.warehouse_log       WHERE date < CURRENT_DATE - INTERVAL '3 months';
