@@ -16,6 +16,8 @@
 
     <modules>
         <module>pt-common</module>
+        <module>pt-dao</module>
+        <module>pt-dao-spring-boot-starter</module>
         <module>pt-login-server</module>
         <module>pt-game-server</module>
     </modules>
@@ -51,6 +53,27 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-database-postgresql</artifactId>
                 <version>10.14.0</version>
+            </dependency>
+            <!-- pt-dao (Spring Boot 4 兼容) -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
+                <version>3.5.15</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot4-starter</artifactId>
+                <version>4.5.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jpstale</groupId>
+                <artifactId>pt-dao</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jpstale</groupId>
+                <artifactId>pt-dao-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
