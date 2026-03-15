@@ -7,18 +7,15 @@ import org.jpstale.server.common.enums.account.BanStatus;
 import org.jpstale.server.web.dto.RegisterResponse;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.Locale;
 
 /**
- * 注册：写入 userdb.user_info，密码存储格式与 pt-login-server 一致：
- * SHA256(UPPERCASE(account)+":"+明文密码) 的十六进制大写。
+ * 注册：写入 userdb.user_info。密码由前端按 SHA256(UPPERCASE(account)+":"+明文) 算出十六进制大写后传入，后端直接存库。
  */
 @Service
 public class RegisterService {
+
+    private static final int PASSWORD_HEX_LENGTH = 64;
 
     private final UserInfoMapper userInfoMapper;
 
@@ -26,7 +23,7 @@ public class RegisterService {
         this.userInfoMapper = userInfoMapper;
     }
 
-    public RegisterResponse register(String account, String email, String plainPassword) {
+    public RegisterResponse register(String account, String email, String passwordHash) {
         String accountName = account.trim();
         String emailTrimmed = email != null ? email.trim() : "";
         if (accountName.isEmpty()) {
@@ -35,13 +32,15 @@ public class RegisterService {
         if (emailTrimmed.isEmpty()) {
             return RegisterResponse.fail("邮箱不能为空");
         }
+        if (passwordHash == null || passwordHash.length() != PASSWORD_HEX_LENGTH || !passwordHash.matches("[0-9A-Fa-f]{64}")) {
+            return RegisterResponse.fail("密码格式无效");
+        }
         if (userInfoMapper.selectOneByAccountName(accountName) != null) {
             return RegisterResponse.fail("账号已存在");
         }
         if (userInfoMapper.selectOneByEmail(emailTrimmed) != null) {
             return RegisterResponse.fail("该邮箱已被注册");
         }
-        String passwordHash = hashPassword(accountName, plainPassword);
         UserInfo user = new UserInfo();
         user.setAccountName(accountName);
         user.setPassword(passwordHash);
@@ -63,21 +62,5 @@ public class RegisterService {
         user.setUnmuteDate(null);
         userInfoMapper.insert(user);
         return RegisterResponse.ok("注册成功");
-    }
-
-    /** 与 C++/登录一致：SHA256(UPPERCASE(account)+":"+plainPassword) 十六进制大写 */
-    static String hashPassword(String account, String plainPassword) {
-        String input = account.toUpperCase(Locale.ROOT) + ":" + plainPassword;
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hex = new StringBuilder(digest.length * 2);
-            for (byte b : digest) {
-                hex.append(String.format("%02X", b & 0xff));
-            }
-            return hex.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 not available", e);
-        }
     }
 }

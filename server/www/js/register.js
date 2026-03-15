@@ -13,6 +13,19 @@
     msgEl.classList.add('hidden');
   }
 
+  // 与登录一致：SHA256(UPPERCASE(account)+":"+明文密码) 十六进制大写，前端计算后传后端存库
+  function sha256Hex(str) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str))
+      .then(function (buf) {
+        var arr = new Uint8Array(buf);
+        var hex = '';
+        for (var i = 0; i < arr.length; i++) {
+          hex += ('0' + arr[i].toString(16)).slice(-2).toUpperCase();
+        }
+        return hex;
+      });
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     hideMsg();
@@ -54,10 +67,13 @@
 
     submitBtn.disabled = true;
 
-    fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ account: account, email: email, password: password })
+    var input = account.toUpperCase() + ':' + password;
+    sha256Hex(input).then(function (passwordHash) {
+      return fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ account: account, email: email, password: passwordHash })
+      });
     })
       .then(function (res) { return res.json(); })
       .then(function (data) {

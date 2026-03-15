@@ -1,18 +1,31 @@
-# 本地 PostgreSQL，供 Login/Game Server 使用
+# 本地 PostgreSQL + Nginx（bridge + 端口映射，Win/Mac/Linux 均可用）
 # 启动: cd server && docker compose up -d
-# 建库后执行: psql -h localhost -U postgres -d userdb -f /path/to/PristonTale-EU-main/docs/postgresql-scripts/01-UserDB.sql
-#          psql -h localhost -U postgres -d gamedb  -f /path/to/PristonTale-EU-main/docs/postgresql-scripts/02-GameDB.sql
+# 访问: http://localhost （nginx 80），pt-web-server 需在本机起 8080
+# Windows 若 nginx 启动卡住：多半是绑定挂载 Win 路径导致，可把项目放到 WSL 里再执行 compose
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: jpstale-nginx
+    user: root
+    ports:
+      - "80:80"
+    volumes:
+      - ./www:/usr/share/nginx/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
     container_name: jpstale-pg
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: pt
       TZ: Asia/Shanghai
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./postgres-init:/docker-entrypoint-initdb.d
