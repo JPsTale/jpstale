@@ -7,13 +7,14 @@ services:
     image: postgres:16-alpine
     container_name: jpstale-pg
     environment:
-      POSTGRES_USER: root
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: pt
+      TZ: Asia/Shanghai
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
       - ./postgres-init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -21,12 +22,6 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
-    networks:
-      - pt
 
 volumes:
   pgdata:
-
-networks:
-  pt:
-    driver: bridge

@@ -17,3 +17,5 @@
 **/*.so
 **/*.log*
 **/.flattened-pom.xml
+
+/server/pgdata/
